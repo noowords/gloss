@@ -2,7 +2,7 @@ use async_trait::{ async_trait };
 
 use crate::domain::shared::{ UnitOfWork };
 use crate::domain::models::user::{
-    User, UserRepository, UserModelDomainError,
+    User, UserRepository,
     value_objects::{ UserId }
 };
 
@@ -23,12 +23,12 @@ impl UserRepository for MySqlUserRepository {
     async fn create(
         &self,
         uow: &mut dyn UnitOfWork,
-        user: &mut User
-    ) -> Result<(), UserModelDomainError> {
+        user: &User
+    ) -> Result<(), anyhow::Error> {
         let ctx = uow.ctx_mut()
             .as_any_mut()
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| UserModelDomainError::DatabaseError("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
 
         sqlx::query(
             r#"
@@ -41,7 +41,7 @@ impl UserRepository for MySqlUserRepository {
             .bind(user.role().as_str())
             .execute(&mut *ctx.tx)
             .await
-            .map_err(|e| UserModelDomainError::DatabaseError(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
     }
@@ -50,11 +50,11 @@ impl UserRepository for MySqlUserRepository {
         &self,
         uow: &mut dyn UnitOfWork,
         id: UserId
-    ) -> Result<Option<User>, UserModelDomainError> {
+    ) -> Result<Option<User>, anyhow::Error> {
         let ctx = uow.ctx_mut()
             .as_any_mut()
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| UserModelDomainError::DatabaseError("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
 
         let row: Option<MySqlUserRow> = sqlx::query_as(
             r#"
@@ -66,7 +66,7 @@ impl UserRepository for MySqlUserRepository {
             .bind(id.value())
             .fetch_optional(&mut *ctx.tx)
             .await
-            .map_err(|e| UserModelDomainError::DatabaseError(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         match row {
             Some(row) => Ok(Some(User::try_from(row)?)),
@@ -78,11 +78,11 @@ impl UserRepository for MySqlUserRepository {
         &self,
         uow: &mut dyn UnitOfWork,
         id: UserId
-    ) -> Result<bool, UserModelDomainError> {
+    ) -> Result<bool, anyhow::Error> {
         let ctx = uow.ctx_mut()
             .as_any_mut()
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| UserModelDomainError::DatabaseError("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
 
         let row = sqlx::query(
             r#"
@@ -95,7 +95,7 @@ impl UserRepository for MySqlUserRepository {
             .bind(id.value())
             .fetch_optional(&mut *ctx.tx)
             .await
-            .map_err(|e| UserModelDomainError::DatabaseError(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
         
         Ok(row.is_some())
     }
@@ -103,14 +103,14 @@ impl UserRepository for MySqlUserRepository {
     async fn update(
         &self,
         uow: &mut dyn UnitOfWork,
-        user: &mut User
-    ) -> Result<(), UserModelDomainError> {
+        user: &User
+    ) -> Result<(), anyhow::Error> {
         let ctx = uow.ctx_mut()
             .as_any_mut()
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| UserModelDomainError::DatabaseError("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
 
-        let row = MySqlUserRow::from(&*user);
+        let row = MySqlUserRow::from(user);
 
         sqlx::query(
             r#"
@@ -124,7 +124,7 @@ impl UserRepository for MySqlUserRepository {
             .bind(row.id())
             .execute(&mut *ctx.tx)
             .await
-            .map_err(|e| UserModelDomainError::DatabaseError(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
     }
@@ -133,11 +133,11 @@ impl UserRepository for MySqlUserRepository {
         &self,
         uow: &mut dyn UnitOfWork,
         id: UserId
-    ) -> Result<(), UserModelDomainError> {
+    ) -> Result<(), anyhow::Error> {
         let ctx = uow.ctx_mut()
             .as_any_mut()
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| UserModelDomainError::DatabaseError("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
 
         sqlx::query(
             r#"
@@ -148,7 +148,7 @@ impl UserRepository for MySqlUserRepository {
             .bind(id.value())
             .execute(&mut *ctx.tx)
             .await
-            .map_err(|e| UserModelDomainError::DatabaseError(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
         
         Ok(())
     }

@@ -4,7 +4,7 @@ use serde_json;
 use crate::domain::shared::{ UnitOfWork };
 use crate::domain::models::{
     user::value_objects::{ UserId },
-    master::{ Master, MasterRepository, MasterModelDomainError }
+    master::{ Master, MasterRepository }
 };
 
 use super::super::super::shared::{ MySqlTxContext };
@@ -24,15 +24,15 @@ impl MasterRepository for MySqlMasterRepository {
     async fn create(
         &self,
         uow: &mut dyn UnitOfWork,
-        master: &mut Master
-    ) -> Result<(), MasterModelDomainError> {
+        master: &Master
+    ) -> Result<(), anyhow::Error> {
         let ctx = uow.ctx_mut()
             .as_any_mut()
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| MasterModelDomainError::DatabaseError("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
 
         let schedule_json = serde_json::to_value(master.schedule())
-            .map_err(|e| MasterModelDomainError::CorruptedSchedule(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!("MasterSchedule corrupted: {}", e.to_string()))?;
             
         sqlx::query(
             r#"
@@ -44,7 +44,7 @@ impl MasterRepository for MySqlMasterRepository {
             .bind(&schedule_json)
             .execute(&mut *ctx.tx)
             .await
-            .map_err(|e| MasterModelDomainError::DatabaseError(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
     }
@@ -53,11 +53,11 @@ impl MasterRepository for MySqlMasterRepository {
         &self,
         uow: &mut dyn UnitOfWork,
         user_id: UserId
-    ) -> Result<Option<Master>, MasterModelDomainError> {
+    ) -> Result<Option<Master>, anyhow::Error> {
         let ctx = uow.ctx_mut()
             .as_any_mut()
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| MasterModelDomainError::DatabaseError("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
 
         let row: Option<MySqlMasterRow> = sqlx::query_as(
             r#"
@@ -69,7 +69,7 @@ impl MasterRepository for MySqlMasterRepository {
             .bind(user_id.value())
             .fetch_optional(&mut *ctx.tx)
             .await
-            .map_err(|e| MasterModelDomainError::DatabaseError(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         match row {
             Some(row) => Ok(Some(Master::try_from(row)?)),
@@ -81,11 +81,11 @@ impl MasterRepository for MySqlMasterRepository {
         &self,
         uow: &mut dyn UnitOfWork,
         user_id: UserId
-    ) -> Result<bool, MasterModelDomainError> {
+    ) -> Result<bool, anyhow::Error> {
         let ctx = uow.ctx_mut()
             .as_any_mut()
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| MasterModelDomainError::DatabaseError("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
 
         let row = sqlx::query(
             r#"
@@ -98,7 +98,7 @@ impl MasterRepository for MySqlMasterRepository {
             .bind(user_id.value())
             .fetch_optional(&mut *ctx.tx)
             .await
-            .map_err(|e| MasterModelDomainError::DatabaseError(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
         
         Ok(row.is_some())
     }
@@ -106,14 +106,14 @@ impl MasterRepository for MySqlMasterRepository {
     async fn update(
         &self,
         uow: &mut dyn UnitOfWork,
-        master: &mut Master
-    ) -> Result<(), MasterModelDomainError> {
+        master: &Master
+    ) -> Result<(), anyhow::Error> {
         let ctx = uow.ctx_mut()
             .as_any_mut()
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| MasterModelDomainError::DatabaseError("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
 
-        let row = MySqlMasterRow::from(&*master);
+        let row = MySqlMasterRow::from(master);
 
         sqlx::query(
             r#"
@@ -125,7 +125,7 @@ impl MasterRepository for MySqlMasterRepository {
             .bind(row.user_id())
             .execute(&mut *ctx.tx)
             .await
-            .map_err(|e| MasterModelDomainError::DatabaseError(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
     }
@@ -134,11 +134,11 @@ impl MasterRepository for MySqlMasterRepository {
         &self,
         uow: &mut dyn UnitOfWork,
         user_id: UserId
-    ) -> Result<(), MasterModelDomainError> {
+    ) -> Result<(), anyhow::Error> {
         let ctx = uow.ctx_mut()
             .as_any_mut()
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| MasterModelDomainError::DatabaseError("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
 
         sqlx::query(
             r#"
@@ -149,7 +149,7 @@ impl MasterRepository for MySqlMasterRepository {
             .bind(user_id.value())
             .execute(&mut *ctx.tx)
             .await
-            .map_err(|e| MasterModelDomainError::DatabaseError(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
         
         Ok(())
     }

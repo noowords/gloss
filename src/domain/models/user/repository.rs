@@ -2,8 +2,6 @@ use async_trait::{ async_trait };
 
 use super::super::super::shared::{ UnitOfWork };
 
-use super::errors::{ UserModelDomainError };
-
 use super::{
     User,
     value_objects::{ UserId }
@@ -14,30 +12,30 @@ pub trait UserRepository: Send + Sync {
     async fn create(
         &self,
         uow: &mut dyn UnitOfWork,
-        user: &mut User
-    ) -> Result<(), UserModelDomainError>;
+        user: &User
+    ) -> Result<(), anyhow::Error>;
     
     async fn get_by_id(
         &self,
         uow: &mut dyn UnitOfWork,
         id: UserId
-    ) -> Result<Option<User>, UserModelDomainError>;
+    ) -> Result<Option<User>, anyhow::Error>;
     
     async fn exists(
         &self,
         uow: &mut dyn UnitOfWork,
         id: UserId
-    ) -> Result<bool, UserModelDomainError>;
+    ) -> Result<bool, anyhow::Error>;
     
     async fn update(
         &self,
         uow: &mut dyn UnitOfWork,
-        user: &mut User
-    ) -> Result<(), UserModelDomainError>;
+        user: &User
+    ) -> Result<(), anyhow::Error>;
     
     async fn remove(
         &self,
         uow: &mut dyn UnitOfWork,
         id: UserId
-    ) -> Result<(), UserModelDomainError>;
+    ) -> Result<(), anyhow::Error>;
 }

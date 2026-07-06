@@ -1,11 +1,9 @@
-use super::super::errors::{ UserModelDomainError };
-
 #[derive(Clone, Eq, PartialEq)]
 pub struct UserPhone(String);
 
 impl UserPhone {
-    pub fn new(value: String) -> Result<Self, UserModelDomainError> {
-        if false { return Err(UserModelDomainError::InvalidPhoneFormat) };
+    pub fn new(value: String) -> Result<Self, anyhow::Error> {
+        if false { return Err(anyhow::anyhow!("Invalid UserPhone format")) };
 
         Ok(Self(value))
     }

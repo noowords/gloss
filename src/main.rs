@@ -5,14 +5,12 @@ mod presentation;
 mod bootstrap;
 
 #[tokio::main]
-async fn main() {
-    let db_pool = bootstrap::create_mysql_pool().await.expect("Database connection failed");
-    let provider = bootstrap::create_mysql_provider().await;
-    let uow_factory = bootstrap::create_mysql_unit_of_work_factory(db_pool);
-    let ucs = bootstrap::build_use_cases(uow_factory, provider);
+async fn main() -> Result<(), anyhow::Error> {
+    let pool = bootstrap::infrastructure::connect_to_database("mysql", "mysql://root:root@localhost:3306/gloss").await?;
+    let uow_factory = bootstrap::infrastructure::init_unit_of_work_factory("mysql", pool)?;
+    let infra_factory = bootstrap::infrastructure::init_infrastructure_factory("mysql")?;
+    
+    let command_bus = bootstrap::application::build_command_bus(uow_factory, infra_factory);
 
-    let state = presentation::web::AppState::new(ucs);
-    let app = presentation::web::create_router(state);
-
-    presentation::web::run_server(app).await;
+    bootstrap::presentation::serve_http("0.0.0.0:3000", command_bus).await
 }

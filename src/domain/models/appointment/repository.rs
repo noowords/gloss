@@ -3,7 +3,7 @@ use async_trait::{ async_trait };
 use super::super::super::shared::{ UnitOfWork };
 
 use super::{
-    Appointment, AppointmentModelDomainError,
+    Appointment,
     value_objects::{ AppointmentId }
 };
 
@@ -12,30 +12,30 @@ pub trait AppointmentRepository: Send + Sync {
     async fn create(
         &self,
         uow: &mut dyn UnitOfWork,
-        appointment: Appointment
-    ) -> Result<(), AppointmentModelDomainError>;
+        appointment: &Appointment
+    ) -> Result<(), anyhow::Error>;
     
     async fn get_by_id(
         &self,
         uow: &mut dyn UnitOfWork,
         id: AppointmentId
-    ) -> Result<Option<Appointment>, AppointmentModelDomainError>;
+    ) -> Result<Option<Appointment>, anyhow::Error>;
     
     async fn exists(
         &self,
         uow: &mut dyn UnitOfWork,
         id: AppointmentId
-    ) -> Result<bool, AppointmentModelDomainError>;
+    ) -> Result<bool, anyhow::Error>;
     
     async fn update(
         &self,
         uow: &mut dyn UnitOfWork,
-        appointment: Appointment
-    ) -> Result<(), AppointmentModelDomainError>;
+        appointment: &Appointment
+    ) -> Result<(), anyhow::Error>;
     
     async fn remove(
         &self,
         uow: &mut dyn UnitOfWork,
         id: AppointmentId
-    ) -> Result<(), AppointmentModelDomainError>;
+    ) -> Result<(), anyhow::Error>;
 }

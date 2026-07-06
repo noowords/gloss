@@ -1,25 +1,28 @@
+use std::sync::{ Arc };
 use async_trait::{ async_trait };
-use sqlx::mysql::{ MySqlPool };
 
-use crate::domain::shared::{ UnitOfWork };
-use crate::application::shared::{ UnitOfWorkFactory, SharedApplicationError };
+use crate::domain::shared::{ PoolContext, UnitOfWork, UnitOfWorkFactory };
 
-use super::{ MySqlUnitOfWork };
+use super::{ MySqlPoolContext, MySqlUnitOfWork };
 
 pub struct MySqlUnitOfWorkFactory {
-    pool: MySqlPool
+    cpool: Arc<dyn PoolContext>
 }
 
 impl MySqlUnitOfWorkFactory {
-    pub fn new(pool: MySqlPool) -> Self {
-        Self { pool }
+    pub fn new(cpool: Arc<dyn PoolContext>) -> Self {
+        Self { cpool }
     }
 }
 
 #[async_trait]
 impl UnitOfWorkFactory for MySqlUnitOfWorkFactory {
-    async fn begin(&self) -> Result<Box<dyn UnitOfWork>, SharedApplicationError> {
-        let uow = MySqlUnitOfWork::begin(&self.pool).await?;
+    async fn begin(&self) -> Result<Box<dyn UnitOfWork>, anyhow::Error> {
+        let ctx = self.cpool
+            .downcast_ref::<MySqlPoolContext>()
+            .ok_or_else(|| anyhow::anyhow!("Expected MySqlPoolContext inside MySqlUnitOfWorkFactory"))?;
+
+        let uow = MySqlUnitOfWork::begin(&ctx.pool).await?;
         
         Ok(Box::new(uow))
     }

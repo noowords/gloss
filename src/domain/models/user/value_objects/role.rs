@@ -1,5 +1,3 @@
-use super::super::errors::{ UserModelDomainError };
-
 #[derive(Clone, Eq, PartialEq)]
 pub enum UserRole {
     Admin,
@@ -33,9 +31,9 @@ impl From<UserRole> for String {
 }
 
 impl TryFrom<&str> for UserRole {
-    type Error = UserModelDomainError;
+    type Error = anyhow::Error;
     
     fn try_from(s: &str) -> Result<Self, Self::Error> {
-        UserRole::from_str(s).ok_or_else(|| UserModelDomainError::InvalidRole(s.to_string()))
+        UserRole::from_str(s).ok_or_else(|| anyhow::anyhow!("Invalid UserRole: {}", s.to_string()))
     }
 }

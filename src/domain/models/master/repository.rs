@@ -4,37 +4,37 @@ use super::super::super::shared::{ UnitOfWork };
 
 use super::super::user::value_objects::{ UserId };
 
-use super::{ Master, MasterModelDomainError };
+use super::{ Master };
 
 #[async_trait]
 pub trait MasterRepository: Send + Sync {
     async fn create(
         &self,
         uow: &mut dyn UnitOfWork,
-        master: &mut Master
-    ) -> Result<(), MasterModelDomainError>;
+        master: &Master
+    ) -> Result<(), anyhow::Error>;
     
     async fn get_by_user_id(
         &self,
         uow: &mut dyn UnitOfWork,
         user_id: UserId
-    ) -> Result<Option<Master>, MasterModelDomainError>;
+    ) -> Result<Option<Master>, anyhow::Error>;
     
     async fn exists(
         &self,
         uow: &mut dyn UnitOfWork,
         user_id: UserId
-    ) -> Result<bool, MasterModelDomainError>;
+    ) -> Result<bool, anyhow::Error>;
     
     async fn update(
         &self,
         uow: &mut dyn UnitOfWork,
-        master: &mut Master
-    ) -> Result<(), MasterModelDomainError>;
+        master: &Master
+    ) -> Result<(), anyhow::Error>;
     
     async fn remove(
         &self,
         uow: &mut dyn UnitOfWork,
         user_id: UserId
-    ) -> Result<(), MasterModelDomainError>;
+    ) -> Result<(), anyhow::Error>;
 }

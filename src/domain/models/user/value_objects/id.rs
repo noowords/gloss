@@ -1,7 +1,5 @@
 use uuid::{ Uuid };
 
-use super::super::errors::{ UserModelDomainError };
-
 #[derive(Copy, Clone, Eq, Hash, PartialEq)]
 pub struct UserId(Uuid);
 
@@ -36,12 +34,12 @@ impl From<UserId> for Uuid {
 }
 
 impl std::str::FromStr for UserId {
-    type Err = UserModelDomainError;
+    type Err = anyhow::Error;
     
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Uuid::parse_str(s)
             .map(UserId)
-            .map_err(|_| UserModelDomainError::InvalidId)
+            .map_err(|_| anyhow::anyhow!("Invalid UserId: {}", s))
     }
 }
 

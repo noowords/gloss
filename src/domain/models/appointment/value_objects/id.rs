@@ -1,7 +1,5 @@
 use uuid::{ Uuid };
 
-use super::super::errors::{ AppointmentModelDomainError };
-
 #[derive(Copy, Clone, PartialEq)]
 pub struct AppointmentId(Uuid);
 
@@ -36,12 +34,12 @@ impl From<AppointmentId> for Uuid {
 }
 
 impl std::str::FromStr for AppointmentId {
-    type Err = AppointmentModelDomainError;
+    type Err = anyhow::Error;
     
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Uuid::parse_str(s)
             .map(AppointmentId)
-            .map_err(|_| AppointmentModelDomainError::InvalidId)
+            .map_err(|_| anyhow::anyhow!("Invalid AppointmentId: {}", s))
     }
 }
 

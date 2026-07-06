@@ -4,7 +4,7 @@ use sqlx::{ FromRow };
 use crate::domain::models::{
     user::value_objects::{ UserId },
     master::{
-        Master, MasterModelDomainError,
+        Master,
         value_objects::{ Schedule }
     }
 };
@@ -36,11 +36,11 @@ impl MySqlMasterRow {
 }
 
 impl TryFrom<MySqlMasterRow> for Master {
-    type Error = MasterModelDomainError;
+    type Error = anyhow::Error;
     
     fn try_from(record: MySqlMasterRow) -> Result<Self, Self::Error> {
         let schedule: Schedule = serde_json::from_value(record.schedule)
-            .map_err(|e| MasterModelDomainError::CorruptedSchedule(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!("MasterSchedule corrupted: {}", e.to_string()))?;
         
         Ok(Self::new(
             UserId::from(record.user_id),

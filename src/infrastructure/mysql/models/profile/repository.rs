@@ -3,7 +3,7 @@ use async_trait::{ async_trait };
 use crate::domain::shared::{ UnitOfWork };
 use crate::domain::models::{
     user::value_objects::{ UserId },
-    profile::{ Profile, ProfileRepository, ProfileModelDomainError }
+    profile::{ Profile, ProfileRepository }
 };
 
 use super::super::super::shared::{ MySqlTxContext };
@@ -23,12 +23,12 @@ impl ProfileRepository for MySqlProfileRepository {
     async fn create(
         &self,
         uow: &mut dyn UnitOfWork,
-        profile: &mut Profile
-    ) -> Result<(), ProfileModelDomainError> {
+        profile: &Profile
+    ) -> Result<(), anyhow::Error> {
         let ctx = uow.ctx_mut()
             .as_any_mut()
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| ProfileModelDomainError::DatabaseError("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
 
         sqlx::query(
             r#"
@@ -43,7 +43,7 @@ impl ProfileRepository for MySqlProfileRepository {
             .bind(profile.bio())
             .execute(&mut *ctx.tx)
             .await
-            .map_err(|e| ProfileModelDomainError::DatabaseError(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
     }
@@ -52,11 +52,11 @@ impl ProfileRepository for MySqlProfileRepository {
         &self,
         uow: &mut dyn UnitOfWork,
         user_id: UserId
-    ) -> Result<Option<Profile>, ProfileModelDomainError> {
+    ) -> Result<Option<Profile>, anyhow::Error> {
         let ctx = uow.ctx_mut()
             .as_any_mut()
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| ProfileModelDomainError::DatabaseError("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
 
         let row: Option<MySqlProfileRow> = sqlx::query_as(
             r#"
@@ -68,7 +68,7 @@ impl ProfileRepository for MySqlProfileRepository {
             .bind(user_id.value())
             .fetch_optional(&mut *ctx.tx)
             .await
-            .map_err(|e| ProfileModelDomainError::DatabaseError(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         match row {
             Some(row) => Ok(Some(Profile::try_from(row)?)),
@@ -80,11 +80,11 @@ impl ProfileRepository for MySqlProfileRepository {
         &self,
         uow: &mut dyn UnitOfWork,
         user_id: UserId
-    ) -> Result<bool, ProfileModelDomainError> {
+    ) -> Result<bool, anyhow::Error> {
         let ctx = uow.ctx_mut()
             .as_any_mut()
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| ProfileModelDomainError::DatabaseError("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
 
         let row = sqlx::query(
             r#"
@@ -97,7 +97,7 @@ impl ProfileRepository for MySqlProfileRepository {
             .bind(user_id.value())
             .fetch_optional(&mut *ctx.tx)
             .await
-            .map_err(|e| ProfileModelDomainError::DatabaseError(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(row.is_some())
     }
@@ -105,14 +105,14 @@ impl ProfileRepository for MySqlProfileRepository {
     async fn update(
         &self,
         uow: &mut dyn UnitOfWork,
-        profile: &mut Profile
-    ) -> Result<(), ProfileModelDomainError> {
+        profile: &Profile
+    ) -> Result<(), anyhow::Error> {
         let ctx = uow.ctx_mut()
             .as_any_mut()
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| ProfileModelDomainError::DatabaseError("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
 
-        let row = MySqlProfileRow::from(&*profile);
+        let row = MySqlProfileRow::from(profile);
 
         sqlx::query(
             r#"
@@ -128,7 +128,7 @@ impl ProfileRepository for MySqlProfileRepository {
             .bind(row.user_id())
             .execute(&mut *ctx.tx)
             .await
-            .map_err(|e| ProfileModelDomainError::DatabaseError(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
     }
@@ -137,11 +137,11 @@ impl ProfileRepository for MySqlProfileRepository {
         &self,
         uow: &mut dyn UnitOfWork,
         user_id: UserId
-    ) -> Result<(), ProfileModelDomainError> {
+    ) -> Result<(), anyhow::Error> {
         let ctx = uow.ctx_mut()
             .as_any_mut()
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| ProfileModelDomainError::DatabaseError("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
 
         sqlx::query(
             r#"
@@ -152,7 +152,7 @@ impl ProfileRepository for MySqlProfileRepository {
             .bind(user_id.value())
             .execute(&mut *ctx.tx)
             .await
-            .map_err(|e| ProfileModelDomainError::DatabaseError(e.to_string()))?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
     }
