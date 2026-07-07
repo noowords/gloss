@@ -36,17 +36,17 @@ impl CreateUserHandler {
 impl CommandHandler<CreateUserCommand> for CreateUserHandler {
     type Output = ();
     
-    async fn handle(&self, cmd: CreateUserCommand) -> Result<Self::Output, Box<dyn std::error::Error + Send + Sync>> {
+    async fn handle(&self, command: CreateUserCommand) -> Result<Self::Output, Box<dyn std::error::Error + Send + Sync>> {
         let mut uow = self.uow_factory.begin().await?;
         let user_repository = self.infra_factory.user_repository();
         
         let user = User::new(
             None,
-            cmd.role
+            command.role
                 .as_deref()
                 .map(|r| UserRole::try_from(r))
                 .transpose()?,
-            cmd.phone
+            command.phone
                 .map(|p| UserPhone::new(p))
                 .transpose()?
         );

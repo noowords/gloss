@@ -18,14 +18,14 @@ pub fn build_command_bus(
     command_bus.register::<CreateUserCommand, _>(
         CreateUserHandler::new(
             uow_factory.clone(),
-            infra_factory.clone(),
+            infra_factory.clone()
         )
     );
 
     command_bus.register::<CreateAppointmentCommand, _>(
         CreateAppointmentHandler::new(
             uow_factory.clone(),
-            infra_factory.clone(),
+            infra_factory.clone()
         )
     );
 

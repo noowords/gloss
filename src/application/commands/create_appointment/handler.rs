@@ -33,16 +33,16 @@ impl CreateAppointmentHandler {
 impl CommandHandler<CreateAppointmentCommand> for CreateAppointmentHandler {
     type Output = ();
     
-    async fn handle(&self, cmd: CreateAppointmentCommand) -> Result<Self::Output, Box<dyn std::error::Error + Send + Sync>> {
+    async fn handle(&self, command: CreateAppointmentCommand) -> Result<Self::Output, Box<dyn std::error::Error + Send + Sync>> {
         let mut uow = self.uow_factory.begin().await?;
         let appointment_repository = self.infra_factory.appointment_repository();
 
         let appointment = Appointment::new(
             None,
-            UserId::from(cmd.master_id),
-            UserId::from(cmd.client_id),
-            cmd.date,
-            cmd.time,
+            UserId::from(command.master_id),
+            UserId::from(command.client_id),
+            command.date,
+            command.time,
             None
         );
 
