@@ -16,6 +16,6 @@ pub async fn connect_to_database(
 
             Ok(Arc::new(MySqlPoolContext::new(pool)))
         },
-        _ => Err(anyhow::anyhow!("Unsupported database type: {}", database_type))
+        _ => anyhow::bail!("Unsupported database type: {}", database_type)
     }
 }

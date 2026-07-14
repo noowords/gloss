@@ -15,7 +15,7 @@ pub async fn get_by_id(
     State(state): State<HttpState>,
     Path(req): Path<GetUserByIdRequest>
 ) -> Result<(StatusCode, Json<GetUserByIdView>), StatusCode> {
-    state.app.query_bus.send::<GetUserByIdQuery, Option<GetUserByIdView>>(req.into())
+    state.query_bus.send::<GetUserByIdQuery, Option<GetUserByIdView>>(req.into())
         .await
         .map_err(|e| {
             eprintln!("[Error] Failed to execute GetUserByIdQuery: {:?}", e);

@@ -8,6 +8,6 @@ pub fn initialize_query_service_factory(
 ) -> Result<Arc<dyn QueryServiceFactory>, anyhow::Error> {
     match database_type {
         "mysql" => Ok(Arc::new(MySqlQueryServiceFactory::new())),
-        _ => Err(anyhow::anyhow!("Unsupported database type: {}", database_type))
+        _ => anyhow::bail!("Unsupported database type: {}", database_type)
     }
 }

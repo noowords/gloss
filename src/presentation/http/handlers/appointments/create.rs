@@ -15,7 +15,7 @@ pub async fn create(
     State(state): State<HttpState>,
     Json(req): Json<CreateAppointmentRequest>
 ) -> Result<StatusCode, StatusCode> {
-    state.app.command_bus.send::<CreateAppointmentCommand, ()>(req.into())
+    state.command_bus.send::<CreateAppointmentCommand, ()>(req.into())
         .await
         .map(|_| StatusCode::CREATED)
         .map_err(|e| {

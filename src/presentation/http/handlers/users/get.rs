@@ -11,7 +11,7 @@ use super::super::super::{ HttpState };
 pub async fn get(
     State(state): State<HttpState>
 ) -> Result<(StatusCode, Json<GetUsersView>), StatusCode> {
-    state.app.query_bus.send::<GetUsersQuery, GetUsersView>(GetUsersQuery {})
+    state.query_bus.send::<GetUsersQuery, GetUsersView>(GetUsersQuery {})
         .await
         .map(|users| (StatusCode::OK, Json(users)))
         .map_err(|e| {

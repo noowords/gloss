@@ -7,9 +7,12 @@ use crate::providers::{ AppState };
 
 pub async fn serve_http(
     addr: &str,
-    app: Arc<AppState>
+    app_state: Arc<AppState>
 ) -> Result<(), anyhow::Error> {
-    let state = HttpState::new(app);
+    let state = HttpState::new(
+        app_state.command_bus.clone(),
+        app_state.query_bus.clone(),
+    );
     let router = create_router(state);
     
     let listener = TcpListener::bind(addr)

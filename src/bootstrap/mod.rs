@@ -1,6 +1,8 @@
-mod initialize;
-pub mod infrastructure;
-pub mod application;
-pub mod presentation;
+mod builder;
+mod instance;
+mod application;
+mod infrastructure;
+mod presentation;
 
-pub use initialize::{ InfrastructureBuilder, build_application };
+pub use builder::{ ApplicationBuilder };
+pub use instance::{ Application };

@@ -9,6 +9,6 @@ pub fn initialize_unit_of_work_factory(
 ) -> Result<Arc<dyn UnitOfWorkFactory>, anyhow::Error> {
     match database_type {
         "mysql" => Ok(Arc::new(MySqlUnitOfWorkFactory::new(ctx))),
-        _ => Err(anyhow::anyhow!("Unsupported database type: {}", database_type))
+        _ => anyhow::bail!("Unsupported database type: {}", database_type)
     }
 }

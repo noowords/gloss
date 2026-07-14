@@ -5,19 +5,14 @@ mod presentation;
 mod providers;
 mod bootstrap;
 
-use crate::bootstrap::{
-    InfrastructureBuilder, build_application,
-    presentation::{ serve_http }
-};
+use crate::bootstrap::{ ApplicationBuilder };
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
-    let infrastructure = InfrastructureBuilder::new()
+    let application = ApplicationBuilder::new()
         .with_database("mysql", "mysql://root:root@localhost:3306/gloss")
         .build()
         .await?;
 
-    let application = build_application(infrastructure)?;
-
-    serve_http("127.0.0.1:3000", application).await
+    application.serve("http", "localhost:3000").await
 }

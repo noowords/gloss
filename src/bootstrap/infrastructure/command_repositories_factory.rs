@@ -8,6 +8,6 @@ pub fn initialize_command_repository_factory(
 ) -> Result<Arc<dyn CommandRepositoryFactory>, anyhow::Error> {
     match database_type {
         "mysql" => Ok(Arc::new(MySqlCommandRepositoryFactory::new())),
-        _ => Err(anyhow::anyhow!("Unsupported database type: {}", database_type))
+        _ => anyhow::bail!("Unsupported database type: {}", database_type)
     }
 }

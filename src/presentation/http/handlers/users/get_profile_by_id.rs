@@ -15,7 +15,7 @@ pub async fn get_profile_by_id(
     State(state): State<HttpState>,
     Path(req): Path<GetUserProfileByIdRequest>
 ) -> Result<(StatusCode, Json<GetUserProfileByIdView>), StatusCode> {
-    state.app.query_bus.send::<GetUserProfileByIdQuery, Option<GetUserProfileByIdView>>(req.into())
+    state.query_bus.send::<GetUserProfileByIdQuery, Option<GetUserProfileByIdView>>(req.into())
         .await
         .map_err(|e| {
             eprintln!("[Error] Failed to execute GetUserProfileByIdQuery: {:?}", e);
