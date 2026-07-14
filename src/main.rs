@@ -2,7 +2,6 @@ mod domain;
 mod infrastructure;
 mod application;
 mod presentation;
-mod providers;
 mod bootstrap;
 
 use crate::bootstrap::{ ApplicationBuilder };

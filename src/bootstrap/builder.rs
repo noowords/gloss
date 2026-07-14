@@ -1,7 +1,3 @@
-use std::sync::{ Arc };
-
-use crate::providers::{ AppState };
-
 use super::infrastructure::{
     connect_to_database,
     initialize_unit_of_work_factory,
@@ -41,6 +37,6 @@ impl ApplicationBuilder {
         let command_bus = build_command_bus(uow_factory.clone(), cr_factory.clone());
         let query_bus = build_query_bus(ctx.clone(), qs_factory.clone());
     
-        Ok(Application::new(Arc::new(AppState::new(command_bus, query_bus))))
+        Ok(Application::new(command_bus, query_bus))
     }
 }
