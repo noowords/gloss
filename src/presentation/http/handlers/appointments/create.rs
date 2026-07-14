@@ -15,11 +15,11 @@ pub async fn create(
     State(state): State<HttpState>,
     Json(req): Json<CreateAppointmentRequest>
 ) -> Result<StatusCode, StatusCode> {
-    let command = req.into();
-
-    state.command_bus.send::<CreateAppointmentCommand, ()>(command)
+    state.app.command_bus.send::<CreateAppointmentCommand, ()>(req.into())
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-    Ok(StatusCode::CREATED)
+        .map(|_| StatusCode::CREATED)
+        .map_err(|e| {
+            eprintln!("[Error] Failed to execute CreateAppointmentCommand: {:?}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })
 }

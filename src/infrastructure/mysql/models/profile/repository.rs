@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use crate::domain::shared::{ UnitOfWork };
+use crate::domain::shared::{ TxContext };
 use crate::domain::models::{
     user::value_objects::{ UserId },
     profile::{ Profile, ProfileRepository }
@@ -10,11 +10,12 @@ use super::super::super::shared::{ MySqlTxContext };
 
 use super::{ MySqlProfileRow };
 
+#[derive(Default)]
 pub struct MySqlProfileRepository;
 
 impl MySqlProfileRepository {
     pub fn new() -> Self {
-        Self
+        Self::default()
     }
 }
 
@@ -22,13 +23,12 @@ impl MySqlProfileRepository {
 impl ProfileRepository for MySqlProfileRepository {
     async fn create(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         profile: &Profile
     ) -> Result<(), anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         sqlx::query(
             r#"
@@ -50,13 +50,12 @@ impl ProfileRepository for MySqlProfileRepository {
     
     async fn get_by_user_id(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         user_id: UserId
     ) -> Result<Option<Profile>, anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         let row: Option<MySqlProfileRow> = sqlx::query_as(
             r#"
@@ -78,13 +77,12 @@ impl ProfileRepository for MySqlProfileRepository {
     
     async fn exists(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         user_id: UserId
     ) -> Result<bool, anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         let row = sqlx::query(
             r#"
@@ -104,13 +102,12 @@ impl ProfileRepository for MySqlProfileRepository {
     
     async fn update(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         profile: &Profile
     ) -> Result<(), anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         let row = MySqlProfileRow::from(profile);
 
@@ -135,13 +132,12 @@ impl ProfileRepository for MySqlProfileRepository {
     
     async fn remove(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         user_id: UserId
     ) -> Result<(), anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         sqlx::query(
             r#"

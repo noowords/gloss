@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use crate::domain::shared::{ UnitOfWork };
+use crate::domain::shared::{ TxContext };
 use crate::domain::models::appointment::{
     Appointment, AppointmentRepository,
     value_objects::{ AppointmentId }
@@ -10,11 +10,12 @@ use super::super::super::shared::{ MySqlTxContext };
 
 use super::{ MySqlAppointmentRow };
 
+#[derive(Default)]
 pub struct MySqlAppointmentRepository;
 
 impl MySqlAppointmentRepository {
     pub fn new() -> Self {
-        Self
+        Self::default()
     }
 }
 
@@ -22,13 +23,12 @@ impl MySqlAppointmentRepository {
 impl AppointmentRepository for MySqlAppointmentRepository {
     async fn create(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         appointment: &Appointment
     ) -> Result<(), anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         sqlx::query(
             r#"
@@ -51,13 +51,12 @@ impl AppointmentRepository for MySqlAppointmentRepository {
     
     async fn get_by_id(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         id: AppointmentId
     ) -> Result<Option<Appointment>, anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         let row: Option<MySqlAppointmentRow> = sqlx::query_as(
             r#"
@@ -79,13 +78,12 @@ impl AppointmentRepository for MySqlAppointmentRepository {
     
     async fn exists(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         id: AppointmentId
     ) -> Result<bool, anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         let row = sqlx::query(
             r#"
@@ -105,13 +103,12 @@ impl AppointmentRepository for MySqlAppointmentRepository {
     
     async fn update(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         appointment: &Appointment
     ) -> Result<(), anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         let row = MySqlAppointmentRow::from(appointment);
 
@@ -133,13 +130,12 @@ impl AppointmentRepository for MySqlAppointmentRepository {
     
     async fn remove(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         id: AppointmentId
     ) -> Result<(), anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         sqlx::query(
             r#"

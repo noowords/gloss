@@ -6,7 +6,7 @@ use crate::domain::shared::{ TxContext, UnitOfWork };
 use super::{ MySqlTxContext };
 
 pub struct MySqlUnitOfWork {
-    pub ctx: MySqlTxContext
+    ctx: MySqlTxContext
 }
 
 impl MySqlUnitOfWork {

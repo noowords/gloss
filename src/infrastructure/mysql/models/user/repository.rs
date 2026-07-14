@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use crate::domain::shared::{ UnitOfWork };
+use crate::domain::shared::{ TxContext };
 use crate::domain::models::user::{
     User, UserRepository,
     value_objects::{ UserId }
@@ -10,11 +10,12 @@ use super::super::super::shared::{ MySqlTxContext };
 
 use super::{ MySqlUserRow };
 
+#[derive(Default)]
 pub struct MySqlUserRepository;
 
 impl MySqlUserRepository {
     pub fn new() -> Self {
-        Self
+        Self::default()
     }
 }
 
@@ -22,13 +23,12 @@ impl MySqlUserRepository {
 impl UserRepository for MySqlUserRepository {
     async fn create(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         user: &User
     ) -> Result<(), anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         sqlx::query(
             r#"
@@ -48,13 +48,12 @@ impl UserRepository for MySqlUserRepository {
     
     async fn get_by_id(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         id: UserId
     ) -> Result<Option<User>, anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         let row: Option<MySqlUserRow> = sqlx::query_as(
             r#"
@@ -76,13 +75,12 @@ impl UserRepository for MySqlUserRepository {
     
     async fn exists(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         id: UserId
     ) -> Result<bool, anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         let row = sqlx::query(
             r#"
@@ -102,13 +100,12 @@ impl UserRepository for MySqlUserRepository {
 
     async fn update(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         user: &User
     ) -> Result<(), anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         let row = MySqlUserRow::from(user);
 
@@ -131,13 +128,12 @@ impl UserRepository for MySqlUserRepository {
     
     async fn remove(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         id: UserId
     ) -> Result<(), anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         sqlx::query(
             r#"

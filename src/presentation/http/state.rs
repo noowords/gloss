@@ -1,16 +1,14 @@
 use std::sync::{ Arc };
 
-use crate::application::shared::{ CommandBus, QueryBus };
+use crate::providers::{ AppState };
 
 #[derive(Clone)]
 pub struct HttpState {
-    pub command_bus: Arc<CommandBus>,
-    pub query_bus: Arc<QueryBus>
+    pub app: Arc<AppState>
 }
 
-pub fn create_state(
-    command_bus: Arc<CommandBus>,
-    query_bus: Arc<QueryBus>
-) -> HttpState {
-    HttpState { command_bus, query_bus }
+impl HttpState {
+    pub fn new(app: Arc<AppState>) -> Self {
+        Self { app }
+    }
 }

@@ -2,10 +2,10 @@ use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
 use crate::domain::{
-    shared::{ UnitOfWorkFactory, InfrastructureFactory },
+    shared::{ UnitOfWorkFactory },
     models::{
         user::value_objects::{ UserId },
-        appointment::{ Appointment }
+        appointment::{ Appointment, AppointmentRepository }
     }
 };
 use super::super::super::shared::{ CommandHandler };
@@ -14,18 +14,15 @@ use super::{ CreateAppointmentCommand };
 
 pub struct CreateAppointmentHandler {
     uow_factory: Arc<dyn UnitOfWorkFactory>,
-    infra_factory: Arc<dyn InfrastructureFactory>
+    appointment_repository: Arc<dyn AppointmentRepository>
 }
 
 impl CreateAppointmentHandler {
     pub fn new(
         uow_factory: Arc<dyn UnitOfWorkFactory>,
-        infra_factory: Arc<dyn InfrastructureFactory>
+        appointment_repository: Arc<dyn AppointmentRepository>
     ) -> Self {
-        Self {
-            uow_factory,
-            infra_factory
-        }
+        Self { uow_factory, appointment_repository }
     }
 }
 
@@ -35,7 +32,6 @@ impl CommandHandler<CreateAppointmentCommand> for CreateAppointmentHandler {
     
     async fn handle(&self, command: CreateAppointmentCommand) -> Result<Self::Output, Box<dyn std::error::Error + Send + Sync>> {
         let mut uow = self.uow_factory.begin().await?;
-        let appointment_repository = self.infra_factory.appointment_repository();
 
         let appointment = Appointment::new(
             None,
@@ -46,7 +42,7 @@ impl CommandHandler<CreateAppointmentCommand> for CreateAppointmentHandler {
             None
         );
 
-        appointment_repository.create(&mut *uow, &appointment).await?;
+        self.appointment_repository.create(uow.ctx_mut(), &appointment).await?;
 
         uow.commit().await?;
 

@@ -11,14 +11,14 @@ pub struct Profile {
 
 impl Profile {
     pub fn new(
-        user_id: UserId,
+        user_id: Option<UserId>,
         first_name: String,
         last_name: String,
         avatar_url: Option<String>,
         bio: Option<String>
     ) -> Self {
         Self {
-            user_id,
+            user_id: user_id.unwrap_or(UserId::new()),
             first_name,
             last_name,
             avatar_url,

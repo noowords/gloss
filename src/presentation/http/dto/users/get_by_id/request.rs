@@ -1,7 +1,7 @@
 use serde::{ Deserialize };
 use uuid::{ Uuid };
 
-use crate::application::queries::get_user_by_id::{ GetUserByIdQuery };
+use crate::application::queries::users::get_by_id::{ GetUserByIdQuery };
 
 #[derive(Deserialize)]
 pub struct GetUserByIdRequest {

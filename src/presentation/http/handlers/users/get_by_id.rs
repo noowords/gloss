@@ -4,7 +4,7 @@ use axum::{
     http::{ StatusCode }
 };
 
-use crate::application::queries::get_user_by_id::{ GetUserByIdQuery };
+use crate::application::queries::users::get_by_id::{ GetUserByIdQuery, GetUserByIdView };
 
 use super::super::super::{
     HttpState,
@@ -14,12 +14,13 @@ use super::super::super::{
 pub async fn get_by_id(
     State(state): State<HttpState>,
     Path(req): Path<GetUserByIdRequest>
-) -> Result<(StatusCode, Json<serde_json::Value>), StatusCode> {
-    let query = req.into();
-
-    state.query_bus.send::<GetUserByIdQuery, ()>(query)
+) -> Result<(StatusCode, Json<GetUserByIdView>), StatusCode> {
+    state.app.query_bus.send::<GetUserByIdQuery, Option<GetUserByIdView>>(req.into())
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-    Ok((StatusCode::OK, Json(serde_json::json!({ "message": "User created" }))))
+        .map_err(|e| {
+            eprintln!("[Error] Failed to execute GetUserByIdQuery: {:?}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?
+        .ok_or(StatusCode::NOT_FOUND)
+        .map(|user| (StatusCode::OK, Json(user)))
 }

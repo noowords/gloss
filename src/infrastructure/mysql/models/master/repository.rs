@@ -1,7 +1,7 @@
 use async_trait::{ async_trait };
 use serde_json;
 
-use crate::domain::shared::{ UnitOfWork };
+use crate::domain::shared::{ TxContext };
 use crate::domain::models::{
     user::value_objects::{ UserId },
     master::{ Master, MasterRepository }
@@ -11,11 +11,12 @@ use super::super::super::shared::{ MySqlTxContext };
 
 use super::{ MySqlMasterRow };
 
+#[derive(Default)]
 pub struct MySqlMasterRepository;
 
 impl MySqlMasterRepository {
     pub fn new() -> Self {
-        Self
+        Self::default()
     }
 }
 
@@ -23,13 +24,12 @@ impl MySqlMasterRepository {
 impl MasterRepository for MySqlMasterRepository {
     async fn create(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         master: &Master
     ) -> Result<(), anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         let schedule_json = serde_json::to_value(master.schedule())
             .map_err(|e| anyhow::anyhow!("MasterSchedule corrupted: {}", e.to_string()))?;
@@ -51,13 +51,12 @@ impl MasterRepository for MySqlMasterRepository {
     
     async fn get_by_user_id(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         user_id: UserId
     ) -> Result<Option<Master>, anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         let row: Option<MySqlMasterRow> = sqlx::query_as(
             r#"
@@ -79,13 +78,12 @@ impl MasterRepository for MySqlMasterRepository {
     
     async fn exists(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         user_id: UserId
     ) -> Result<bool, anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         let row = sqlx::query(
             r#"
@@ -105,13 +103,12 @@ impl MasterRepository for MySqlMasterRepository {
 
     async fn update(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         master: &Master
     ) -> Result<(), anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         let row = MySqlMasterRow::from(master);
 
@@ -132,13 +129,12 @@ impl MasterRepository for MySqlMasterRepository {
     
     async fn remove(
         &self,
-        uow: &mut dyn UnitOfWork,
+        ctx: &mut dyn TxContext,
         user_id: UserId
     ) -> Result<(), anyhow::Error> {
-        let ctx = uow.ctx_mut()
-            .as_any_mut()
+        let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid UnitOfWork context".to_string()))?;
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
 
         sqlx::query(
             r#"

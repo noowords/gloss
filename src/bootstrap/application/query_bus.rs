@@ -1,23 +1,41 @@
 use std::sync::{ Arc };
 
 use crate::application::{
-    shared::{ QueryBus },
+    shared::{ QueryServiceFactory, QueryBus },
     queries::{
-        get_user_by_id::{ GetUserByIdQuery, GetUserByIdHandler }
+        users::{
+            get::{ GetUsersQuery, GetUsersHandler },
+            get_by_id::{ GetUserByIdQuery, GetUserByIdHandler },
+            get_profile_by_id::{ GetUserProfileByIdQuery, GetUserProfileByIdHandler }
+        }
     }
 };
-use crate::domain::shared::{ UnitOfWorkFactory, InfrastructureFactory };
+use crate::domain::shared::{ PoolContext };
 
 pub fn build_query_bus(
-    uow_factory: Arc<dyn UnitOfWorkFactory>,
-    infra_factory: Arc<dyn InfrastructureFactory>
+    ctx: Arc<dyn PoolContext>,
+    service_factory: Arc<dyn QueryServiceFactory>
 ) -> Arc<QueryBus> {
     let mut command_bus = QueryBus::new();
+    
+    command_bus.register::<GetUsersQuery, GetUsersHandler>(
+        GetUsersHandler::new(
+            ctx.clone(),
+            service_factory.users_service()
+        )
+    );
 
-    command_bus.register::<GetUserByIdQuery, _>(
+    command_bus.register::<GetUserByIdQuery, GetUserByIdHandler>(
         GetUserByIdHandler::new(
-            uow_factory.clone(),
-            infra_factory.clone()
+            ctx.clone(),
+            service_factory.users_service()
+        )
+    );
+    
+    command_bus.register::<GetUserProfileByIdQuery, GetUserProfileByIdHandler>(
+        GetUserProfileByIdHandler::new(
+            ctx,
+            service_factory.users_service()
         )
     );
 

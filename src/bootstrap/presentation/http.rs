@@ -1,15 +1,15 @@
 use std::sync::{ Arc };
 use tokio::net::{ TcpListener };
 
-use crate::application::shared::{ CommandBus, QueryBus };
-use crate::presentation::http::{ create_state, create_router, serve };
+use crate::presentation::http::{ HttpState, create_router, serve };
+
+use crate::providers::{ AppState };
 
 pub async fn serve_http(
     addr: &str,
-    command_bus: Arc<CommandBus>,
-    query_bus: Arc<QueryBus>
+    app: Arc<AppState>
 ) -> Result<(), anyhow::Error> {
-    let state = create_state(command_bus, query_bus);
+    let state = HttpState::new(app);
     let router = create_router(state);
     
     let listener = TcpListener::bind(addr)

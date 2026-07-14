@@ -1,2 +1,2 @@
-pub mod create_user;
+pub mod register_user;
 pub mod create_appointment;

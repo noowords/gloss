@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use super::super::super::shared::{ UnitOfWork };
+use super::super::super::shared::{ TxContext };
 
 use super::{
     User,
@@ -11,31 +11,31 @@ use super::{
 pub trait UserRepository: Send + Sync {
     async fn create(
         &self,
-        uow: &mut dyn UnitOfWork,
+        uow: &mut dyn TxContext,
         user: &User
     ) -> Result<(), anyhow::Error>;
     
     async fn get_by_id(
         &self,
-        uow: &mut dyn UnitOfWork,
+        uow: &mut dyn TxContext,
         id: UserId
     ) -> Result<Option<User>, anyhow::Error>;
     
     async fn exists(
         &self,
-        uow: &mut dyn UnitOfWork,
+        uow: &mut dyn TxContext,
         id: UserId
     ) -> Result<bool, anyhow::Error>;
     
     async fn update(
         &self,
-        uow: &mut dyn UnitOfWork,
+        uow: &mut dyn TxContext,
         user: &User
     ) -> Result<(), anyhow::Error>;
     
     async fn remove(
         &self,
-        uow: &mut dyn UnitOfWork,
+        uow: &mut dyn TxContext,
         id: UserId
     ) -> Result<(), anyhow::Error>;
 }

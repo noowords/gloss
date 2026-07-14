@@ -2,22 +2,22 @@ mod domain;
 mod infrastructure;
 mod application;
 mod presentation;
+mod providers;
 mod bootstrap;
 
 use crate::bootstrap::{
-    infrastructure::{ connect_to_database, init_unit_of_work_factory, init_infrastructure_factory },
-    application::{ build_command_bus, build_query_bus },
+    InfrastructureBuilder, build_application,
     presentation::{ serve_http }
 };
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
-    let pool = connect_to_database("mysql", "mysql://root:root@localhost:3306/gloss").await?;
-    let uow_factory = init_unit_of_work_factory("mysql", pool)?;
-    let infra_factory = init_infrastructure_factory("mysql")?;
-    
-    let command_bus = build_command_bus(uow_factory.clone(), infra_factory.clone());
-    let query_bus = build_query_bus(uow_factory, infra_factory);
+    let infrastructure = InfrastructureBuilder::new()
+        .with_database("mysql", "mysql://root:root@localhost:3306/gloss")
+        .build()
+        .await?;
 
-    serve_http("0.0.0.0:3000", command_bus, query_bus).await
+    let application = build_application(infrastructure)?;
+
+    serve_http("127.0.0.1:3000", application).await
 }

@@ -58,7 +58,7 @@ impl TryFrom<MySqlProfileRow> for Profile {
     
     fn try_from(record: MySqlProfileRow) -> Result<Self, Self::Error> {
         Ok(Self::new(
-            UserId::from(record.user_id),
+            Some(UserId::from(record.user_id)),
             record.first_name,
             record.last_name,
             record.avatar_url,
