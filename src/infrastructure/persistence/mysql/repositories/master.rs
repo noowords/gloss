@@ -1,0 +1,153 @@
+use async_trait::{ async_trait };
+use serde_json;
+
+use crate::domain::common::{ TxContext };
+use crate::domain::models::{
+    user::value_objects::{ UserId },
+    master::{ Master, MasterRepository }
+};
+
+use super::super::{
+    common::{ MySqlTxContext },
+    models::{ MySqlMasterRow }
+};
+
+#[derive(Default)]
+pub struct MySqlMasterRepository;
+
+impl MySqlMasterRepository {
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
+
+#[async_trait]
+impl MasterRepository for MySqlMasterRepository {
+    async fn create(
+        &self,
+        ctx: &mut dyn TxContext,
+        master: &Master
+    ) -> Result<(), anyhow::Error> {
+        let ctx = ctx
+            .downcast_mut::<MySqlTxContext>()
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
+
+        let schedule_json = serde_json::to_value(master.schedule())
+            .map_err(|e| anyhow::anyhow!("MasterSchedule corrupted: {}", e.to_string()))?;
+            
+        sqlx::query(
+            r#"
+            INSERT INTO masters (user_id, schedule)
+            VALUES (?, ?)
+            "#
+        )
+            .bind(master.user_id().value())
+            .bind(&schedule_json)
+            .execute(&mut *ctx.tx)
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        Ok(())
+    }
+    
+    async fn get_by_user_id(
+        &self,
+        ctx: &mut dyn TxContext,
+        user_id: UserId
+    ) -> Result<Option<Master>, anyhow::Error> {
+        let ctx = ctx
+            .downcast_mut::<MySqlTxContext>()
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
+
+        let row: Option<MySqlMasterRow> = sqlx::query_as(
+            r#"
+            SELECT user_id, schedule
+            FROM masters
+            WHERE user_id = ?
+            "#
+        )
+            .bind(user_id.value())
+            .fetch_optional(&mut *ctx.tx)
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        match row {
+            Some(row) => Ok(Some(Master::try_from(row)?)),
+            None => Ok(None)
+        }
+    }
+    
+    async fn exists(
+        &self,
+        ctx: &mut dyn TxContext,
+        user_id: UserId
+    ) -> Result<bool, anyhow::Error> {
+        let ctx = ctx
+            .downcast_mut::<MySqlTxContext>()
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
+
+        let row = sqlx::query(
+            r#"
+            SELECT 1
+            FROM masters
+            WHERE user_id = ?
+            LIMIT 1
+            "#
+        )
+            .bind(user_id.value())
+            .fetch_optional(&mut *ctx.tx)
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+        
+        Ok(row.is_some())
+    }
+
+    async fn update(
+        &self,
+        ctx: &mut dyn TxContext,
+        master: &Master
+    ) -> Result<(), anyhow::Error> {
+        let ctx = ctx
+            .downcast_mut::<MySqlTxContext>()
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
+
+        let row = MySqlMasterRow::from(master);
+
+        sqlx::query(
+            r#"
+            UPDATE masters SET schedule = ?
+            WHERE user_id = ?
+            "#
+        )
+            .bind(row.schedule())
+            .bind(row.user_id())
+            .execute(&mut *ctx.tx)
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        Ok(())
+    }
+    
+    async fn remove(
+        &self,
+        ctx: &mut dyn TxContext,
+        user_id: UserId
+    ) -> Result<(), anyhow::Error> {
+        let ctx = ctx
+            .downcast_mut::<MySqlTxContext>()
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
+
+        sqlx::query(
+            r#"
+            DELETE FROM masters
+            WHERE user_id = ?
+            "#
+        )
+            .bind(user_id.value())
+            .execute(&mut *ctx.tx)
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+        
+        Ok(())
+    }
+}

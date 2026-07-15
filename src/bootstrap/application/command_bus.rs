@@ -1,17 +1,17 @@
 use std::sync::{ Arc };
 
 use crate::application::{
-    shared::{ CommandBus },
+    common::{ CommandBus },
     commands::{
         register_user::{ RegisterUserCommand, RegisterUserHandler },
         create_appointment::{ CreateAppointmentCommand, CreateAppointmentHandler }
     }
 };
-use crate::domain::shared::{ UnitOfWorkFactory, CommandRepositoryFactory };
+use crate::domain::common::{ UnitOfWorkFactory, RepositoryFactory };
 
 pub fn build_command_bus(
     uow_factory: Arc<dyn UnitOfWorkFactory>,
-    repository_factory: Arc<dyn CommandRepositoryFactory>
+    repository_factory: Arc<dyn RepositoryFactory>
 ) -> Arc<CommandBus> {
     let mut command_bus = CommandBus::new();
 

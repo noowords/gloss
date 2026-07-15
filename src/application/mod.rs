@@ -1,3 +1,3 @@
-pub mod shared;
+pub mod common;
 pub mod commands;
 pub mod queries;

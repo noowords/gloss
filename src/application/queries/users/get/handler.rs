@@ -1,9 +1,9 @@
 use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
-use crate::domain::shared::{ PoolContext };
+use crate::domain::common::{ PoolContext };
 
-use super::super::super::super::shared::{ QueryHandler };
+use super::super::super::super::common::{ QueryHandler };
 
 use super::super::{ UsersQueryService };
 

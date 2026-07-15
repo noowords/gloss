@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use super::super::super::shared::{ TxContext };
+use super::super::super::common::{ TxContext };
 
 use super::{
     Appointment,

@@ -2,7 +2,7 @@ use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
 use crate::domain::{
-    shared::{ UnitOfWorkFactory },
+    common::{ UnitOfWorkFactory },
     models::{
         user::{
             User, UserRepository,
@@ -14,7 +14,7 @@ use crate::domain::{
     }
 };
 
-use super::super::super::shared::{ CommandHandler };
+use super::super::super::common::{ CommandHandler };
 
 use super::{ RegisterUserCommand };
 

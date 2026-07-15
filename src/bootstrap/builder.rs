@@ -1,7 +1,7 @@
 use super::infrastructure::{
     connect_to_database,
     initialize_unit_of_work_factory,
-    initialize_command_repository_factory,
+    initialize_repository_factory,
     initialize_query_service_factory
 };
 
@@ -31,11 +31,11 @@ impl ApplicationBuilder {
 
         let ctx = connect_to_database(&database_type, &database_url).await?;
         let uow_factory = initialize_unit_of_work_factory(&database_type, ctx.clone())?;
-        let cr_factory = initialize_command_repository_factory(&database_type)?;
-        let qs_factory = initialize_query_service_factory(&database_type)?;
+        let repository_factory = initialize_repository_factory(&database_type)?;
+        let query_service_factory = initialize_query_service_factory(&database_type)?;
 
-        let command_bus = build_command_bus(uow_factory.clone(), cr_factory.clone());
-        let query_bus = build_query_bus(ctx.clone(), qs_factory.clone());
+        let command_bus = build_command_bus(uow_factory.clone(), repository_factory.clone());
+        let query_bus = build_query_bus(ctx.clone(), query_service_factory.clone());
     
         Ok(Application::new(command_bus, query_bus))
     }

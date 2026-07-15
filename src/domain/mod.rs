@@ -1,2 +1,2 @@
-pub mod shared;
+pub mod common;
 pub mod models;
