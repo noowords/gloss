@@ -1,7 +1,11 @@
 use std::sync::{ Arc };
 
+use crate::application::common::{
+    QueryBus,
+    commands::{ CommandBus }
+};
+
 use super::presentation::{ serve_http };
-use crate::application::common::{ CommandBus, QueryBus };
 
 pub struct Application {
     command_bus: Arc<CommandBus>,

@@ -1,6 +1,9 @@
 use std::sync::{ Arc };
 
-use crate::application::common::{ CommandBus, QueryBus };
+use crate::application::common::{
+    QueryBus,
+    commands::{ CommandBus }
+};
 
 #[derive(Clone)]
 pub struct HttpState {

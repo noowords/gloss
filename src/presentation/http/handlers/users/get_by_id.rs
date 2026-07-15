@@ -13,14 +13,12 @@ use super::super::super::{
 
 pub async fn get_by_id(
     State(state): State<HttpState>,
-    Path(req): Path<GetUserByIdRequest>
+    Path(payload): Path<GetUserByIdRequest>
 ) -> Result<(StatusCode, Json<GetUserByIdView>), StatusCode> {
-    state.query_bus.send::<GetUserByIdQuery, Option<GetUserByIdView>>(req.into())
-        .await
-        .map_err(|e| {
-            eprintln!("[Error] Failed to execute GetUserByIdQuery: {:?}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
-        })?
-        .ok_or(StatusCode::NOT_FOUND)
-        .map(|user| (StatusCode::OK, Json(user)))
+    match state.query_bus.send::<GetUserByIdQuery, Option<GetUserByIdView>>(payload.into()).await {
+        Ok(Some(user)) => Ok((StatusCode::OK, Json(user))),
+        Ok(None) => Err(StatusCode::NOT_FOUND),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR)
+    }
 }
+

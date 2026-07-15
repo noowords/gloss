@@ -25,7 +25,7 @@ impl MySqlRepositoryFactory {
 }
 
 impl RepositoryFactory for MySqlRepositoryFactory {
-    fn user_repository<'a>(&self, ctx: &'a mut dyn TxContext) -> Result<Box<dyn UserRepository + 'a>, anyhow::Error> {
+    fn users<'a>(&self, ctx: &'a mut dyn TxContext) -> Result<Box<dyn UserRepository + 'a>, anyhow::Error> {
         let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
             .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
@@ -33,7 +33,7 @@ impl RepositoryFactory for MySqlRepositoryFactory {
         Ok(Box::new(MySqlUserRepository::new(&mut ctx.tx)))
     }
 
-    fn profile_repository<'a>(&self, ctx: &'a mut dyn TxContext) -> Result<Box<dyn ProfileRepository + 'a>, anyhow::Error> {
+    fn profiles<'a>(&self, ctx: &'a mut dyn TxContext) -> Result<Box<dyn ProfileRepository + 'a>, anyhow::Error> {
         let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
             .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
@@ -41,7 +41,7 @@ impl RepositoryFactory for MySqlRepositoryFactory {
         Ok(Box::new(MySqlProfileRepository::new(&mut ctx.tx)))
     }
 
-    fn master_repository<'a>(&self, ctx: &'a mut dyn TxContext) -> Result<Box<dyn MasterRepository + 'a>, anyhow::Error> {
+    fn masters<'a>(&self, ctx: &'a mut dyn TxContext) -> Result<Box<dyn MasterRepository + 'a>, anyhow::Error> {
         let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
             .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
@@ -49,7 +49,7 @@ impl RepositoryFactory for MySqlRepositoryFactory {
         Ok(Box::new(MySqlMasterRepository::new(&mut ctx.tx)))
     }
 
-    fn appointment_repository<'a>(&self, ctx: &'a mut dyn TxContext) -> Result<Box<dyn AppointmentRepository + 'a>, anyhow::Error> {
+    fn appointments<'a>(&self, ctx: &'a mut dyn TxContext) -> Result<Box<dyn AppointmentRepository + 'a>, anyhow::Error> {
         let ctx = ctx
             .downcast_mut::<MySqlTxContext>()
             .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;

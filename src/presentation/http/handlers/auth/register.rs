@@ -13,13 +13,10 @@ use super::super::super::{
 
 pub async fn register(
     State(state): State<HttpState>,
-    Json(req): Json<RegisterUserRequest>,
+    Json(payload): Json<RegisterUserRequest>,
 ) -> Result<StatusCode, StatusCode> {
-    state.command_bus.send::<RegisterUserCommand, (), anyhow::Error>(req.into())
-        .await
-        .map(|_| StatusCode::CREATED)
-        .map_err(|e| {
-            eprintln!("[Error] Failed to execute RegisterUserCommand: {:?}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
-        })
+    match state.command_bus.send::<RegisterUserCommand>(payload.into()).await {
+        Ok(_) => Ok(StatusCode::CREATED),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR)
+    }
 }

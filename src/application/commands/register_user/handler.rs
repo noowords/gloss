@@ -9,7 +9,7 @@ use crate::domain::models::{
 };
 
 use super::super::super::common::{
-    CommandHandler,
+    commands::{ CommandHandler },
     persistence::{ TxContext, RepositoryFactory }
 };
 
@@ -18,30 +18,21 @@ use super::{ RegisterUserCommand };
 #[derive(Default)]
 pub struct RegisterUserHandler;
 
-impl RegisterUserHandler {
-    pub fn new() -> Self {
-        Self::default()
-    }    
-}
-
 #[async_trait]
 impl CommandHandler<RegisterUserCommand> for RegisterUserHandler {
-    type Output = ();
-    type Error = anyhow::Error;
-    
     async fn handle(
         &self,
         ctx: &mut dyn TxContext,
         repository_factory: &dyn RepositoryFactory,
         command: RegisterUserCommand
-    ) -> Result<Self::Output, Self::Error> {
+    ) -> Result<(), anyhow::Error> {
         let user = User::new(
             None,
             None,
             UserPhone::new(command.phone).map(Some)?
         );
         
-        repository_factory.user_repository(ctx)?.create(&user).await?;
+        repository_factory.users(ctx)?.create(&user).await?;
 
         let profile = Profile::new(
             Some(user.id()),
@@ -51,7 +42,7 @@ impl CommandHandler<RegisterUserCommand> for RegisterUserHandler {
             None
         );
 
-        repository_factory.profile_repository(ctx)?.create(&profile).await?;
+        repository_factory.profiles(ctx)?.create(&profile).await?;
 
         Ok(())
     }

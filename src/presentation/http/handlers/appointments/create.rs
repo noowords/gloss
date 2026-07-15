@@ -13,13 +13,10 @@ use super::super::super::{
 
 pub async fn create(
     State(state): State<HttpState>,
-    Json(req): Json<CreateAppointmentRequest>
+    Json(payload): Json<CreateAppointmentRequest>
 ) -> Result<StatusCode, StatusCode> {
-    state.command_bus.send::<CreateAppointmentCommand, (), anyhow::Error>(req.into())
-        .await
-        .map(|_| StatusCode::CREATED)
-        .map_err(|e| {
-            eprintln!("[Error] Failed to execute CreateAppointmentCommand: {:?}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
-        })
+    match state.command_bus.send::<CreateAppointmentCommand>(payload.into()).await {
+        Ok(_) => Ok(StatusCode::CREATED),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR)
+    }
 }

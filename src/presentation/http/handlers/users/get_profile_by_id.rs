@@ -13,9 +13,9 @@ use super::super::super::{
 
 pub async fn get_profile_by_id(
     State(state): State<HttpState>,
-    Path(req): Path<GetUserProfileByIdRequest>
+    Path(payload): Path<GetUserProfileByIdRequest>
 ) -> Result<(StatusCode, Json<GetUserProfileByIdView>), StatusCode> {
-    state.query_bus.send::<GetUserProfileByIdQuery, Option<GetUserProfileByIdView>>(req.into())
+    state.query_bus.send::<GetUserProfileByIdQuery, Option<GetUserProfileByIdView>>(payload.into())
         .await
         .map_err(|e| {
             eprintln!("[Error] Failed to execute GetUserProfileByIdQuery: {:?}", e);
