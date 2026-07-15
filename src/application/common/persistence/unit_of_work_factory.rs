@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use crate::domain::common::{ UnitOfWork };
+use super::{ UnitOfWork };
 
 #[async_trait]
 pub trait UnitOfWorkFactory: Send + Sync {

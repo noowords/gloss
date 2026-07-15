@@ -1,7 +1,7 @@
 use std::sync::{ Arc };
 
-use crate::application::common::{ QueryServiceFactory };
 use crate::infrastructure::persistence::mysql::common::{ MySqlQueryServiceFactory };
+use crate::application::common::{ QueryServiceFactory };
 
 pub fn initialize_query_service_factory(
     database_type: &str

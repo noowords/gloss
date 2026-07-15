@@ -1,7 +1,7 @@
 use async_trait::{ async_trait };
 use uuid::{ Uuid };
 
-use crate::domain::common::{ PoolContext };
+use super::super::super::common::persistence::{ PoolContext };
 
 use super::{
     get::{ GetUsersView },

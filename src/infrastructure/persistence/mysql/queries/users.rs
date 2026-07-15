@@ -1,15 +1,17 @@
 use async_trait::{ async_trait };
 use uuid::{ Uuid };
 
-use crate::application::queries::{
-    users::{
-        UsersQueryService,
-        get::{ GetUsersView },
-        get_by_id::{ GetUserByIdView },
-        get_profile_by_id::{ GetUserProfileByIdView }
+use crate::application::{
+    common::persistence::{ PoolContext },
+    queries::{
+        users::{
+            UsersQueryService,
+            get::{ GetUsersView },
+            get_by_id::{ GetUserByIdView },
+            get_profile_by_id::{ GetUserProfileByIdView }
+        }
     }
 };
-use crate::domain::common::{ PoolContext };
 
 use super::super::common::{ MySqlPoolContext };
 

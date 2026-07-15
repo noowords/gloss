@@ -1,11 +1,11 @@
 use async_trait::{ async_trait };
 use serde_json;
 
-use crate::domain::common::{ TxContext };
 use crate::domain::models::{
     user::value_objects::{ UserId },
     master::{ Master, MasterRepository }
 };
+use crate::application::common::persistence::{ TxContext };
 
 use super::super::{
     common::{ MySqlTxContext },

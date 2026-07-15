@@ -15,7 +15,7 @@ pub async fn register(
     State(state): State<HttpState>,
     Json(req): Json<RegisterUserRequest>,
 ) -> Result<StatusCode, StatusCode> {
-    state.command_bus.send::<RegisterUserCommand, ()>(req.into())
+    state.command_bus.send::<RegisterUserCommand, (), anyhow::Error>(req.into())
         .await
         .map(|_| StatusCode::CREATED)
         .map_err(|e| {

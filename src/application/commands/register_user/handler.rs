@@ -1,53 +1,54 @@
 use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
-use crate::domain::{
-    common::{ UnitOfWorkFactory },
-    models::{
-        user::{
-            User, UserRepository,
-            value_objects::{ UserPhone }
-        },
-        profile::{
-            Profile, ProfileRepository
-        }
+use crate::domain::models::{
+    user::{
+        User, UserRepository,
+        value_objects::{ UserPhone }
+    },
+    profile::{
+        Profile, ProfileRepository
     }
 };
 
-use super::super::super::common::{ CommandHandler };
+use super::super::super::common::{
+    CommandHandler,
+    persistence::{ TxContext }
+};
 
 use super::{ RegisterUserCommand };
 
 pub struct RegisterUserHandler {
-    uow_factory: Arc<dyn UnitOfWorkFactory>,
-    users_repository: Arc<dyn UserRepository>,
-    profiles_repository: Arc<dyn ProfileRepository>
+    user_repository: Arc<dyn UserRepository>,
+    profile_repository: Arc<dyn ProfileRepository>
 }
 
 impl RegisterUserHandler {
     pub fn new(
-        uow_factory: Arc<dyn UnitOfWorkFactory>,
-        users_repository: Arc<dyn UserRepository>,
-        profiles_repository: Arc<dyn ProfileRepository>
+        user_repository: Arc<dyn UserRepository>,
+        profile_repository: Arc<dyn ProfileRepository>
     ) -> Self {
-        Self { uow_factory, users_repository, profiles_repository }
+        Self { user_repository, profile_repository }
     }
 }
 
 #[async_trait]
 impl CommandHandler<RegisterUserCommand> for RegisterUserHandler {
     type Output = ();
+    type Error = anyhow::Error;
     
-    async fn handle(&self, command: RegisterUserCommand) -> Result<Self::Output, Box<dyn std::error::Error + Send + Sync>> {
-        let mut uow = self.uow_factory.begin().await?;
-        
+    async fn handle(
+        &self,
+        ctx: &mut dyn TxContext,
+        command: RegisterUserCommand
+    ) -> Result<Self::Output, Self::Error> {
         let user = User::new(
             None,
             None,
             UserPhone::new(command.phone).map(Some)?
         );
         
-        self.users_repository.create(uow.ctx_mut(), &user).await?;
+        self.user_repository.create(ctx, &user).await?;
 
         let profile = Profile::new(
             Some(user.id()),
@@ -57,10 +58,8 @@ impl CommandHandler<RegisterUserCommand> for RegisterUserHandler {
             None
         );
 
-        self.profiles_repository.create(uow.ctx_mut(), &profile).await?;
+        self.profile_repository.create(ctx, &profile).await?;
 
-        uow.commit().await?;
-        
         Ok(())
     }
 }

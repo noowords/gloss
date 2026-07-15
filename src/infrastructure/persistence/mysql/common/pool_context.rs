@@ -1,7 +1,7 @@
 use std::any::{ Any };
 use sqlx::mysql::{ MySqlPool };
 
-use crate::domain::common::{ PoolContext };
+use crate::application::common::persistence::{ PoolContext };
 
 pub struct MySqlPoolContext {
     pub pool: MySqlPool

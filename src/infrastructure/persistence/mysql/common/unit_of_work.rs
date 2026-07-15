@@ -1,7 +1,7 @@
 use async_trait::{ async_trait };
 use sqlx::mysql::{ MySqlPool };
 
-use crate::domain::common::{ TxContext, UnitOfWork };
+use crate::application::common::persistence::{ TxContext, UnitOfWork };
 
 use super::{ MySqlTxContext };
 

@@ -1,7 +1,7 @@
 use std::any::{ Any };
 use sqlx::{ MySql, Transaction };
 
-use crate::domain::common::{ TxContext };
+use crate::application::common::persistence::{ TxContext };
 
 pub struct MySqlTxContext {
     pub tx: Transaction<'static, MySql>

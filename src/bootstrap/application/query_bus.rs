@@ -1,7 +1,10 @@
 use std::sync::{ Arc };
 
 use crate::application::{
-    common::{ QueryServiceFactory, QueryBus },
+    common::{
+        QueryServiceFactory, QueryBus,
+        persistence::{ PoolContext }
+    },
     queries::{
         users::{
             get::{ GetUsersQuery, GetUsersHandler },
@@ -10,7 +13,6 @@ use crate::application::{
         }
     }
 };
-use crate::domain::common::{ PoolContext };
 
 pub fn build_query_bus(
     ctx: Arc<dyn PoolContext>,

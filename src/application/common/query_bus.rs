@@ -50,7 +50,7 @@ impl QueryBus {
             .downcast_ref::<Box<dyn QueryHandler<Q, Output = R>>>()
             .ok_or_else(|| {
                 format!(
-                    "Type mismatch for query: {:?}. Чекайте совпадение возвращаемого типа (Output) в send::<Q, R>()!",
+                    "Type mismatch for query: {:?}",
                     std::any::type_name::<Q>()
                 )
             })?;

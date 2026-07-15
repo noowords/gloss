@@ -1,10 +1,10 @@
 use async_trait::{ async_trait };
 
-use crate::domain::common::{ TxContext };
 use crate::domain::models::{
     user::value_objects::{ UserId },
     profile::{ Profile, ProfileRepository }
 };
+use crate::application::common::persistence::{ TxContext };
 
 use super::super::{
     common::{ MySqlTxContext },

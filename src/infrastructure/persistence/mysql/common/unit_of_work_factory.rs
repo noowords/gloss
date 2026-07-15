@@ -1,7 +1,7 @@
 use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
-use crate::domain::common::{ PoolContext, UnitOfWork, UnitOfWorkFactory };
+use crate::application::common::persistence::{ PoolContext, UnitOfWork, UnitOfWorkFactory };
 
 use super::{ MySqlPoolContext, MySqlUnitOfWork };
 

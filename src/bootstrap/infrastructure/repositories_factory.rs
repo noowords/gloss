@@ -1,7 +1,7 @@
 use std::sync::{ Arc };
 
-use crate::domain::common::{ RepositoryFactory };
 use crate::infrastructure::persistence::mysql::common::{ MySqlRepositoryFactory };
+use crate::application::common::persistence::{ RepositoryFactory };
 
 pub fn initialize_repository_factory(
     database_type: &str

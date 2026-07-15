@@ -1,38 +1,40 @@
 use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
-use crate::domain::{
-    common::{ UnitOfWorkFactory },
-    models::{
-        user::value_objects::{ UserId },
-        appointment::{ Appointment, AppointmentRepository }
-    }
+use crate::domain::models::{
+    user::value_objects::{ UserId },
+    appointment::{ Appointment, AppointmentRepository }
 };
-use super::super::super::common::{ CommandHandler };
+
+use super::super::super::common::{
+    CommandHandler,
+    persistence::{ TxContext }
+};
 
 use super::{ CreateAppointmentCommand };
 
 pub struct CreateAppointmentHandler {
-    uow_factory: Arc<dyn UnitOfWorkFactory>,
     appointment_repository: Arc<dyn AppointmentRepository>
 }
 
 impl CreateAppointmentHandler {
     pub fn new(
-        uow_factory: Arc<dyn UnitOfWorkFactory>,
         appointment_repository: Arc<dyn AppointmentRepository>
     ) -> Self {
-        Self { uow_factory, appointment_repository }
+        Self { appointment_repository }
     }
 }
 
 #[async_trait]
 impl CommandHandler<CreateAppointmentCommand> for CreateAppointmentHandler {
     type Output = ();
+    type Error = anyhow::Error;
     
-    async fn handle(&self, command: CreateAppointmentCommand) -> Result<Self::Output, Box<dyn std::error::Error + Send + Sync>> {
-        let mut uow = self.uow_factory.begin().await?;
-
+    async fn handle(
+        &self,
+        ctx: &mut dyn TxContext,
+        command: CreateAppointmentCommand
+    ) -> Result<Self::Output, Self::Error> {
         let appointment = Appointment::new(
             None,
             UserId::from(command.master_id),
@@ -42,9 +44,7 @@ impl CommandHandler<CreateAppointmentCommand> for CreateAppointmentHandler {
             None
         );
 
-        self.appointment_repository.create(uow.ctx_mut(), &appointment).await?;
-
-        uow.commit().await?;
+        self.appointment_repository.create(ctx, &appointment).await?;
 
         Ok(())
     }
