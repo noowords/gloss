@@ -1,12 +1,10 @@
-use std::sync::{ Arc };
-
 use crate::domain::models::{
     user::{ UserRepository },
     profile::{ ProfileRepository },
     master::{ MasterRepository },
     appointment::{ AppointmentRepository }
 };
-use crate::application::common::persistence::{ RepositoryFactory };
+use crate::application::common::persistence::{ TxContext, RepositoryFactory };
 
 use super::super::repositories::{
     MySqlUserRepository,
@@ -14,6 +12,8 @@ use super::super::repositories::{
     MySqlMasterRepository,
     MySqlAppointmentRepository
 };
+
+use super::{ MySqlTxContext };
 
 #[derive(Default)]
 pub struct MySqlRepositoryFactory;
@@ -25,19 +25,35 @@ impl MySqlRepositoryFactory {
 }
 
 impl RepositoryFactory for MySqlRepositoryFactory {
-    fn user_repository(&self) -> Arc<dyn UserRepository> {
-        Arc::new(MySqlUserRepository::new())
+    fn user_repository<'a>(&self, ctx: &'a mut dyn TxContext) -> Result<Box<dyn UserRepository + 'a>, anyhow::Error> {
+        let ctx = ctx
+            .downcast_mut::<MySqlTxContext>()
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
+
+        Ok(Box::new(MySqlUserRepository::new(&mut ctx.tx)))
     }
 
-    fn profile_repository(&self) -> Arc<dyn ProfileRepository> {
-        Arc::new(MySqlProfileRepository::new())
+    fn profile_repository<'a>(&self, ctx: &'a mut dyn TxContext) -> Result<Box<dyn ProfileRepository + 'a>, anyhow::Error> {
+        let ctx = ctx
+            .downcast_mut::<MySqlTxContext>()
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
+
+        Ok(Box::new(MySqlProfileRepository::new(&mut ctx.tx)))
     }
 
-    fn master_repository(&self) -> Arc<dyn MasterRepository> {
-        Arc::new(MySqlMasterRepository::new())
+    fn master_repository<'a>(&self, ctx: &'a mut dyn TxContext) -> Result<Box<dyn MasterRepository + 'a>, anyhow::Error> {
+        let ctx = ctx
+            .downcast_mut::<MySqlTxContext>()
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
+
+        Ok(Box::new(MySqlMasterRepository::new(&mut ctx.tx)))
     }
 
-    fn appointment_repository(&self) -> Arc<dyn AppointmentRepository> {
-        Arc::new(MySqlAppointmentRepository::new())
+    fn appointment_repository<'a>(&self, ctx: &'a mut dyn TxContext) -> Result<Box<dyn AppointmentRepository + 'a>, anyhow::Error> {
+        let ctx = ctx
+            .downcast_mut::<MySqlTxContext>()
+            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
+
+        Ok(Box::new(MySqlAppointmentRepository::new(&mut ctx.tx)))
     }
 }

@@ -1,27 +1,23 @@
-use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
 use crate::domain::models::{
     user::value_objects::{ UserId },
-    appointment::{ Appointment, AppointmentRepository }
+    appointment::{ Appointment }
 };
 
 use super::super::super::common::{
     CommandHandler,
-    persistence::{ TxContext }
+    persistence::{ TxContext, RepositoryFactory }
 };
 
 use super::{ CreateAppointmentCommand };
 
-pub struct CreateAppointmentHandler {
-    appointment_repository: Arc<dyn AppointmentRepository>
-}
+#[derive(Default)]
+pub struct CreateAppointmentHandler;
 
 impl CreateAppointmentHandler {
-    pub fn new(
-        appointment_repository: Arc<dyn AppointmentRepository>
-    ) -> Self {
-        Self { appointment_repository }
+    pub fn new() -> Self {
+        Self::default()
     }
 }
 
@@ -33,6 +29,7 @@ impl CommandHandler<CreateAppointmentCommand> for CreateAppointmentHandler {
     async fn handle(
         &self,
         ctx: &mut dyn TxContext,
+        repository_factory: &dyn RepositoryFactory,
         command: CreateAppointmentCommand
     ) -> Result<Self::Output, Self::Error> {
         let appointment = Appointment::new(
@@ -43,8 +40,8 @@ impl CommandHandler<CreateAppointmentCommand> for CreateAppointmentHandler {
             command.time,
             None
         );
-
-        self.appointment_repository.create(ctx, &appointment).await?;
+        
+        repository_factory.appointment_repository(ctx)?.create(&appointment).await?;
 
         Ok(())
     }

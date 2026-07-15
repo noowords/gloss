@@ -1,36 +1,38 @@
+use std::cell::{ UnsafeCell };
 use async_trait::{ async_trait };
+use sqlx::{ Transaction, MySql };
 
 use crate::domain::models::user::{
     User, UserRepository,
     value_objects::{ UserId }
 };
-use crate::application::common::persistence::{ TxContext };
 
-use super::super::{
-    common::{ MySqlTxContext },
-    models::{ MySqlUserRow }
-};
+use super::super::models::{ MySqlUserRow };
 
-#[derive(Default)]
-pub struct MySqlUserRepository;
+pub struct MySqlUserRepository<'a> {
+    tx: UnsafeCell<&'a mut Transaction<'static, MySql>>
+}
 
-impl MySqlUserRepository {
-    pub fn new() -> Self {
-        Self::default()
+unsafe impl<'a> Send for MySqlUserRepository<'a> {}
+unsafe impl<'a> Sync for MySqlUserRepository<'a> {}
+
+impl<'a> MySqlUserRepository<'a> {
+    pub fn new(tx: &'a mut Transaction<'static, MySql>) -> Self {
+        Self { tx: UnsafeCell::new(tx) }
+    }
+
+    #[inline(always)]
+    fn tx_mut(&self) -> &mut sqlx::MySqlConnection {
+        unsafe {
+            let tx_ref = &mut *self.tx.get();
+            tx_ref.as_mut()
+        }
     }
 }
 
 #[async_trait]
-impl UserRepository for MySqlUserRepository {
-    async fn create(
-        &self,
-        ctx: &mut dyn TxContext,
-        user: &User
-    ) -> Result<(), anyhow::Error> {
-        let ctx = ctx
-            .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
-
+impl<'a> UserRepository for MySqlUserRepository<'a> {
+    async fn create(&self, user: &User) -> Result<(), anyhow::Error> {
         sqlx::query(
             r#"
             INSERT INTO users (id, phone, role, created_at)
@@ -40,22 +42,14 @@ impl UserRepository for MySqlUserRepository {
             .bind(user.id().value())
             .bind(user.phone().as_ref().map(|p| p.value().clone()))
             .bind(user.role().as_str())
-            .execute(&mut *ctx.tx)
+            .execute(self.tx_mut())
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
     }
     
-    async fn get_by_id(
-        &self,
-        ctx: &mut dyn TxContext,
-        id: UserId
-    ) -> Result<Option<User>, anyhow::Error> {
-        let ctx = ctx
-            .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
-
+    async fn get_by_id(&self, id: UserId) -> Result<Option<User>, anyhow::Error> {
         let row: Option<MySqlUserRow> = sqlx::query_as(
             r#"
             SELECT id, role, phone
@@ -64,7 +58,7 @@ impl UserRepository for MySqlUserRepository {
             "#
         )
             .bind(id.value())
-            .fetch_optional(&mut *ctx.tx)
+            .fetch_optional(self.tx_mut())
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
@@ -74,15 +68,7 @@ impl UserRepository for MySqlUserRepository {
         }
     }
     
-    async fn exists(
-        &self,
-        ctx: &mut dyn TxContext,
-        id: UserId
-    ) -> Result<bool, anyhow::Error> {
-        let ctx = ctx
-            .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
-
+    async fn exists(&self, id: UserId) -> Result<bool, anyhow::Error> {
         let row = sqlx::query(
             r#"
             SELECT 1
@@ -92,22 +78,14 @@ impl UserRepository for MySqlUserRepository {
             "#
         )
             .bind(id.value())
-            .fetch_optional(&mut *ctx.tx)
+            .fetch_optional(self.tx_mut())
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
         
         Ok(row.is_some())
     }
 
-    async fn update(
-        &self,
-        ctx: &mut dyn TxContext,
-        user: &User
-    ) -> Result<(), anyhow::Error> {
-        let ctx = ctx
-            .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
-
+    async fn update(&self, user: &User) -> Result<(), anyhow::Error> {
         let row = MySqlUserRow::from(user);
 
         sqlx::query(
@@ -120,22 +98,14 @@ impl UserRepository for MySqlUserRepository {
             .bind(row.phone())
             .bind(row.role())
             .bind(row.id())
-            .execute(&mut *ctx.tx)
+            .execute(self.tx_mut())
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
     }
     
-    async fn remove(
-        &self,
-        ctx: &mut dyn TxContext,
-        id: UserId
-    ) -> Result<(), anyhow::Error> {
-        let ctx = ctx
-            .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
-
+    async fn remove(&self, id: UserId) -> Result<(), anyhow::Error> {
         sqlx::query(
             r#"
             DELETE FROM users
@@ -143,7 +113,7 @@ impl UserRepository for MySqlUserRepository {
             "#
         )
             .bind(id.value())
-            .execute(&mut *ctx.tx)
+            .execute(self.tx_mut())
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
         

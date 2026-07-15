@@ -1,37 +1,39 @@
+use std::cell::{ UnsafeCell };
 use async_trait::{ async_trait };
+use sqlx::{ Transaction, MySql };
 use serde_json;
 
 use crate::domain::models::{
     user::value_objects::{ UserId },
     master::{ Master, MasterRepository }
 };
-use crate::application::common::persistence::{ TxContext };
 
-use super::super::{
-    common::{ MySqlTxContext },
-    models::{ MySqlMasterRow }
-};
+use super::super::models::{ MySqlMasterRow };
 
-#[derive(Default)]
-pub struct MySqlMasterRepository;
+pub struct MySqlMasterRepository<'a> {
+    tx: UnsafeCell<&'a mut Transaction<'static, MySql>>
+}
 
-impl MySqlMasterRepository {
-    pub fn new() -> Self {
-        Self::default()
+unsafe impl<'a> Send for MySqlMasterRepository<'a> {}
+unsafe impl<'a> Sync for MySqlMasterRepository<'a> {}
+
+impl<'a> MySqlMasterRepository<'a> {
+    pub fn new(tx: &'a mut Transaction<'static, MySql>) -> Self {
+        Self { tx: UnsafeCell::new(tx) }
+    }
+
+    #[inline(always)]
+    fn tx_mut(&self) -> &mut sqlx::MySqlConnection {
+        unsafe {
+            let tx_ref = &mut *self.tx.get();
+            tx_ref.as_mut()
+        }
     }
 }
 
 #[async_trait]
-impl MasterRepository for MySqlMasterRepository {
-    async fn create(
-        &self,
-        ctx: &mut dyn TxContext,
-        master: &Master
-    ) -> Result<(), anyhow::Error> {
-        let ctx = ctx
-            .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
-
+impl<'a> MasterRepository for MySqlMasterRepository<'a> {
+    async fn create(&self, master: &Master) -> Result<(), anyhow::Error> {
         let schedule_json = serde_json::to_value(master.schedule())
             .map_err(|e| anyhow::anyhow!("MasterSchedule corrupted: {}", e.to_string()))?;
             
@@ -43,22 +45,14 @@ impl MasterRepository for MySqlMasterRepository {
         )
             .bind(master.user_id().value())
             .bind(&schedule_json)
-            .execute(&mut *ctx.tx)
+            .execute(self.tx_mut())
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
     }
     
-    async fn get_by_user_id(
-        &self,
-        ctx: &mut dyn TxContext,
-        user_id: UserId
-    ) -> Result<Option<Master>, anyhow::Error> {
-        let ctx = ctx
-            .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
-
+    async fn get_by_user_id(&self, user_id: UserId) -> Result<Option<Master>, anyhow::Error> {
         let row: Option<MySqlMasterRow> = sqlx::query_as(
             r#"
             SELECT user_id, schedule
@@ -67,7 +61,7 @@ impl MasterRepository for MySqlMasterRepository {
             "#
         )
             .bind(user_id.value())
-            .fetch_optional(&mut *ctx.tx)
+            .fetch_optional(self.tx_mut())
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
@@ -77,15 +71,7 @@ impl MasterRepository for MySqlMasterRepository {
         }
     }
     
-    async fn exists(
-        &self,
-        ctx: &mut dyn TxContext,
-        user_id: UserId
-    ) -> Result<bool, anyhow::Error> {
-        let ctx = ctx
-            .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
-
+    async fn exists(&self, user_id: UserId) -> Result<bool, anyhow::Error> {
         let row = sqlx::query(
             r#"
             SELECT 1
@@ -95,22 +81,14 @@ impl MasterRepository for MySqlMasterRepository {
             "#
         )
             .bind(user_id.value())
-            .fetch_optional(&mut *ctx.tx)
+            .fetch_optional(self.tx_mut())
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
         
         Ok(row.is_some())
     }
 
-    async fn update(
-        &self,
-        ctx: &mut dyn TxContext,
-        master: &Master
-    ) -> Result<(), anyhow::Error> {
-        let ctx = ctx
-            .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
-
+    async fn update(&self, master: &Master) -> Result<(), anyhow::Error> {
         let row = MySqlMasterRow::from(master);
 
         sqlx::query(
@@ -121,22 +99,14 @@ impl MasterRepository for MySqlMasterRepository {
         )
             .bind(row.schedule())
             .bind(row.user_id())
-            .execute(&mut *ctx.tx)
+            .execute(self.tx_mut())
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
     }
     
-    async fn remove(
-        &self,
-        ctx: &mut dyn TxContext,
-        user_id: UserId
-    ) -> Result<(), anyhow::Error> {
-        let ctx = ctx
-            .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
-
+    async fn remove(&self, user_id: UserId) -> Result<(), anyhow::Error> {
         sqlx::query(
             r#"
             DELETE FROM masters
@@ -144,7 +114,7 @@ impl MasterRepository for MySqlMasterRepository {
             "#
         )
             .bind(user_id.value())
-            .execute(&mut *ctx.tx)
+            .execute(self.tx_mut())
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
         

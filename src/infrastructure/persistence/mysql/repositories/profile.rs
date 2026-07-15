@@ -1,36 +1,38 @@
+use std::cell::{ UnsafeCell };
 use async_trait::{ async_trait };
+use sqlx::{ Transaction, MySql };
 
 use crate::domain::models::{
     user::value_objects::{ UserId },
     profile::{ Profile, ProfileRepository }
 };
-use crate::application::common::persistence::{ TxContext };
 
-use super::super::{
-    common::{ MySqlTxContext },
-    models::{ MySqlProfileRow }
-};
+use super::super::models::{ MySqlProfileRow };
 
-#[derive(Default)]
-pub struct MySqlProfileRepository;
+pub struct MySqlProfileRepository<'a> {
+    tx: UnsafeCell<&'a mut Transaction<'static, MySql>>
+}
 
-impl MySqlProfileRepository {
-    pub fn new() -> Self {
-        Self::default()
+unsafe impl<'a> Send for MySqlProfileRepository<'a> {}
+unsafe impl<'a> Sync for MySqlProfileRepository<'a> {}
+
+impl<'a> MySqlProfileRepository<'a> {
+    pub fn new(tx: &'a mut Transaction<'static, MySql>) -> Self {
+        Self { tx: UnsafeCell::new(tx) }
+    }
+
+    #[inline(always)]
+    fn tx_mut(&self) -> &mut sqlx::MySqlConnection {
+        unsafe {
+            let tx_ref = &mut *self.tx.get();
+            tx_ref.as_mut()
+        }
     }
 }
 
 #[async_trait]
-impl ProfileRepository for MySqlProfileRepository {
-    async fn create(
-        &self,
-        ctx: &mut dyn TxContext,
-        profile: &Profile
-    ) -> Result<(), anyhow::Error> {
-        let ctx = ctx
-            .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
-
+impl<'a> ProfileRepository for MySqlProfileRepository<'a> {
+    async fn create(&self, profile: &Profile) -> Result<(), anyhow::Error> {
         sqlx::query(
             r#"
             INSERT INTO profiles (user_id, first_name, last_name, avatar_url, bio)
@@ -42,22 +44,14 @@ impl ProfileRepository for MySqlProfileRepository {
             .bind(profile.last_name())
             .bind(profile.avatar_url())
             .bind(profile.bio())
-            .execute(&mut *ctx.tx)
+            .execute(self.tx_mut())
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
     }
     
-    async fn get_by_user_id(
-        &self,
-        ctx: &mut dyn TxContext,
-        user_id: UserId
-    ) -> Result<Option<Profile>, anyhow::Error> {
-        let ctx = ctx
-            .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
-
+    async fn get_by_user_id(&self, user_id: UserId) -> Result<Option<Profile>, anyhow::Error> {
         let row: Option<MySqlProfileRow> = sqlx::query_as(
             r#"
             SELECT user_id, first_name, last_name, avatar_url, bio
@@ -66,7 +60,7 @@ impl ProfileRepository for MySqlProfileRepository {
             "#
         )
             .bind(user_id.value())
-            .fetch_optional(&mut *ctx.tx)
+            .fetch_optional(self.tx_mut())
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
@@ -76,15 +70,7 @@ impl ProfileRepository for MySqlProfileRepository {
         }
     }
     
-    async fn exists(
-        &self,
-        ctx: &mut dyn TxContext,
-        user_id: UserId
-    ) -> Result<bool, anyhow::Error> {
-        let ctx = ctx
-            .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
-
+    async fn exists(&self, user_id: UserId) -> Result<bool, anyhow::Error> {
         let row = sqlx::query(
             r#"
             SELECT 1
@@ -94,22 +80,14 @@ impl ProfileRepository for MySqlProfileRepository {
             "#
         )
             .bind(user_id.value())
-            .fetch_optional(&mut *ctx.tx)
+            .fetch_optional(self.tx_mut())
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(row.is_some())
     }
     
-    async fn update(
-        &self,
-        ctx: &mut dyn TxContext,
-        profile: &Profile
-    ) -> Result<(), anyhow::Error> {
-        let ctx = ctx
-            .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
-
+    async fn update(&self, profile: &Profile) -> Result<(), anyhow::Error> {
         let row = MySqlProfileRow::from(profile);
 
         sqlx::query(
@@ -124,22 +102,14 @@ impl ProfileRepository for MySqlProfileRepository {
             .bind(row.avatar_url())
             .bind(row.bio())
             .bind(row.user_id())
-            .execute(&mut *ctx.tx)
+            .execute(self.tx_mut())
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
     }
     
-    async fn remove(
-        &self,
-        ctx: &mut dyn TxContext,
-        user_id: UserId
-    ) -> Result<(), anyhow::Error> {
-        let ctx = ctx
-            .downcast_mut::<MySqlTxContext>()
-            .ok_or_else(|| anyhow::anyhow!("Invalid TxContext context".to_string()))?;
-
+    async fn remove(&self, user_id: UserId) -> Result<(), anyhow::Error> {
         sqlx::query(
             r#"
             DELETE FROM profiles
@@ -147,7 +117,7 @@ impl ProfileRepository for MySqlProfileRepository {
             "#
         )
             .bind(user_id.value())
-            .execute(&mut *ctx.tx)
+            .execute(self.tx_mut())
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 

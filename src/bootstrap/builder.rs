@@ -20,8 +20,8 @@ impl ApplicationBuilder {
         Self::default()
     }
 
-    pub fn with_database(mut self, db_type: impl Into<String>, db_url: impl Into<String>) -> Self {
-        self.database = Some((db_type.into(), db_url.into()));
+    pub fn with_database(mut self, database_type: impl Into<String>, database_url: impl Into<String>) -> Self {
+        self.database = Some((database_type.into(), database_url.into()));
         self
     }
 

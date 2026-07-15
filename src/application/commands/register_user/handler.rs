@@ -1,35 +1,27 @@
-use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
 use crate::domain::models::{
     user::{
-        User, UserRepository,
+        User,
         value_objects::{ UserPhone }
     },
-    profile::{
-        Profile, ProfileRepository
-    }
+    profile::{ Profile }
 };
 
 use super::super::super::common::{
     CommandHandler,
-    persistence::{ TxContext }
+    persistence::{ TxContext, RepositoryFactory }
 };
 
 use super::{ RegisterUserCommand };
 
-pub struct RegisterUserHandler {
-    user_repository: Arc<dyn UserRepository>,
-    profile_repository: Arc<dyn ProfileRepository>
-}
+#[derive(Default)]
+pub struct RegisterUserHandler;
 
 impl RegisterUserHandler {
-    pub fn new(
-        user_repository: Arc<dyn UserRepository>,
-        profile_repository: Arc<dyn ProfileRepository>
-    ) -> Self {
-        Self { user_repository, profile_repository }
-    }
+    pub fn new() -> Self {
+        Self::default()
+    }    
 }
 
 #[async_trait]
@@ -40,6 +32,7 @@ impl CommandHandler<RegisterUserCommand> for RegisterUserHandler {
     async fn handle(
         &self,
         ctx: &mut dyn TxContext,
+        repository_factory: &dyn RepositoryFactory,
         command: RegisterUserCommand
     ) -> Result<Self::Output, Self::Error> {
         let user = User::new(
@@ -48,7 +41,7 @@ impl CommandHandler<RegisterUserCommand> for RegisterUserHandler {
             UserPhone::new(command.phone).map(Some)?
         );
         
-        self.user_repository.create(ctx, &user).await?;
+        repository_factory.user_repository(ctx)?.create(&user).await?;
 
         let profile = Profile::new(
             Some(user.id()),
@@ -58,7 +51,7 @@ impl CommandHandler<RegisterUserCommand> for RegisterUserHandler {
             None
         );
 
-        self.profile_repository.create(ctx, &profile).await?;
+        repository_factory.profile_repository(ctx)?.create(&profile).await?;
 
         Ok(())
     }
