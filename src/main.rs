@@ -1,7 +1,3 @@
-mod domain;
-mod infrastructure;
-mod application;
-mod presentation;
 mod bootstrap;
 
 use crate::bootstrap::{ ApplicationBuilder };

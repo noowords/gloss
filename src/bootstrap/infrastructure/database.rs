@@ -1,8 +1,8 @@
 use std::sync::{ Arc };
 use sqlx::mysql::{ MySqlPool };
 
-use crate::infrastructure::persistence::mysql::common::{ MySqlPoolContext };
-use crate::application::common::persistence::{ PoolContext };
+use infrastructure::persistence::mysql::common::{ MySqlPoolContext };
+use application::common::persistence::{ PoolContext };
 
 pub async fn connect_to_database(
     database_type: &str,

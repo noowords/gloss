@@ -1,11 +1,11 @@
 use std::sync::Arc;
 use tokio::net::TcpListener;
 
-use crate::application::common::{
+use application::common::{
     QueryBus,
     commands::{ CommandBus }
 };
-use crate::presentation::http::{HttpState, create_router, serve};
+use presentation::http::{HttpState, create_router, serve};
 
 pub async fn serve_http(
     addr: &str,

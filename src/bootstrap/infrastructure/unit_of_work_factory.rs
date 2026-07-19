@@ -1,7 +1,7 @@
 use std::sync::{ Arc };
 
-use crate::infrastructure::persistence::mysql::common::{ MySqlUnitOfWorkFactory };
-use crate::application::common::persistence::{ PoolContext, UnitOfWorkFactory };
+use infrastructure::persistence::mysql::common::{ MySqlUnitOfWorkFactory };
+use application::common::persistence::{ PoolContext, UnitOfWorkFactory };
 
 pub fn initialize_unit_of_work_factory(
     database_type: &str,

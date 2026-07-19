@@ -1,6 +1,6 @@
 use std::sync::{ Arc };
 
-use crate::application::{
+use application::{
     common::{
         QueryServiceFactory, QueryBus,
         persistence::{ PoolContext }

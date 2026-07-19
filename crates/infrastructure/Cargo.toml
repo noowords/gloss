@@ -1,0 +1,17 @@
+[package]
+name = "infrastructure"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+chrono.workspace = true
+serde.workspace = true
+uuid.workspace = true
+sqlx.workspace = true
+async-trait.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+
+domain.workspace = true
+application.workspace = true
