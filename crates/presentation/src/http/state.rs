@@ -1,8 +1,8 @@
 use std::sync::{ Arc };
 
-use application::common::{
-    QueryBus,
-    commands::{ CommandBus }
+use application::buses::{
+    command_bus::{ CommandBus },
+    query_bus::{ QueryBus }
 };
 
 #[derive(Clone)]

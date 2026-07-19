@@ -1,25 +1,22 @@
-use std::sync::{ Arc };
-use async_trait::{ async_trait };
+use async_trait::async_trait;
+use std::sync::Arc;
 
-use super::super::super::super::common::{
-    QueryHandler,
-    persistence::{ PoolContext }
+use super::super::super::super::{
+    buses::query_bus::{ QueryHandler },
+    persistence::contexts::{ PoolContext }
 };
 
-use super::super::{ UsersQueryService };
+use super::super::UsersQueryService;
 
-use super::{ GetUserByIdQuery, GetUserByIdView };
+use super::{GetUserByIdQuery, GetUserByIdView};
 
 pub struct GetUserByIdHandler {
     ctx: Arc<dyn PoolContext>,
-    service: Arc<dyn UsersQueryService>
+    service: Arc<dyn UsersQueryService>,
 }
 
 impl GetUserByIdHandler {
-    pub fn new(
-        ctx: Arc<dyn PoolContext>,
-        service: Arc<dyn UsersQueryService>
-    ) -> Self {
+    pub fn new(ctx: Arc<dyn PoolContext>, service: Arc<dyn UsersQueryService>) -> Self {
         Self { ctx, service }
     }
 }
@@ -27,9 +24,13 @@ impl GetUserByIdHandler {
 #[async_trait]
 impl QueryHandler<GetUserByIdQuery> for GetUserByIdHandler {
     type Output = Option<GetUserByIdView>;
-    
-    async fn handle(&self, query: GetUserByIdQuery) -> Result<Self::Output, Box<dyn std::error::Error + Send + Sync>> {
-        self.service.get_by_id(&*self.ctx, query.id)
+
+    async fn handle(
+        &self,
+        query: GetUserByIdQuery,
+    ) -> Result<Self::Output, Box<dyn std::error::Error + Send + Sync>> {
+        self.service
+            .get_by_id(&*self.ctx, query.id)
             .await
             .map_err(|e| e.into())
     }

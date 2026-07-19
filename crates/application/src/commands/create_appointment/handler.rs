@@ -1,16 +1,13 @@
-use async_trait::{ async_trait };
+use async_trait::async_trait;
 
-use domain::models::{
-    user::value_objects::{ UserId },
-    appointment::{ Appointment }
+use domain::{appointment::Appointment, user::value_objects::UserId};
+
+use super::super::super::{
+    buses::command_bus::CommandHandler,
+    persistence::{contexts::TxContext, factories::RepositoryFactory},
 };
 
-use super::super::super::common::{
-    commands::{ CommandHandler },
-    persistence::{ TxContext, RepositoryFactory }
-};
-
-use super::{ CreateAppointmentCommand };
+use super::CreateAppointmentCommand;
 
 #[derive(Default)]
 pub struct CreateAppointmentHandler;
@@ -21,7 +18,7 @@ impl CommandHandler<CreateAppointmentCommand> for CreateAppointmentHandler {
         &self,
         ctx: &mut dyn TxContext,
         repository_factory: &dyn RepositoryFactory,
-        command: CreateAppointmentCommand
+        command: CreateAppointmentCommand,
     ) -> Result<(), anyhow::Error> {
         let appointment = Appointment::new(
             None,
@@ -29,10 +26,13 @@ impl CommandHandler<CreateAppointmentCommand> for CreateAppointmentHandler {
             UserId::from(command.client_id),
             command.date,
             command.time,
-            None
+            None,
         );
-        
-        repository_factory.appointments(ctx)?.create(&appointment).await?;
+
+        repository_factory
+            .appointments(ctx)?
+            .create(&appointment)
+            .await?;
 
         Ok(())
     }

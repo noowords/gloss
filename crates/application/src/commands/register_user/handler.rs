@@ -1,19 +1,16 @@
-use async_trait::{ async_trait };
+use async_trait::async_trait;
 
-use domain::models::{
-    user::{
-        User,
-        value_objects::{ UserPhone }
-    },
-    profile::{ Profile }
+use domain::{
+    profile::Profile,
+    user::{User, value_objects::UserPhone},
 };
 
-use super::super::super::common::{
-    commands::{ CommandHandler },
-    persistence::{ TxContext, RepositoryFactory }
+use super::super::super::{
+    buses::command_bus::CommandHandler,
+    persistence::{contexts::TxContext, factories::RepositoryFactory},
 };
 
-use super::{ RegisterUserCommand };
+use super::RegisterUserCommand;
 
 #[derive(Default)]
 pub struct RegisterUserHandler;
@@ -24,14 +21,10 @@ impl CommandHandler<RegisterUserCommand> for RegisterUserHandler {
         &self,
         ctx: &mut dyn TxContext,
         repository_factory: &dyn RepositoryFactory,
-        command: RegisterUserCommand
+        command: RegisterUserCommand,
     ) -> Result<(), anyhow::Error> {
-        let user = User::new(
-            None,
-            None,
-            UserPhone::new(command.phone).map(Some)?
-        );
-        
+        let user = User::new(None, None, UserPhone::new(command.phone).map(Some)?);
+
         repository_factory.users(ctx)?.create(&user).await?;
 
         let profile = Profile::new(
@@ -39,7 +32,7 @@ impl CommandHandler<RegisterUserCommand> for RegisterUserHandler {
             command.first_name,
             command.last_name,
             None,
-            None
+            None,
         );
 
         repository_factory.profiles(ctx)?.create(&profile).await?;

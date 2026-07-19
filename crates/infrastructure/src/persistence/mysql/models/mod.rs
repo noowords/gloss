@@ -1,9 +1,9 @@
-mod user;
-mod profile;
-mod master;
-mod appointment;
+mod user_model;
+mod profile_model;
+mod maste_modelr;
+mod appointment_model;
 
-pub use user::{ MySqlUserRow };
-pub use profile::{ MySqlProfileRow };
-pub use master::{ MySqlMasterRow };
-pub use appointment::{ MySqlAppointmentRow };
+pub use user_model::{ MySqlUserRow };
+pub use profile_model::{ MySqlProfileRow };
+pub use maste_modelr::{ MySqlMasterRow };
+pub use appointment_model::{ MySqlAppointmentRow };

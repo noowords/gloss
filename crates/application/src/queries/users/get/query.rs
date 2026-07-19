@@ -1,6 +1,4 @@
 use serde::{ Deserialize };
 
 #[derive(Deserialize)]
-pub struct GetUsersQuery {
-    
-}
+pub struct GetUsersQuery { }

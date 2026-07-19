@@ -1,6 +1,6 @@
 use serde::{ Deserialize };
 
-use super::super::super::common::commands::{ Command };
+use super::super::super::buses::command_bus::{ Command };
 
 use super::{ RegisterUserHandler };
 

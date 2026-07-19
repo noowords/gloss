@@ -1,11 +1,11 @@
 use std::sync::{ Arc };
+use tokio::net::{ TcpListener };
 
-use application::common::{
-    QueryBus,
-    commands::{ CommandBus }
+use application::buses::{
+    command_bus::{ CommandBus },
+    query_bus::{ QueryBus }
 };
-
-use super::presentation::{ serve_http };
+use presentation::http::{ HttpState, create_router, serve };
 
 pub struct Application {
     command_bus: Arc<CommandBus>,
@@ -19,7 +19,16 @@ impl Application {
     
     pub async fn serve(&self, server_type: &str, addr: &str) -> Result<(), anyhow::Error> {
         match server_type {
-            "http" => serve_http(addr, self.command_bus.clone(), self.query_bus.clone()).await,
+            "http" => {
+                let state = HttpState::new(self.command_bus.clone(), self.query_bus.clone());
+                let router = create_router(state);
+            
+                let listener = TcpListener::bind(addr)
+                    .await
+                    .map_err(|e| anyhow::anyhow!("TcpListener binding failed: {}", e.to_string()))?;
+            
+                serve(listener, router).await
+            },
             _ => anyhow::bail!("Unsupported server type: {}", server_type),
         }
     }

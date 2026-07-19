@@ -6,7 +6,6 @@ publish = false
 
 [dependencies]
 chrono.workspace = true
-serde.workspace = true
+serde.workspace = true # remove
 uuid.workspace = true
-async-trait.workspace = true
-anyhow.workspace = true
+anyhow.workspace = true # remove
