@@ -1,7 +1,7 @@
 mod state;
 mod router;
 mod server;
-pub mod dto;
+pub mod dtos;
 pub mod handlers;
 
 pub use state::{ HttpState };

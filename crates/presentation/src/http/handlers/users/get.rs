@@ -8,7 +8,7 @@ use application::features::queries::get_users::{ GetUsersQuery };
 
 use super::super::super::{
     HttpState,
-    dto::users::get::{ GetUsersResponse }
+    dtos::users::get::{ GetUsersResponse }
 };
 
 pub async fn get(

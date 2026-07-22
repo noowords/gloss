@@ -8,7 +8,7 @@ use application::features::queries::get_user_profile_by_id::{ GetUserProfileById
 
 use super::super::super::{
     HttpState,
-    dto::users::get_profile_by_id::{ GetUserProfileByIdRequest, GetUserProfileByIdResponse }
+    dtos::users::get_profile_by_id::{ GetUserProfileByIdRequest, GetUserProfileByIdResponse }
 };
 
 pub async fn get_profile_by_id(

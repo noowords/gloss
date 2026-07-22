@@ -8,7 +8,7 @@ use application::features::commands::schedule_appointment::{ ScheduleAppointment
 
 use super::super::super::{
     HttpState,
-    dto::appointments::schedule::{ ScheduleAppointmentRequest }
+    dtos::appointments::schedule::{ ScheduleAppointmentRequest }
 };
 
 pub async fn schedule(

@@ -8,7 +8,7 @@ use application::features::commands::register_user::{ RegisterUserCommand };
 
 use super::super::super::{
     HttpState,
-    dto::auth::register::{ RegisterUserRequest }
+    dtos::auth::register::{ RegisterUserRequest }
 };
 
 pub async fn register(

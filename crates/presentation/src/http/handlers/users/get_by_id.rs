@@ -8,7 +8,7 @@ use application::features::queries::get_user_by_id::{ GetUserByIdQuery };
 
 use super::super::super::{
     HttpState,
-    dto::users::get_by_id::{ GetUserByIdRequest, GetUserByIdResponse }
+    dtos::users::get_by_id::{ GetUserByIdRequest, GetUserByIdResponse }
 };
 
 pub async fn get_by_id(
