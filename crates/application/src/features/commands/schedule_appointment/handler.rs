@@ -3,7 +3,7 @@ use async_trait::{ async_trait };
 
 use domain::appointment::{ Appointment };
 
-use crate::{ Command, CommandHandler, CommandContext };
+use crate::interfaces::command::{ Command, CommandHandler, CommandContext };
 use super::{ ScheduleAppointmentCommand, ScheduleAppointmentCommandService };
 
 pub struct ScheduleAppointmentCommandHandler {

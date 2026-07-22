@@ -1,6 +1,6 @@
 use domain::user::value_objects::{ UserId };
 
-use crate::{ Query };
+use crate::interfaces::query::{ Query };
 use super::{ GetUserByIdQueryResult, GetUserByIdQueryHandler };
 
 #[derive(Clone)]

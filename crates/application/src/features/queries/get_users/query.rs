@@ -1,4 +1,4 @@
-use crate::{ Query };
+use crate::interfaces::query::{ Query };
 use super::{ GetUsersQueryResult, GetUsersQueryHandler };
 
 #[derive(Clone)]

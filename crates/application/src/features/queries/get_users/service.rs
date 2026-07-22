@@ -2,7 +2,7 @@ use async_trait::{ async_trait };
 
 use domain::user::{ User };
 
-use crate::{ QueryContext };
+use crate::interfaces::query::{ QueryContext };
 
 #[async_trait]
 pub trait GetUsersQueryService: Send + Sync {

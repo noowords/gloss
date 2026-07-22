@@ -1,7 +1,10 @@
 use std::sync::{ Arc };
 use tokio::net::{ TcpListener };
 
-use application::pipeline::{ CommandBus, QueryBus };
+use application::pipeline::{
+    command::{ CommandBus },
+    query::{ QueryBus }
+};
 use presentation::http::{ HttpState, create_router, serve };
 
 pub struct Application {

@@ -1,3 +1,2 @@
-pub mod pipeline;
 pub mod interfaces;
 pub mod features;

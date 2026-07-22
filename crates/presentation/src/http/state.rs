@@ -1,6 +1,9 @@
 use std::sync::{ Arc };
 
-use application::pipeline::{ CommandBus, QueryBus };
+use application::pipeline::{
+    command::{ CommandBus },
+    query::{ QueryBus }
+};
 
 #[derive(Clone)]
 pub struct HttpState {

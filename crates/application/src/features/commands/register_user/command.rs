@@ -1,4 +1,4 @@
-use crate::{ Command };
+use crate::interfaces::command::{ Command };
 use super::{ RegisterUserCommandResult, RegisterUserCommandHandler };
 
 #[derive(Clone)]

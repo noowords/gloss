@@ -2,7 +2,10 @@ use std::sync::{ Arc };
 use sqlx::mysql::{ MySqlPool };
 
 use application::{
-    pipeline::{ CommandBus, QueryBus },
+    pipeline::{
+        command::{ CommandBus },
+        query::{ QueryBus }
+    },
     features::{
         commands::{
             register_user::{ RegisterUserCommand, RegisterUserCommandHandler },
@@ -15,9 +18,11 @@ use application::{
         }
     }
 };
-use infrastructure::persistence::mysql::{
-    contexts::{ MySqlPoolContext },
-    factories::{ MySqlUnitOfWorkFactory },
+use infrastructure::adapters::mysql::{
+    interfaces::{
+        command::{ MySqlCommandProvider },
+        query::{ MySqlQueryProvider }
+    },
     features::{
         commands::{
             register_user::{ MySqlRegisterUserCommandService },
@@ -51,23 +56,18 @@ impl ApplicationBuilder {
         let (database_type, database_url) = self.database
             .ok_or_else(|| anyhow::anyhow!("Database is not configured. Call .with_database()"))?;
 
-        let ctx = match database_type.as_str() {
+        let (command_provider, query_provider) = match database_type.as_str() {
             "mysql" => {
                 let pool = MySqlPool::connect(&database_url)
                     .await
                     .map_err(|e| anyhow::anyhow!("Database connection failed: {}", e.to_string()))?;
-    
-                Arc::new(MySqlPoolContext::new(pool))
+
+                (Arc::new(MySqlCommandProvider::new(pool.clone())), Arc::new(MySqlQueryProvider::new(pool)))
             },
             _ => anyhow::bail!("Unsupported database type: {}", &database_type)
         };
-        
-        let uow_factory = match database_type.as_str() {
-            "mysql" => Arc::new(MySqlUnitOfWorkFactory::new(ctx.clone())),
-            _ => anyhow::bail!("Unsupported database type: {}", &database_type)
-        };
 
-        let mut command_bus = CommandBus::new(uow_factory);
+        let mut command_bus = CommandBus::new(command_provider);
 
         command_bus.register::<RegisterUserCommand>(
             RegisterUserCommandHandler::build(
@@ -81,7 +81,7 @@ impl ApplicationBuilder {
             )
         );
 
-        let mut query_bus = QueryBus::new(ctx);
+        let mut query_bus = QueryBus::new(query_provider);
 
         query_bus.register::<GetUsersQuery>(
             GetUsersQueryHandler::build(

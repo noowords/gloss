@@ -3,7 +3,7 @@ use async_trait::{ async_trait };
 
 use domain::user::{ User };
 
-use crate::{ Command, CommandHandler, CommandContext };
+use crate::interfaces::command::{ Command, CommandHandler, CommandContext };
 use super::{ RegisterUserCommand, RegisterUserCommandService };
 
 pub struct RegisterUserCommandHandler {

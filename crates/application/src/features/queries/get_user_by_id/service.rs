@@ -5,7 +5,7 @@ use domain::user::{
     value_objects::{ UserId }
 };
 
-use crate::{ QueryContext };
+use crate::interfaces::query::{ QueryContext };
 
 #[async_trait]
 pub trait GetUserByIdQueryService: Send + Sync {
