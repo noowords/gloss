@@ -4,7 +4,7 @@ use axum::{
     http::{ StatusCode }
 };
 
-use application::commands::register_user::{ RegisterUserCommand };
+use application::features::commands::register_user::{ RegisterUserCommand };
 
 use super::super::super::{
     HttpState,

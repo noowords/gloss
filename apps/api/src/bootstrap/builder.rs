@@ -2,31 +2,32 @@ use std::sync::{ Arc };
 use sqlx::mysql::{ MySqlPool };
 
 use application::{
-    buses::{
-        command_bus::{ CommandBus },
-        query_bus::{ QueryBus }
-    },
-    commands::{
-        register_user::{ RegisterUserCommand, RegisterUserCommandHandler },
-        schedule_appointment::{ ScheduleAppointmentCommand, ScheduleAppointmentCommandHandler }
-    },
-    queries::{
-        get_users::{ GetUsersQuery, GetUsersQueryHandler },
-        get_user_by_id::{ GetUserByIdQuery, GetUserByIdQueryHandler },
-        get_user_profile_by_id::{ GetUserProfileByIdQuery, GetUserProfileByIdQueryHandler }
+    pipeline::{ CommandBus, QueryBus },
+    features::{
+        commands::{
+            register_user::{ RegisterUserCommand, RegisterUserCommandHandler },
+            schedule_appointment::{ ScheduleAppointmentCommand, ScheduleAppointmentCommandHandler }
+        },
+        queries::{
+            get_users::{ GetUsersQuery, GetUsersQueryHandler },
+            get_user_by_id::{ GetUserByIdQuery, GetUserByIdQueryHandler },
+            get_user_profile_by_id::{ GetUserProfileByIdQuery, GetUserProfileByIdQueryHandler }
+        }
     }
 };
 use infrastructure::persistence::mysql::{
     contexts::{ MySqlPoolContext },
     factories::{ MySqlUnitOfWorkFactory },
-    commands::{
-        register_user::{ MySqlRegisterUserCommandService },
-        schedule_appointment::{ MySqlScheduleAppointmentCommandService }
-    },
-    queries::{
-        get_users::{ MySqlGetUsersQueryService },
-        get_user_by_id::{ MySqlGetUserByIdQueryService },
-        get_user_profile_by_id::{ MySqlGetUserProfileByIdQueryService }
+    features::{
+        commands::{
+            register_user::{ MySqlRegisterUserCommandService },
+            schedule_appointment::{ MySqlScheduleAppointmentCommandService }
+        },
+        queries::{
+            get_users::{ MySqlGetUsersQueryService },
+            get_user_by_id::{ MySqlGetUserByIdQueryService },
+            get_user_profile_by_id::{ MySqlGetUserProfileByIdQueryService }
+        }
     }
 };
 

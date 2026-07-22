@@ -4,7 +4,7 @@ use axum::{
     http::{ StatusCode }
 };
 
-use application::queries::get_users::{ GetUsersQuery };
+use application::features::queries::get_users::{ GetUsersQuery };
 
 use super::super::super::{
     HttpState,
