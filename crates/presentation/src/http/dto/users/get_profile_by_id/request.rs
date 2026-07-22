@@ -1,7 +1,7 @@
 use serde::{ Deserialize };
 use uuid::{ Uuid };
 
-use application::projections::queries::{ GetUserProfileByIdQuery };
+use application::projections::get_user_profile_by_id::{ GetUserProfileByIdQuery };
 
 #[derive(Deserialize)]
 pub struct GetUserProfileByIdRequest {

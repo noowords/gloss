@@ -4,7 +4,7 @@ use axum::{
     http::{ StatusCode }
 };
 
-use application::persistence::commands::{ ScheduleAppointmentCommand };
+use application::persistence::schedule_appointment::{ ScheduleAppointmentCommand };
 
 use super::super::super::{
     HttpState,

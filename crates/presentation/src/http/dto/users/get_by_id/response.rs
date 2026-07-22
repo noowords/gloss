@@ -1,7 +1,7 @@
 use serde::{ Serialize };
 use uuid::{ Uuid };
 
-use application::projections::query_results::{ GetUserByIdQueryResult };
+use application::projections::get_user_by_id::{ GetUserByIdQueryResult };
 
 #[derive(Serialize)]
 pub struct Profile {

@@ -2,7 +2,7 @@ use serde::{ Deserialize };
 use chrono::{ NaiveDate, NaiveTime };
 use uuid::{ Uuid };
 
-use application::persistence::commands::{ ScheduleAppointmentCommand };
+use application::persistence::schedule_appointment::{ ScheduleAppointmentCommand };
 
 #[derive(Deserialize)]
 pub struct ScheduleAppointmentRequest {

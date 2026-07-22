@@ -1,1 +1,2 @@
-pub mod command_services;
+pub mod register_user;
+pub mod schedule_appointment;

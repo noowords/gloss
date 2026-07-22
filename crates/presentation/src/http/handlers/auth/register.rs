@@ -4,7 +4,7 @@ use axum::{
     http::{ StatusCode }
 };
 
-use application::persistence::commands::{ RegisterUserCommand };
+use application::persistence::register_user::{ RegisterUserCommand };
 
 use super::super::super::{
     HttpState,

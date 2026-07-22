@@ -4,7 +4,7 @@ use axum::{
     http::{ StatusCode }
 };
 
-use application::projections::queries::{ GetUsersQuery };
+use application::projections::get_users::{ GetUsersQuery };
 
 use super::super::super::{
     HttpState,

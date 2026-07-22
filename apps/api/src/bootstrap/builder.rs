@@ -6,37 +6,24 @@ use application::buses::{
     query_bus::{ QueryBus }
 };
 use application::persistence::{
-    commands::{
-        RegisterUserCommand,
-        ScheduleAppointmentCommand
-    },
-    command_handlers::{
-        RegisterUserCommandHandler,
-        ScheduleAppointmentCommandHandler
-    }
+    register_user::{ RegisterUserCommand, RegisterUserCommandHandler },
+    schedule_appointment::{ ScheduleAppointmentCommand, ScheduleAppointmentCommandHandler }
 };
 use application::projections::{
-    queries::{
-        GetUsersQuery,
-        GetUserByIdQuery,
-        GetUserProfileByIdQuery
-    },
-    query_handlers::{
-        GetUsersQueryHandler,
-        GetUserByIdQueryHandler,
-        GetUserProfileByIdQueryHandler
-    }
+    get_users::{ GetUsersQuery, GetUsersQueryHandler },
+    get_user_by_id::{ GetUserByIdQuery, GetUserByIdQueryHandler },
+    get_user_profile_by_id::{ GetUserProfileByIdQuery, GetUserProfileByIdQueryHandler }
 };
 use infrastructure::contexts::mysql::{ MySqlPoolContext };
 use infrastructure::factories::mysql::{ MySqlUnitOfWorkFactory };
-use infrastructure::persistence::mysql::command_services::{
-    MySqlRegisterUserCommandService,
-    MySqlScheduleAppointmentCommandService
+use infrastructure::persistence::mysql::{
+    register_user::{ MySqlRegisterUserCommandService },
+    schedule_appointment::{ MySqlScheduleAppointmentCommandService }
 };
-use infrastructure::projections::mysql::query_services::{
-    MySqlGetUsersQueryService,
-    MySqlGetUserByIdQueryService,
-    MySqlGetUserProfileByIdQueryService
+use infrastructure::projections::mysql::{
+    get_users::{ MySqlGetUsersQueryService },
+    get_user_by_id::{ MySqlGetUserByIdQueryService },
+    get_user_profile_by_id::{ MySqlGetUserProfileByIdQueryService }
 };
 
 use super::{ Application };
