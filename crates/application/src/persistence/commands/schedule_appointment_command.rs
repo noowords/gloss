@@ -1,5 +1,4 @@
 use chrono::{ NaiveDate, NaiveTime };
-use serde::{ Deserialize };
 use uuid::{ Uuid };
 
 use crate::buses::command_bus::{ Command };
@@ -8,7 +7,7 @@ use crate::persistence::{
     command_handlers::{ ScheduleAppointmentCommandHandler },
 };
 
-#[derive(Clone, Deserialize)]
+#[derive(Clone)]
 pub struct ScheduleAppointmentCommand {
     pub master_id: Uuid,
     pub client_id: Uuid,

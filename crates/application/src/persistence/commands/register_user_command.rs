@@ -1,12 +1,10 @@
-use serde::{ Deserialize };
-
 use crate::buses::command_bus::{ Command };
 use crate::persistence::{
     command_results::{ RegisterUserCommandResult },
     command_handlers::{ RegisterUserCommandHandler },
 };
 
-#[derive(Clone, Deserialize)]
+#[derive(Clone)]
 pub struct RegisterUserCommand {
     pub phone: Option<String>,
     pub first_name: String,
