@@ -1,4 +1,4 @@
-#[derive(Clone, PartialEq)]
+#[derive(Clone)]
 pub enum AppointmentStatus {
     Pending,
     Confirmed,
@@ -6,37 +6,27 @@ pub enum AppointmentStatus {
     Completed
 }
 
-impl AppointmentStatus {
-    pub fn as_str(&self) -> &'static str {
-        match self {
+impl From<AppointmentStatus> for String {
+    fn from(status: AppointmentStatus) -> Self {
+        match status {
             AppointmentStatus::Pending => "pending",
             AppointmentStatus::Confirmed => "confirmed",
             AppointmentStatus::Cancelled => "cancelled",
             AppointmentStatus::Completed => "completed"
-        }
-    }
-    
-    pub fn from_str(s: &str) -> Option<Self> {
-        match s {
-            "pending" => Some(AppointmentStatus::Pending),
-            "confirmed" => Some(AppointmentStatus::Confirmed),
-            "cancelled" => Some(AppointmentStatus::Cancelled),
-            "completed" => Some(AppointmentStatus::Completed),
-            _ => None
-        }
-    }
-}
-
-impl From<AppointmentStatus> for String {
-    fn from(role: AppointmentStatus) -> Self {
-        role.as_str().to_string()
+        }.to_string()
     }
 }
 
 impl TryFrom<&str> for AppointmentStatus {
     type Error = anyhow::Error;
     
-    fn try_from(s: &str) -> Result<Self, Self::Error> {
-        AppointmentStatus::from_str(s).ok_or_else(|| anyhow::anyhow!("Invalid AppointmentStatus: {}", s.to_string()))
+    fn try_from(str: &str) -> Result<Self, Self::Error> {
+        match str {
+            "pending" => Ok(AppointmentStatus::Pending),
+            "confirmed" => Ok(AppointmentStatus::Confirmed),
+            "cancelled" => Ok(AppointmentStatus::Cancelled),
+            "completed" => Ok(AppointmentStatus::Completed),
+            _ => anyhow::bail!("Invalid AppointmentStatus: {}", str.to_string())
+        }
     }
 }

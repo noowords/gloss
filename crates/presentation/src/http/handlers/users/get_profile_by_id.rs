@@ -4,23 +4,21 @@ use axum::{
     http::{ StatusCode }
 };
 
-use application::queries::users::get_profile_by_id::{ GetUserProfileByIdQuery, GetUserProfileByIdView };
+use application::projections::queries::{ GetUserProfileByIdQuery };
 
 use super::super::super::{
     HttpState,
-    dto::users::get_profile_by_id::{ GetUserProfileByIdRequest }
+    dto::users::get_profile_by_id::{ GetUserProfileByIdRequest, GetUserProfileByIdResponse }
 };
 
 pub async fn get_profile_by_id(
     State(state): State<HttpState>,
     Path(payload): Path<GetUserProfileByIdRequest>
-) -> Result<(StatusCode, Json<GetUserProfileByIdView>), StatusCode> {
-    state.query_bus.send::<GetUserProfileByIdQuery, Option<GetUserProfileByIdView>>(payload.into())
-        .await
-        .map_err(|e| {
-            eprintln!("[Error] Failed to execute GetUserProfileByIdQuery: {:?}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
-        })?
-        .ok_or(StatusCode::NOT_FOUND)
-        .map(|profile| (StatusCode::OK, Json(profile)))
+) -> Result<(StatusCode, Json<GetUserProfileByIdResponse>), StatusCode> {
+    match state.query_bus.send::<GetUserProfileByIdQuery>(payload.into()).await {
+        Ok(Ok(output)) if output.value().is_some() => Ok((StatusCode::OK, Json(output.into()))),
+        Ok(Ok(_)) => Err(StatusCode::NOT_FOUND),
+        Ok(Err(_)) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
 }

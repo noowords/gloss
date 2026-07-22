@@ -1,39 +1,29 @@
-#[derive(Clone, Eq, PartialEq)]
+#[derive(Clone)]
 pub enum UserRole {
     Admin,
     Master,
     Client
 }
 
-impl UserRole {
-    pub fn as_str(&self) -> &'static str {
-        match self {
+impl From<UserRole> for String {
+    fn from(role: UserRole) -> Self {
+        match role {
             UserRole::Admin => "admin",
             UserRole::Master => "master",
             UserRole::Client => "client"
-        }
-    }
-    
-    pub fn from_str(s: &str) -> Option<Self> {
-        match s {
-            "admin" => Some(UserRole::Admin),
-            "master" => Some(UserRole::Master),
-            "client" => Some(UserRole::Client),
-            _ => None
-        }
-    }
-}
-
-impl From<UserRole> for String {
-    fn from(role: UserRole) -> Self {
-        role.as_str().to_string()
+        }.to_string()
     }
 }
 
 impl TryFrom<&str> for UserRole {
     type Error = anyhow::Error;
     
-    fn try_from(s: &str) -> Result<Self, Self::Error> {
-        UserRole::from_str(s).ok_or_else(|| anyhow::anyhow!("Invalid UserRole: {}", s.to_string()))
+    fn try_from(str: &str) -> Result<Self, Self::Error> {
+        match str {
+            "admin" => Some(UserRole::Admin),
+            "master" => Some(UserRole::Master),
+            "client" => Some(UserRole::Client),
+            _ => None
+        }.ok_or_else(|| anyhow::anyhow!("Invalid UserRole: {}", str.to_string()))
     }
 }

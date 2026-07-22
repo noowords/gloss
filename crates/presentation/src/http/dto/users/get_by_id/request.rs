@@ -1,7 +1,7 @@
 use serde::{ Deserialize };
 use uuid::{ Uuid };
 
-use application::queries::users::get_by_id::{ GetUserByIdQuery };
+use application::projections::queries::{ GetUserByIdQuery };
 
 #[derive(Deserialize)]
 pub struct GetUserByIdRequest {
@@ -10,6 +10,6 @@ pub struct GetUserByIdRequest {
 
 impl From<GetUserByIdRequest> for GetUserByIdQuery {
     fn from(req: GetUserByIdRequest) -> Self {
-        Self { id: req.id }
+        Self { id: req.id.into() }
     }
 }

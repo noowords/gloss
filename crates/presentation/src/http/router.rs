@@ -12,6 +12,6 @@ pub fn create_router(state: HttpState) -> Router {
         .route("/users", get(handlers::users::get))
         .route("/users/{id}", get(handlers::users::get_by_id))
         .route("/users/{id}/profile", get(handlers::users::get_profile_by_id))
-        .route("/appointments", post(handlers::appointments::create))
+        .route("/appointments", post(handlers::appointments::schedule))
         .with_state(state)
 }

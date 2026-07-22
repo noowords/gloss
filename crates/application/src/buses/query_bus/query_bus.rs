@@ -1,56 +1,46 @@
 use std::any::{ Any, TypeId };
 use std::collections::{ HashMap };
+use std::sync::{ Arc };
 
-use super::{ Query, QueryHandler };
-
-type HandlerBox = Box<dyn Any + Send + Sync>;
+use crate::contexts::{ PoolContext };
+use crate::buses::query_bus::{ Query, QueryHandler };
 
 pub struct QueryBus {
-    handlers: HashMap<TypeId, HandlerBox>
+    ctx: Arc<dyn PoolContext>,
+    handlers: HashMap<TypeId, Box<dyn Any + Send + Sync>>
 }
 
 impl QueryBus {
-    pub fn new() -> Self {
-        Self { handlers: HashMap::new() }
+    pub fn new(ctx: Arc<dyn PoolContext>) -> Self {
+        Self { ctx, handlers: HashMap::new() }
     }
     
-    pub fn register<Q, H>(&mut self, handler: H) -> &mut Self
+    pub fn register<Q>(&mut self, handler: Q::Handler) -> &mut Self
     where
-        Q: Query,
-        H: QueryHandler<Q> + 'static,
+        Q: Query
     {
         let type_id = TypeId::of::<Q>();
         
-        let trait_object: Box<dyn QueryHandler<Q, Output = H::Output>> = Box::new(handler);
+        let trait_object: Box<dyn QueryHandler<Q>> = Box::new(handler);
         
         self.handlers.insert(type_id, Box::new(trait_object));
         self
     }
     
-    pub async fn send<Q, R>(&self, query: Q) -> Result<R, Box<dyn std::error::Error + Send + Sync>>
+    pub async fn send<Q>(&self, query: Q) -> Result<Result<Q::Result, Q::Error>, anyhow::Error>
     where
-        Q: Query,
-        R: Send + 'static,
+        Q: Query
     {
         let type_id = TypeId::of::<Q>();
         
-        let handler_any = self.handlers
-            .get(&type_id)
-            .ok_or_else(|| format!("No handler registered for query: {:?}", std::any::type_name::<Q>()))?;
+        let handler_any = self.handlers.get(&type_id)
+            .ok_or_else(|| format!("No handler registered for query: {:?}", std::any::type_name::<Q>()))
+            .map_err(|e| anyhow::anyhow!(e))?;
         
-        let handler = handler_any
-            .downcast_ref::<Box<dyn QueryHandler<Q, Output = R>>>()
-            .ok_or_else(|| {
-                format!(
-                    "Type mismatch for query: {:?}",
-                    std::any::type_name::<Q>()
-                )
-            })?;
+        let handler = handler_any.downcast_ref::<Box<dyn QueryHandler<Q>>>()
+            .ok_or_else(|| format!("Type mismatch for query: {:?}", std::any::type_name::<Q>()))
+            .map_err(|e| anyhow::anyhow!(e))?;
         
-        handler.handle(query).await
+        Ok(handler.handle(&*self.ctx, query).await)
     }
-}
-
-impl Default for QueryBus {
-    fn default() -> Self { Self::new() }
 }

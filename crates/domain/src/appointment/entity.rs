@@ -1,9 +1,8 @@
 use chrono::{ NaiveDate, NaiveTime };
 
-use super::super::user::value_objects::{ UserId };
+use crate::user::value_objects::{ UserId };
 use super::value_objects::{ AppointmentId, AppointmentStatus };
 
-#[derive(Clone)]
 pub struct Appointment {
     id: AppointmentId,
     master_id: UserId,
@@ -14,22 +13,31 @@ pub struct Appointment {
 }
 
 impl Appointment {
-    pub fn new(
-        id: Option<AppointmentId>,
+    pub fn schedule(
         master_id: UserId,
         client_id: UserId,
         date: NaiveDate,
-        time: NaiveTime,
-        status: Option<AppointmentStatus>
+        time: NaiveTime
     ) -> Self {
         Self {
-            id: id.unwrap_or(AppointmentId::new()),
+            id: AppointmentId::generate(),
             master_id,
             client_id,
             date,
             time,
-            status: status.unwrap_or(AppointmentStatus::Pending)
+            status: AppointmentStatus::Pending
         }
+    }
+    
+    pub fn restore(
+        id: AppointmentId,
+        master_id: UserId,
+        client_id: UserId,
+        date: NaiveDate,
+        time: NaiveTime,
+        status: AppointmentStatus
+    ) -> Self {
+        Self { id, master_id, client_id, date, time, status }
     }
 
     pub fn id(&self) -> AppointmentId {
@@ -52,15 +60,7 @@ impl Appointment {
         self.date
     }
     
-    pub fn status(&self) -> &AppointmentStatus {
-        &self.status
-    }
-
-    pub fn cancel(&mut self) {
-        self.status = AppointmentStatus::Cancelled;
-    }
-
-    pub fn complete(&mut self) {
-        self.status = AppointmentStatus::Completed;
+    pub fn status(&self) -> AppointmentStatus {
+        self.status.clone()
     }
 }

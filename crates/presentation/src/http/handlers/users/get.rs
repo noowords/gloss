@@ -4,15 +4,19 @@ use axum::{
     http::{ StatusCode }
 };
 
-use application::queries::users::get::{ GetUsersQuery, GetUsersView };
+use application::projections::queries::{ GetUsersQuery };
 
-use super::super::super::{ HttpState };
+use super::super::super::{
+    HttpState,
+    dto::users::get::{ GetUsersResponse }
+};
 
 pub async fn get(
     State(state): State<HttpState>
-) -> Result<(StatusCode, Json<GetUsersView>), StatusCode> {
-    match state.query_bus.send::<GetUsersQuery, GetUsersView>(GetUsersQuery { }).await {
-        Ok(users) => Ok((StatusCode::OK, Json(users))),
+) -> Result<(StatusCode, Json<GetUsersResponse>), StatusCode> {
+    match state.query_bus.send::<GetUsersQuery>(GetUsersQuery { }).await {
+        Ok(Ok(output)) => Ok((StatusCode::OK, Json(output.into()))),
+        Ok(Err(_)) => Err(StatusCode::INTERNAL_SERVER_ERROR),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR)
     }
 }

@@ -10,7 +10,6 @@ serde.workspace = true
 uuid.workspace = true
 sqlx.workspace = true
 async-trait.workspace = true
-serde_json.workspace = true
 anyhow.workspace = true
 
 domain.workspace = true

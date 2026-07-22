@@ -1,29 +1,15 @@
 use uuid::{ Uuid };
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 pub struct AppointmentId(Uuid);
 
 impl AppointmentId {
-    pub fn new() -> Self {
+    pub fn generate() -> Self {
         Self(Uuid::now_v7())
     }
 
-    pub fn value(&self) -> Uuid {
+    pub fn uuid(&self) -> Uuid {
         self.0
-    }
-    
-    pub fn as_bytes(&self) -> &[u8; 16] {
-        self.0.as_bytes()
-    }
-    
-    pub fn to_string(&self) -> String {
-        self.0.to_string()
-    }
-}
-
-impl From<Uuid> for AppointmentId {
-    fn from(uuid: Uuid) -> Self {
-        Self(uuid)
     }
 }
 
@@ -33,24 +19,40 @@ impl From<AppointmentId> for Uuid {
     }
 }
 
-impl std::str::FromStr for AppointmentId {
-    type Err = anyhow::Error;
-    
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Uuid::parse_str(s)
+impl From<AppointmentId> for String {
+    fn from(id: AppointmentId) -> Self {
+        id.uuid().to_string()
+    }
+}
+
+impl From<AppointmentId> for [u8; 16] {
+    fn from(id: AppointmentId) -> Self {
+        id.uuid().into_bytes()
+    }
+}
+
+impl From<Uuid> for AppointmentId {
+    fn from(uuid: Uuid) -> Self {
+        Self(uuid)
+    }
+}
+
+impl TryFrom<&str> for AppointmentId {
+    type Error = anyhow::Error;
+
+    fn try_from(str: &str) -> Result<Self, Self::Error> {
+        Uuid::parse_str(str)
             .map(AppointmentId)
-            .map_err(|_| anyhow::anyhow!("Invalid AppointmentId: {}", s))
+            .map_err(|_| anyhow::anyhow!("Invalid AppointmentId: {}", str))
     }
 }
 
-impl std::fmt::Display for AppointmentId {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
+impl TryFrom<&[u8; 16]> for AppointmentId {
+    type Error = anyhow::Error;
 
-impl Default for AppointmentId {
-    fn default() -> Self {
-        Self::new()
+    fn try_from(bytes: &[u8; 16]) -> Result<Self, Self::Error> {
+        Uuid::from_slice(bytes)
+            .map(AppointmentId)
+            .map_err(|_| anyhow::anyhow!("Invalid AppointmentId: {}", String::from_utf8_lossy(bytes)))
     }
 }

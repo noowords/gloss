@@ -1,29 +1,15 @@
 use uuid::{ Uuid };
 
-#[derive(Copy, Clone, Eq, Hash, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 pub struct UserId(Uuid);
 
 impl UserId {
-    pub fn new() -> Self {
+    pub fn generate() -> Self {
         Self(Uuid::now_v7())
     }
 
-    pub fn value(&self) -> Uuid {
+    pub fn uuid(&self) -> Uuid {
         self.0
-    }
-    
-    pub fn as_bytes(&self) -> &[u8; 16] {
-        self.0.as_bytes()
-    }
-    
-    pub fn to_string(&self) -> String {
-        self.0.to_string()
-    }
-}
-
-impl From<Uuid> for UserId {
-    fn from(uuid: Uuid) -> Self {
-        Self(uuid)
     }
 }
 
@@ -33,24 +19,40 @@ impl From<UserId> for Uuid {
     }
 }
 
-impl std::str::FromStr for UserId {
-    type Err = anyhow::Error;
+impl From<UserId> for String {
+    fn from(id: UserId) -> Self {
+        id.uuid().to_string()
+    }
+}
+
+impl From<UserId> for [u8; 16] {
+    fn from(id: UserId) -> Self {
+        id.uuid().into_bytes()
+    }
+}
+
+impl From<Uuid> for UserId {
+    fn from(uuid: Uuid) -> Self {
+        Self(uuid)
+    }
+}
+
+impl TryFrom<&str> for UserId {
+    type Error = anyhow::Error;
     
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Uuid::parse_str(s)
+    fn try_from(str: &str) -> Result<Self, Self::Error> {
+        Uuid::parse_str(str)
             .map(UserId)
-            .map_err(|_| anyhow::anyhow!("Invalid UserId: {}", s))
+            .map_err(|_| anyhow::anyhow!("Invalid UserId: {}", str))
     }
 }
 
-impl std::fmt::Display for UserId {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl Default for UserId {
-    fn default() -> Self {
-        Self::new()
+impl TryFrom<&[u8; 16]> for UserId {
+    type Error = anyhow::Error;
+    
+    fn try_from(bytes: &[u8; 16]) -> Result<Self, Self::Error> {
+        Uuid::from_slice(bytes)
+            .map(UserId)
+            .map_err(|_| anyhow::anyhow!("Invalid UserId: {}", String::from_utf8_lossy(bytes)))
     }
 }

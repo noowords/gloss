@@ -1,0 +1,14 @@
+[package]
+name = "api"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+tokio.workspace = true
+sqlx.workspace = true # refactor(api/bootstrap): migrate database connection to the infrastructure layer
+anyhow.workspace = true
+
+application.workspace = true
+infrastructure.workspace = true
+presentation.workspace = true

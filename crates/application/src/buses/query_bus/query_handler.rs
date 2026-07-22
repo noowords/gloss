@@ -1,9 +1,9 @@
 use async_trait::{ async_trait };
 
-use super::{ Query };
+use crate::contexts::{ PoolContext };
+use crate::buses::query_bus::{ Query };
 
 #[async_trait]
-pub trait QueryHandler<Q: Query>: Send + Sync {
-    type Output: Send + 'static;
-    async fn handle(&self, query: Q) -> Result<Self::Output, Box<dyn std::error::Error + Send + Sync>>;
+pub trait QueryHandler<Q: Query>: Send + Sync + 'static {
+    async fn handle(&self, ctx: &dyn PoolContext, query: Q) -> Result<Q::Result, Q::Error>;
 }
