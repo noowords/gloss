@@ -1,6 +1,6 @@
 use serde::{ Deserialize };
 
-use application::persistence::register_user::{ RegisterUserCommand };
+use application::commands::register_user::{ RegisterUserCommand };
 
 #[derive(Deserialize)]
 pub struct RegisterUserRequest {

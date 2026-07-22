@@ -1,2 +1,6 @@
-pub mod register_user;
-pub mod schedule_appointment;
+pub mod models;
+pub mod commands;
+pub mod queries;
+
+pub mod contexts;
+pub mod factories;

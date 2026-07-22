@@ -1,6 +1,6 @@
 use serde::{ Serialize };
 
-use application::projections::get_user_profile_by_id::{ GetUserProfileByIdQueryResult };
+use application::queries::get_user_profile_by_id::{ GetUserProfileByIdQueryResult };
 
 #[derive(Serialize)]
 pub struct Profile {
