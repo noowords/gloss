@@ -3,8 +3,7 @@ use async_trait::{ async_trait };
 
 use domain::appointment::{ Appointment };
 
-use crate::contexts::{ TxContext };
-use crate::{ Command, CommandHandler };
+use crate::{ Command, CommandHandler, CommandContext };
 use super::{ ScheduleAppointmentCommand, ScheduleAppointmentCommandService };
 
 pub struct ScheduleAppointmentCommandHandler {
@@ -19,7 +18,7 @@ impl ScheduleAppointmentCommandHandler {
 
 #[async_trait]
 impl CommandHandler<ScheduleAppointmentCommand> for ScheduleAppointmentCommandHandler {
-    async fn handle(&self, ctx: &mut dyn TxContext, command: ScheduleAppointmentCommand) -> Result<
+    async fn handle(&self, context: &mut dyn CommandContext, command: ScheduleAppointmentCommand) -> Result<
         <ScheduleAppointmentCommand as Command>::Result,
         <ScheduleAppointmentCommand as Command>::Error
     > {
@@ -30,7 +29,7 @@ impl CommandHandler<ScheduleAppointmentCommand> for ScheduleAppointmentCommandHa
             command.time
         );
 
-        self.service.save_appointment(ctx, &appointment).await?;
+        self.service.save_appointment(context, &appointment).await?;
         
         Ok(())
     }

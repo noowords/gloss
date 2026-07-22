@@ -2,17 +2,16 @@ use std::any::{ Any, TypeId };
 use std::collections::{ HashMap };
 use std::sync::{ Arc };
 
-use crate::factories::{ UnitOfWorkFactory };
-use crate::{ Command, CommandHandler };
+use crate::{ Command, CommandHandler, CommandProvider };
 
 pub struct CommandBus {
-    uow_factory: Arc<dyn UnitOfWorkFactory>,
+    provider: Arc<dyn CommandProvider>,
     handlers: HashMap<TypeId, Box<dyn Any + Send + Sync>>
 }
 
 impl CommandBus {
-    pub fn new(uow_factory: Arc<dyn UnitOfWorkFactory>) -> Self {
-        Self { handlers: HashMap::new(), uow_factory }
+    pub fn new(provider: Arc<dyn CommandProvider>) -> Self {
+        Self { provider, handlers: HashMap::new() }
     }
 
     pub fn register<C>(&mut self, handler: C::Handler) -> &mut Self
@@ -41,13 +40,13 @@ impl CommandBus {
             .ok_or_else(|| format!("Type mismatch for command: {:?}", std::any::type_name::<C>()))
             .map_err(|e| anyhow::anyhow!(e))?;
 
-        let mut uow = self.uow_factory.begin()
+        let mut context = self.provider.provide_context()
             .await
             .map_err(|e| anyhow::anyhow!(e))?;
 
-        let result = handler.handle(uow.ctx_mut(), command).await;
+        let result = handler.handle(&mut *context, command).await;
 
-        uow.commit()
+        context.commit()
             .await
             .map_err(|e| anyhow::anyhow!(e))?;
 

@@ -1,8 +1,7 @@
 use async_trait::{ async_trait };
 use std::sync::{ Arc };
 
-use crate::contexts::{ PoolContext };
-use crate::{ Query, QueryHandler };
+use crate::{ Query, QueryHandler, QueryContext };
 use super::{ GetUsersQuery, GetUsersQueryService };
 
 pub struct GetUsersQueryHandler {
@@ -17,11 +16,11 @@ impl GetUsersQueryHandler {
 
 #[async_trait]
 impl QueryHandler<GetUsersQuery> for GetUsersQueryHandler {
-    async fn handle(&self, ctx: &dyn PoolContext, _query: GetUsersQuery) -> Result<
+    async fn handle(&self, context: &dyn QueryContext, _query: GetUsersQuery) -> Result<
         <GetUsersQuery as Query>::Result,
         <GetUsersQuery as Query>::Error
     > {
-        self.service.get_users(ctx)
+        self.service.get_users(context)
             .await
             .map(|users| users.into())
     }

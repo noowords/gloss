@@ -2,17 +2,16 @@ use std::any::{ Any, TypeId };
 use std::collections::{ HashMap };
 use std::sync::{ Arc };
 
-use crate::contexts::{ PoolContext };
-use crate::{ Query, QueryHandler };
+use crate::{ Query, QueryHandler, QueryProvider };
 
 pub struct QueryBus {
-    ctx: Arc<dyn PoolContext>,
+    provider: Arc<dyn QueryProvider>,
     handlers: HashMap<TypeId, Box<dyn Any + Send + Sync>>
 }
 
 impl QueryBus {
-    pub fn new(ctx: Arc<dyn PoolContext>) -> Self {
-        Self { ctx, handlers: HashMap::new() }
+    pub fn new(provider: Arc<dyn QueryProvider>) -> Self {
+        Self { provider, handlers: HashMap::new() }
     }
     
     pub fn register<Q>(&mut self, handler: Q::Handler) -> &mut Self
@@ -40,7 +39,9 @@ impl QueryBus {
         let handler = handler_any.downcast_ref::<Box<dyn QueryHandler<Q>>>()
             .ok_or_else(|| format!("Type mismatch for query: {:?}", std::any::type_name::<Q>()))
             .map_err(|e| anyhow::anyhow!(e))?;
+
+        let context = self.provider.provide_context();
         
-        Ok(handler.handle(&*self.ctx, query).await)
+        Ok(handler.handle(&*context, query).await)
     }
 }

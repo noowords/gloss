@@ -3,8 +3,7 @@ use async_trait::{ async_trait };
 
 use domain::user::{ User };
 
-use crate::contexts::{ TxContext };
-use crate::{ Command, CommandHandler };
+use crate::{ Command, CommandHandler, CommandContext };
 use super::{ RegisterUserCommand, RegisterUserCommandService };
 
 pub struct RegisterUserCommandHandler {
@@ -19,7 +18,7 @@ impl RegisterUserCommandHandler {
 
 #[async_trait]
 impl CommandHandler<RegisterUserCommand> for RegisterUserCommandHandler {
-    async fn handle(&self, ctx: &mut dyn TxContext, command: RegisterUserCommand) -> Result<
+    async fn handle(&self, context: &mut dyn CommandContext, command: RegisterUserCommand) -> Result<
         <RegisterUserCommand as Command>::Result,
         <RegisterUserCommand as Command>::Error
     > {
@@ -32,8 +31,8 @@ impl CommandHandler<RegisterUserCommand> for RegisterUserCommandHandler {
             command.avatar_url
         );
 
-        self.service.save_user(ctx, &user).await?;
-        self.service.save_profile(ctx, &user.profile()).await?;
+        self.service.save_user(context, &user).await?;
+        self.service.save_profile(context, &user.profile()).await?;
 
         Ok(())
     }

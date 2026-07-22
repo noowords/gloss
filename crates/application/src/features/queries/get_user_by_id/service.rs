@@ -5,9 +5,9 @@ use domain::user::{
     value_objects::{ UserId }
 };
 
-use crate::contexts::{ PoolContext };
+use crate::{ QueryContext };
 
 #[async_trait]
 pub trait GetUserByIdQueryService: Send + Sync {
-    async fn get_user_by_id(&self, ctx: &dyn PoolContext, id: UserId) -> Result<Option<User>, anyhow::Error>;
+    async fn get_user_by_id(&self, context: &dyn QueryContext, id: UserId) -> Result<Option<User>, anyhow::Error>;
 }
