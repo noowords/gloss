@@ -6,7 +6,6 @@ publish = false
 
 [dependencies]
 tokio.workspace = true
-sqlx.workspace = true # refactor(api/bootstrap): migrate database connection to the infrastructure layer
 anyhow.workspace = true
 
 application.workspace = true
