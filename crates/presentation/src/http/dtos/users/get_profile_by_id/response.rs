@@ -1,6 +1,6 @@
 use serde::{ Serialize };
 
-use application::features::queries::get_user_profile_by_id::{ GetUserProfileByIdQueryResult };
+use application::features::users::queries::get_user_profile_by_id::{ GetUserProfileByIdQueryResult };
 
 #[derive(Serialize)]
 pub struct Profile {

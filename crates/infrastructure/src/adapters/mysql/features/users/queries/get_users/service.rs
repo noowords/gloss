@@ -3,7 +3,7 @@ use async_trait::{ async_trait };
 use domain::aggregates::user::{ User };
 
 use application::interfaces::query::{ QueryContext };
-use application::features::queries::get_users::{ GetUsersQueryService };
+use application::features::users::queries::get_users::{ GetUsersQueryService };
 
 use crate::adapters::mysql::interfaces::query::{ MySqlQueryContext };
 use crate::models::mysql::user::{ MySqlUserModel };

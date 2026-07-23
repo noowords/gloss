@@ -1,6 +1,6 @@
 use serde::{ Deserialize };
 
-use application::features::commands::register_user::{ RegisterUserCommand };
+use application::features::users::commands::register_user::{ RegisterUserCommand };
 
 #[derive(Deserialize)]
 pub struct RegisterUserRequest {

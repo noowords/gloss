@@ -1,25 +1,25 @@
 use async_trait::{ async_trait };
 
 use domain::aggregates::user::{
-    profile::{ Profile },
+    User,
     value_objects::{ UserId }
 };
 
 use application::interfaces::query::{ QueryContext };
-use application::features::queries::get_user_profile_by_id::{ GetUserProfileByIdQueryService };
+use application::features::users::queries::get_user_by_id::{ GetUserByIdQueryService };
 
 use crate::adapters::mysql::interfaces::query::{ MySqlQueryContext };
-use crate::models::mysql::{
-    user::value_objects::{ MySqlUserIdModel },
-    profile::{ MySqlProfileModel }
+use crate::models::mysql::user::{
+    MySqlUserModel,
+    value_objects::{ MySqlUserIdModel }
 };
 
 #[derive(Default)]
-pub struct MySqlGetUserProfileByIdQueryService;
+pub struct MySqlGetUserByIdQueryService;
 
 #[async_trait]
-impl GetUserProfileByIdQueryService for MySqlGetUserProfileByIdQueryService {
-    async fn get_user_profile_by_id(&self, context: &dyn QueryContext, id: UserId) -> Result<Option<Profile>, anyhow::Error> {
+impl GetUserByIdQueryService for MySqlGetUserByIdQueryService {
+    async fn get_user_by_id(&self, context: &dyn QueryContext, id: UserId) -> Result<Option<User>, anyhow::Error> {
         let pool = context.as_any()
             .downcast_ref::<MySqlQueryContext>()
             .map(|context| context.pool())
@@ -27,17 +27,19 @@ impl GetUserProfileByIdQueryService for MySqlGetUserProfileByIdQueryService {
 
         let id_model: MySqlUserIdModel = id.into();
 
-        let model: Option<MySqlProfileModel> = sqlx::query_as(
+        let model: Option<MySqlUserModel> = sqlx::query_as(
             r#"
             SELECT
-                p.user_id,
+                u.id,
+                u.role,
+                u.phone,
                 p.first_name,
                 p.last_name,
                 p.avatar_url,
                 p.bio
-            FROM profiles p
-            WHERE p.user_id = ?
-            LIMIT 1
+            FROM users u
+            JOIN profiles p ON u.id = p.user_id
+            ORDER BY u.id DESC
             "#
         )
             .bind(id_model)
@@ -45,6 +47,6 @@ impl GetUserProfileByIdQueryService for MySqlGetUserProfileByIdQueryService {
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
-        model.map(Profile::try_from).transpose()
+        model.map(User::try_from).transpose()
     }
 }

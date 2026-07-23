@@ -4,7 +4,7 @@ use axum::{
     http::{ StatusCode }
 };
 
-use application::features::queries::get_user_profile_by_id::{ GetUserProfileByIdQuery };
+use application::features::users::queries::get_user_profile_by_id::{ GetUserProfileByIdQuery };
 
 use super::super::super::{
     HttpState,

@@ -1,25 +1,25 @@
 use async_trait::{ async_trait };
 
 use domain::aggregates::user::{
-    User,
+    profile::{ Profile },
     value_objects::{ UserId }
 };
 
 use application::interfaces::query::{ QueryContext };
-use application::features::queries::get_user_by_id::{ GetUserByIdQueryService };
+use application::features::users::queries::get_user_profile_by_id::{ GetUserProfileByIdQueryService };
 
 use crate::adapters::mysql::interfaces::query::{ MySqlQueryContext };
-use crate::models::mysql::user::{
-    MySqlUserModel,
-    value_objects::{ MySqlUserIdModel }
+use crate::models::mysql::{
+    user::value_objects::{ MySqlUserIdModel },
+    profile::{ MySqlProfileModel }
 };
 
 #[derive(Default)]
-pub struct MySqlGetUserByIdQueryService;
+pub struct MySqlGetUserProfileByIdQueryService;
 
 #[async_trait]
-impl GetUserByIdQueryService for MySqlGetUserByIdQueryService {
-    async fn get_user_by_id(&self, context: &dyn QueryContext, id: UserId) -> Result<Option<User>, anyhow::Error> {
+impl GetUserProfileByIdQueryService for MySqlGetUserProfileByIdQueryService {
+    async fn get_user_profile_by_id(&self, context: &dyn QueryContext, id: UserId) -> Result<Option<Profile>, anyhow::Error> {
         let pool = context.as_any()
             .downcast_ref::<MySqlQueryContext>()
             .map(|context| context.pool())
@@ -27,19 +27,17 @@ impl GetUserByIdQueryService for MySqlGetUserByIdQueryService {
 
         let id_model: MySqlUserIdModel = id.into();
 
-        let model: Option<MySqlUserModel> = sqlx::query_as(
+        let model: Option<MySqlProfileModel> = sqlx::query_as(
             r#"
             SELECT
-                u.id,
-                u.role,
-                u.phone,
+                p.user_id,
                 p.first_name,
                 p.last_name,
                 p.avatar_url,
                 p.bio
-            FROM users u
-            JOIN profiles p ON u.id = p.user_id
-            ORDER BY u.id DESC
+            FROM profiles p
+            WHERE p.user_id = ?
+            LIMIT 1
             "#
         )
             .bind(id_model)
@@ -47,6 +45,6 @@ impl GetUserByIdQueryService for MySqlGetUserByIdQueryService {
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
-        model.map(User::try_from).transpose()
+        model.map(Profile::try_from).transpose()
     }
 }

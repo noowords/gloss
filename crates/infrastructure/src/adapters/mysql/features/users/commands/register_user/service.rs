@@ -6,7 +6,7 @@ use domain::aggregates::user::{
 };
 
 use application::interfaces::command::{ CommandContext };
-use application::features::commands::register_user::{ RegisterUserCommandService };
+use application::features::users::commands::register_user::{ RegisterUserCommandService };
 
 use crate::adapters::mysql::interfaces::command::{ MySqlCommandContext };
 use crate::models::mysql::{
