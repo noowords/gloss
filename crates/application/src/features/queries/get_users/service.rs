@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use domain::user::{ User };
+use domain::aggregates::user::{ User };
 
 use crate::interfaces::query::{ QueryContext };
 

@@ -1,6 +1,6 @@
 use chrono::{ NaiveDate, NaiveTime };
 
-use crate::user::value_objects::{ UserId };
+use crate::aggregates::user::value_objects::{ UserId };
 use super::value_objects::{ AppointmentId, AppointmentStatus };
 
 pub struct Appointment {

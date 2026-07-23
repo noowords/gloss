@@ -1,6 +1,6 @@
 use sqlx::{ Type };
 
-use domain::appointment::value_objects::{ AppointmentStatus };
+use domain::aggregates::appointment::value_objects::{ AppointmentStatus };
 
 #[derive(Clone, Type)]
 #[sqlx(transparent)]
@@ -18,7 +18,7 @@ impl MySqlAppointmentStatusModel {
 
 impl TryFrom<MySqlAppointmentStatusModel> for AppointmentStatus {
     type Error = anyhow::Error;
-    
+
     fn try_from(model: MySqlAppointmentStatusModel) -> Result<Self, Self::Error> {
         AppointmentStatus::try_from(model.value().as_str())
     }

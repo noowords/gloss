@@ -1,6 +1,6 @@
 use sqlx::{ Type };
 
-use domain::user::value_objects::{ UserPhone };
+use domain::aggregates::user::value_objects::{ UserPhone };
 
 #[derive(Clone, Type)]
 #[sqlx(transparent)]
@@ -18,7 +18,7 @@ impl MySqlUserPhoneModel {
 
 impl TryFrom<MySqlUserPhoneModel> for UserPhone {
     type Error = anyhow::Error;
-    
+
     fn try_from(model: MySqlUserPhoneModel) -> Result<Self, Self::Error> {
         UserPhone::try_from(model.value().as_str())
     }

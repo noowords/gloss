@@ -1,6 +1,6 @@
 use sqlx::{ FromRow };
 
-use domain::user::{
+use domain::aggregates::user::{
     profile::{ Profile },
     value_objects::{ UserId }
 };
@@ -56,7 +56,7 @@ impl MySqlProfileModel {
 
 impl TryFrom<MySqlProfileModel> for Profile {
     type Error = anyhow::Error;
-    
+
     fn try_from(model: MySqlProfileModel) -> Result<Self, Self::Error> {
         Ok(Self::restore(
             UserId::from(model.user_id.value()),

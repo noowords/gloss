@@ -1,6 +1,6 @@
 use uuid::{ Uuid };
 
-use domain::user::{
+use domain::aggregates::user::{
     User,
     profile::{ Profile }
 };

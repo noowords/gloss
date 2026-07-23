@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use domain::appointment::{ Appointment };
+use domain::aggregates::appointment::{ Appointment };
 
 use application::interfaces::command::{ CommandContext };
 use application::features::commands::schedule_appointment::{ ScheduleAppointmentCommandService };

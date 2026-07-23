@@ -1,4 +1,4 @@
-use domain::user::value_objects::{ UserId };
+use domain::aggregates::user::value_objects::{ UserId };
 
 use crate::interfaces::query::{ Query };
 use super::{ GetUserProfileByIdQueryResult, GetUserProfileByIdQueryHandler };

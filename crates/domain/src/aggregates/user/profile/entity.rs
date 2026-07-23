@@ -1,4 +1,4 @@
-use crate::user::value_objects::{ UserId };
+use crate::aggregates::user::value_objects::{ UserId };
 
 #[derive(Clone)]
 pub struct Profile {

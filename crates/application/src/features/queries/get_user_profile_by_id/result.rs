@@ -1,4 +1,4 @@
-use domain::user::profile::{ Profile };
+use domain::aggregates::user::profile::{ Profile };
 
 #[derive(Clone)]
 pub struct ProfileDto {

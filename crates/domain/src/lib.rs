@@ -1,2 +1,1 @@
-pub mod user;
-pub mod appointment;
+pub mod aggregates;

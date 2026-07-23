@@ -1,7 +1,7 @@
 use uuid::{ Uuid };
 use sqlx::{ Type };
 
-use domain::appointment::value_objects::{ AppointmentId };
+use domain::aggregates::appointment::value_objects::{ AppointmentId };
 
 #[derive(Clone, Type)]
 #[sqlx(transparent)]
@@ -19,7 +19,7 @@ impl MySqlAppointmentIdModel {
 
 impl TryFrom<MySqlAppointmentIdModel> for AppointmentId {
     type Error = anyhow::Error;
-    
+
     fn try_from(model: MySqlAppointmentIdModel) -> Result<Self, Self::Error> {
         Ok(Self::from(model.value()))
     }

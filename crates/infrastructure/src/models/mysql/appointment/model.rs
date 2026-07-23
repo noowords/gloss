@@ -1,7 +1,7 @@
 use chrono::{ NaiveDate, NaiveTime };
 use sqlx::{ FromRow };
 
-use domain::appointment::{ Appointment };
+use domain::aggregates::appointment::{ Appointment };
 
 use super::super::user::value_objects::{ MySqlUserIdModel };
 
@@ -39,23 +39,23 @@ impl MySqlAppointmentModel {
     pub fn id(&self) -> MySqlAppointmentIdModel {
         self.id.clone()
     }
-    
+
     pub fn master_id(&self) -> MySqlUserIdModel {
         self.master_id.clone()
     }
-    
+
     pub fn client_id(&self) -> MySqlUserIdModel {
         self.client_id.clone()
     }
-    
+
     pub fn date(&self) -> NaiveDate {
         self.date
     }
-    
+
     pub fn time(&self) -> NaiveTime {
         self.time
     }
-    
+
     pub fn status(&self) -> Option<MySqlAppointmentStatusModel> {
         self.status.clone()
     }
@@ -63,7 +63,7 @@ impl MySqlAppointmentModel {
 
 impl TryFrom<MySqlAppointmentModel> for Appointment {
     type Error = anyhow::Error;
-    
+
     fn try_from(model: MySqlAppointmentModel) -> Result<Self, Self::Error> {
         Ok(Self::restore(
             model.id.try_into()?,

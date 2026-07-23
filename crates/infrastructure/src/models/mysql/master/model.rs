@@ -3,7 +3,7 @@ use sqlx::{
     types::{ Json }
 };
 
-use domain::user::master::{ Master };
+use domain::aggregates::user::master::{ Master };
 
 use super::super::user::value_objects::{ MySqlUserIdModel };
 
@@ -29,7 +29,7 @@ impl MySqlMasterModel {
     pub fn user_id(&self) -> MySqlUserIdModel {
         self.user_id.clone()
     }
-    
+
     pub fn schedule(&self) -> &Json<MySqlMasterScheduleModel> {
         &self.schedule
     }
@@ -37,7 +37,7 @@ impl MySqlMasterModel {
 
 impl TryFrom<MySqlMasterModel> for Master {
     type Error = anyhow::Error;
-    
+
     fn try_from(model: MySqlMasterModel) -> Result<Self, Self::Error> {
         Ok(Self::restore(
             model.user_id().value().into(),

@@ -1,7 +1,7 @@
 use uuid::{ Uuid };
 use sqlx::{ Type };
 
-use domain::user::value_objects::{ UserId };
+use domain::aggregates::user::value_objects::{ UserId };
 
 #[derive(Clone, Type)]
 #[sqlx(transparent)]
@@ -19,7 +19,7 @@ impl MySqlUserIdModel {
 
 impl TryFrom<MySqlUserIdModel> for UserId {
     type Error = anyhow::Error;
-    
+
     fn try_from(model: MySqlUserIdModel) -> Result<Self, Self::Error> {
         Ok(Self::from(model.value()))
     }

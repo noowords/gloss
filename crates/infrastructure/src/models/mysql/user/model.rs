@@ -1,6 +1,6 @@
 use sqlx::{ FromRow };
 
-use domain::user::{ User, profile::Profile };
+use domain::aggregates::user::{ User, profile::Profile };
 
 use super::value_objects::{ MySqlUserIdModel, MySqlUserRoleModel, MySqlUserPhoneModel };
 
@@ -39,11 +39,11 @@ impl MySqlUserModel {
     pub fn id(&self) -> MySqlUserIdModel {
         self.id.clone()
     }
-    
+
     pub fn role(&self) -> MySqlUserRoleModel {
         self.role.clone()
     }
-    
+
     pub fn phone(&self) -> Option<MySqlUserPhoneModel> {
         self.phone.clone()
     }
@@ -67,7 +67,7 @@ impl MySqlUserModel {
 
 impl TryFrom<MySqlUserModel> for User {
     type Error = anyhow::Error;
-    
+
     fn try_from(model: MySqlUserModel) -> Result<Self, Self::Error> {
         let MySqlUserModel {
             id,

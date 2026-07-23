@@ -1,6 +1,6 @@
 use sqlx::{ Type };
 
-use domain::user::value_objects::{ UserRole };
+use domain::aggregates::user::value_objects::{ UserRole };
 
 #[derive(Clone, Type)]
 #[sqlx(transparent)]
@@ -18,7 +18,7 @@ impl MySqlUserRoleModel {
 
 impl TryFrom<MySqlUserRoleModel> for UserRole {
     type Error = anyhow::Error;
-    
+
     fn try_from(model: MySqlUserRoleModel) -> Result<Self, Self::Error> {
         UserRole::try_from(model.value().as_str())
     }

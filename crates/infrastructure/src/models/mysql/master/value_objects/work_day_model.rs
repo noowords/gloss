@@ -1,7 +1,7 @@
 use chrono::{ NaiveTime };
 use serde::{ Serialize, Deserialize };
 
-use domain::user::master::value_objects::{ MasterWorkDay };
+use domain::aggregates::user::master::value_objects::{ MasterWorkDay };
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct MySqlMasterWorkDayModel {
@@ -20,7 +20,7 @@ impl MySqlMasterWorkDayModel {
 
 impl TryFrom<MySqlMasterWorkDayModel> for MasterWorkDay {
     type Error = anyhow::Error;
-    
+
     fn try_from(model: MySqlMasterWorkDayModel) -> Result<Self, Self::Error> {
         Ok(Self::from_slots(model.slots))
     }
