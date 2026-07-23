@@ -1,6 +1,4 @@
-mod bootstrap;
-
-use crate::bootstrap::{ Database, ApplicationBuilder };
+use bootstrap::{ Database, ApplicationBuilder };
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
