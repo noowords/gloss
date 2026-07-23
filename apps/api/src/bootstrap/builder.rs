@@ -6,26 +6,38 @@ use application::{
         query::{ QueryBus }
     },
     features::{
-        commands::{
-            register_user::{ RegisterUserCommand, RegisterUserCommandHandler },
-            schedule_appointment::{ ScheduleAppointmentCommand, ScheduleAppointmentCommandHandler }
+        users::{
+            commands::{
+                register_user::{ RegisterUserCommand, RegisterUserCommandHandler }
+            },
+            queries::{
+                get_users::{ GetUsersQuery, GetUsersQueryHandler },
+                get_user_by_id::{ GetUserByIdQuery, GetUserByIdQueryHandler },
+                get_user_profile_by_id::{ GetUserProfileByIdQuery, GetUserProfileByIdQueryHandler }
+            }
         },
-        queries::{
-            get_users::{ GetUsersQuery, GetUsersQueryHandler },
-            get_user_by_id::{ GetUserByIdQuery, GetUserByIdQueryHandler },
-            get_user_profile_by_id::{ GetUserProfileByIdQuery, GetUserProfileByIdQueryHandler }
+        appointments::{
+            commands::{
+                schedule_appointment::{ ScheduleAppointmentCommand, ScheduleAppointmentCommandHandler }
+            }
         }
     }
 };
 use infrastructure::adapters::mysql::features::{
-    commands::{
-        register_user::{ MySqlRegisterUserCommandService },
-        schedule_appointment::{ MySqlScheduleAppointmentCommandService }
+    users::{
+        commands::{
+            register_user::{ MySqlRegisterUserCommandService }
+        },
+        queries::{
+            get_users::{ MySqlGetUsersQueryService },
+            get_user_by_id::{ MySqlGetUserByIdQueryService },
+            get_user_profile_by_id::{ MySqlGetUserProfileByIdQueryService }
+        }
     },
-    queries::{
-        get_users::{ MySqlGetUsersQueryService },
-        get_user_by_id::{ MySqlGetUserByIdQueryService },
-        get_user_profile_by_id::{ MySqlGetUserProfileByIdQueryService }
+    appointments::{
+        commands::{
+            schedule_appointment::{ MySqlScheduleAppointmentCommandService }
+        }
     }
 };
 use infrastructure::{ MySqlDatabaseProvider };
