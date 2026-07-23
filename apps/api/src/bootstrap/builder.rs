@@ -1,5 +1,4 @@
 use std::sync::{ Arc };
-use sqlx::mysql::{ MySqlPool };
 
 use application::{
     pipeline::{
@@ -18,28 +17,27 @@ use application::{
         }
     }
 };
-use infrastructure::adapters::mysql::{
-    interfaces::{
-        command::{ MySqlCommandProvider },
-        query::{ MySqlQueryProvider }
+use infrastructure::adapters::mysql::features::{
+    commands::{
+        register_user::{ MySqlRegisterUserCommandService },
+        schedule_appointment::{ MySqlScheduleAppointmentCommandService }
     },
-    features::{
-        commands::{
-            register_user::{ MySqlRegisterUserCommandService },
-            schedule_appointment::{ MySqlScheduleAppointmentCommandService }
-        },
-        queries::{
-            get_users::{ MySqlGetUsersQueryService },
-            get_user_by_id::{ MySqlGetUserByIdQueryService },
-            get_user_profile_by_id::{ MySqlGetUserProfileByIdQueryService }
-        }
+    queries::{
+        get_users::{ MySqlGetUsersQueryService },
+        get_user_by_id::{ MySqlGetUserByIdQueryService },
+        get_user_profile_by_id::{ MySqlGetUserProfileByIdQueryService }
     }
 };
+use infrastructure::{ MySqlDatabaseProvider };
 
 use super::{ Application };
 
+pub enum Database {
+    MySql(String)
+}
+
 pub struct ApplicationBuilder {
-    database: Option<(String, String)>
+    database: Option<Database>
 }
 
 impl ApplicationBuilder {
@@ -47,25 +45,21 @@ impl ApplicationBuilder {
         Self { database: None }
     }
 
-    pub fn with_database(mut self, database_type: impl Into<String>, database_url: impl Into<String>) -> Self {
-        self.database = Some((database_type.into(), database_url.into()));
+    pub fn with_database(mut self, database: Database) -> Self {
+        self.database = Some(database);
         self
     }
 
     pub async fn build(self) -> Result<Application, anyhow::Error> {
-        let (database_type, database_url) = self.database
-            .ok_or_else(|| anyhow::anyhow!("Database is not configured. Call .with_database()"))?;
+        let database = self.database
+            .ok_or_else(|| anyhow::anyhow!("Database is not configured"))?;
 
-        let (command_provider, query_provider) = match database_type.as_str() {
-            "mysql" => {
-                let pool = MySqlPool::connect(&database_url)
-                    .await
-                    .map_err(|e| anyhow::anyhow!("Database connection failed: {}", e.to_string()))?;
-
-                (Arc::new(MySqlCommandProvider::new(pool.clone())), Arc::new(MySqlQueryProvider::new(pool)))
-            },
-            _ => anyhow::bail!("Unsupported database type: {}", &database_type)
+        let database_provider = match database {
+            Database::MySql(url) => MySqlDatabaseProvider::connect(&url).await?,
         };
+        
+        let command_provider = database_provider.command_provider();
+        let query_provider = database_provider.query_provider();
 
         let mut command_bus = CommandBus::new(command_provider);
 
