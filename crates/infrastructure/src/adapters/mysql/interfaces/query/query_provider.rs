@@ -1,6 +1,6 @@
 use sqlx::{ MySqlPool };
 
-use application::interfaces::query::{ QueryProvider, QueryContext };
+use application::contracts::query::{ QueryProvider, QueryContext };
 
 use super::{ MySqlQueryContext };
 
@@ -17,7 +17,7 @@ impl MySqlQueryProvider {
 impl QueryProvider for MySqlQueryProvider {
     fn provide_context(&self) -> Box<dyn QueryContext> {
         let pool = self.pool.clone();
-        
+
         Box::new(MySqlQueryContext::new(pool))
     }
 }

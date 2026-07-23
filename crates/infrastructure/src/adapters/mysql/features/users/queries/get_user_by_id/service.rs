@@ -5,7 +5,7 @@ use domain::aggregates::user::{
     value_objects::{ UserId }
 };
 
-use application::interfaces::query::{ QueryContext };
+use application::contracts::query::{ QueryContext };
 use application::features::users::queries::get_user_by_id::{ GetUserByIdQueryService };
 
 use crate::adapters::mysql::interfaces::query::{ MySqlQueryContext };

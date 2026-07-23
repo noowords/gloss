@@ -1,7 +1,7 @@
 use sqlx::{ MySqlPool };
 use async_trait::{ async_trait };
 
-use application::interfaces::command::{ CommandProvider, CommandContext };
+use application::contracts::command::{ CommandProvider, CommandContext };
 
 use super::{ MySqlCommandContext };
 

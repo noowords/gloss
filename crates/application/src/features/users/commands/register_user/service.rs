@@ -5,7 +5,7 @@ use domain::aggregates::user::{
     profile::{ Profile }
 };
 
-use crate::interfaces::command::{ CommandContext };
+use crate::contracts::command::{ CommandContext };
 
 #[async_trait]
 pub trait RegisterUserCommandService: Send + Sync {

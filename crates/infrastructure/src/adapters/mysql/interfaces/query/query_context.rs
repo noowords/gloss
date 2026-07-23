@@ -1,7 +1,7 @@
 use std::any::{ Any };
 use sqlx::{ MySqlPool };
 
-use application::interfaces::query::{ QueryContext };
+use application::contracts::query::{ QueryContext };
 
 pub struct MySqlQueryContext {
     pub pool: MySqlPool

@@ -1,7 +1,7 @@
 use async_trait::{ async_trait };
 use std::sync::{ Arc };
 
-use crate::interfaces::query::{ Query, QueryHandler, QueryContext };
+use crate::contracts::query::{ Query, QueryHandler, QueryContext };
 use super::{ GetUsersQuery, GetUsersQueryService };
 
 pub struct GetUsersQueryHandler {

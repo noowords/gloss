@@ -2,7 +2,7 @@ use async_trait::{ async_trait };
 
 use domain::aggregates::appointment::{ Appointment };
 
-use application::interfaces::command::{ CommandContext };
+use application::contracts::command::{ CommandContext };
 use application::features::appointments::commands::schedule_appointment::{ ScheduleAppointmentCommandService };
 
 use crate::adapters::mysql::interfaces::command::{ MySqlCommandContext };

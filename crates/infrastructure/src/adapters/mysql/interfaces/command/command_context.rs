@@ -2,7 +2,7 @@ use std::any::{ Any };
 use async_trait::{ async_trait };
 use sqlx::{ Transaction, MySql };
 
-use application::interfaces::command::{ CommandContext };
+use application::contracts::command::{ CommandContext };
 
 pub struct MySqlCommandContext {
     pub tx: Transaction<'static, MySql>
@@ -21,9 +21,9 @@ impl MySqlCommandContext {
 #[async_trait]
 impl CommandContext for MySqlCommandContext {
     fn as_any(&self) -> &dyn Any { self }
-    
+
     fn as_any_mut(&mut self) -> &mut dyn Any { self }
-    
+
     async fn commit(self: Box<Self>) -> Result<(), anyhow::Error> {
         self.tx.commit()
             .await

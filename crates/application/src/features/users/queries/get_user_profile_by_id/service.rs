@@ -5,7 +5,7 @@ use domain::aggregates::user::{
     value_objects::{ UserId }
 };
 
-use crate::interfaces::query::{ QueryContext };
+use crate::contracts::query::{ QueryContext };
 
 #[async_trait]
 pub trait GetUserProfileByIdQueryService: Send + Sync {

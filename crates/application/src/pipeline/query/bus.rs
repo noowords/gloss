@@ -2,7 +2,7 @@ use std::any::{ Any, TypeId };
 use std::collections::{ HashMap };
 use std::sync::{ Arc };
 
-use crate::interfaces::query::{ Query, QueryHandler, QueryProvider };
+use crate::contracts::query::{ Query, QueryHandler, QueryProvider };
 
 pub struct QueryBus {
     provider: Arc<dyn QueryProvider>,
