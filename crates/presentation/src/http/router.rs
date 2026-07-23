@@ -5,7 +5,7 @@ use axum::{
 
 use super::{ HttpState, controllers };
 
-pub fn create_router(state: HttpState) -> Router {
+pub fn create_http_router(state: HttpState) -> Router {
     Router::new()
         .route("/health", get(controllers::health))
         .route("/auth/register", post(controllers::auth::register))

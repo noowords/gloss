@@ -1,5 +1,3 @@
-mod builder;
-mod instance;
+mod http_builder;
 
-pub use builder::{ Database, ApplicationBuilder };
-pub use instance::{ Application };
+pub use http_builder::{ build_http };
