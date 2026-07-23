@@ -24,7 +24,10 @@ use application::{
     }
 };
 use infrastructure::persistence::mysql::{
-    MySqlDatabaseProvider,
+    contracts::cqrs::{
+        command::{ MySqlCommandProvider },
+        query::{ MySqlQueryProvider }
+    },
     features::{
         users::{
             commands::{
@@ -43,6 +46,7 @@ use infrastructure::persistence::mysql::{
         }
     }
 };
+use infrastructure::persistence::mysql::{ MySqlConnection };
 
 use super::{ Application };
 
@@ -68,12 +72,17 @@ impl ApplicationBuilder {
         let database = self.database
             .ok_or_else(|| anyhow::anyhow!("Database is not configured"))?;
 
-        let database_provider = match database {
-            Database::MySql(url) => MySqlDatabaseProvider::connect(&url).await?,
+        let pool = match database {
+            Database::MySql(url) => MySqlConnection::connect(&url).await?
         };
         
-        let command_provider = database_provider.command_provider();
-        let query_provider = database_provider.query_provider();
+        let command_provider = match database {
+            Database::MySql(_) => Arc::new(MySqlCommandProvider::new(pool.clone()))
+        };
+        
+        let query_provider = match database {
+            Database::MySql(_) => Arc::new(MySqlQueryProvider::new(pool))
+        };
 
         let mut command_bus = CommandBus::new(command_provider);
 
