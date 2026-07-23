@@ -3,7 +3,7 @@ use async_trait::{ async_trait };
 
 use domain::aggregates::user::{ User };
 
-use crate::contracts::command::{ Command, CommandHandler, CommandContext };
+use crate::contracts::cqrs::command::{ Command, CommandHandler, CommandContext };
 use super::{ RegisterUserCommand, RegisterUserCommandService };
 
 pub struct RegisterUserCommandHandler {

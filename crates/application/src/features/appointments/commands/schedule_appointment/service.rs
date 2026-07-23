@@ -2,7 +2,7 @@ use async_trait::{ async_trait };
 
 use domain::aggregates::appointment::{ Appointment };
 
-use crate::contracts::command::{ CommandContext };
+use crate::contracts::cqrs::command::{ CommandContext };
 
 #[async_trait]
 pub trait ScheduleAppointmentCommandService: Send + Sync {

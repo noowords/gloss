@@ -1,7 +1,7 @@
 use chrono::{ NaiveDate, NaiveTime };
 use uuid::{ Uuid };
 
-use crate::contracts::command::{ Command };
+use crate::contracts::cqrs::command::{ Command };
 use super::{ ScheduleAppointmentCommandResult, ScheduleAppointmentCommandHandler };
 
 #[derive(Clone)]

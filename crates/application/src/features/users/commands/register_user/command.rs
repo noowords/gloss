@@ -1,4 +1,4 @@
-use crate::contracts::command::{ Command };
+use crate::contracts::cqrs::command::{ Command };
 use super::{ RegisterUserCommandResult, RegisterUserCommandHandler };
 
 #[derive(Clone)]

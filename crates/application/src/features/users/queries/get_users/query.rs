@@ -1,4 +1,4 @@
-use crate::contracts::query::{ Query };
+use crate::contracts::cqrs::query::{ Query };
 use super::{ GetUsersQueryResult, GetUsersQueryHandler };
 
 #[derive(Clone)]

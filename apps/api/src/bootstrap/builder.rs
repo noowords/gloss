@@ -23,24 +23,26 @@ use application::{
         }
     }
 };
-use infrastructure::adapters::mysql::features::{
-    users::{
-        commands::{
-            register_user::{ MySqlRegisterUserCommandService }
+use infrastructure::persistence::mysql::{
+    MySqlDatabaseProvider,
+    features::{
+        users::{
+            commands::{
+                register_user::{ MySqlRegisterUserCommandService }
+            },
+            queries::{
+                get_users::{ MySqlGetUsersQueryService },
+                get_user_by_id::{ MySqlGetUserByIdQueryService },
+                get_user_profile_by_id::{ MySqlGetUserProfileByIdQueryService }
+            }
         },
-        queries::{
-            get_users::{ MySqlGetUsersQueryService },
-            get_user_by_id::{ MySqlGetUserByIdQueryService },
-            get_user_profile_by_id::{ MySqlGetUserProfileByIdQueryService }
-        }
-    },
-    appointments::{
-        commands::{
-            schedule_appointment::{ MySqlScheduleAppointmentCommandService }
+        appointments::{
+            commands::{
+                schedule_appointment::{ MySqlScheduleAppointmentCommandService }
+            }
         }
     }
 };
-use infrastructure::{ MySqlDatabaseProvider };
 
 use super::{ Application };
 

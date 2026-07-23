@@ -2,7 +2,7 @@ use std::any::{ Any, TypeId };
 use std::collections::{ HashMap };
 use std::sync::{ Arc };
 
-use crate::contracts::command::{ Command, CommandHandler, CommandProvider };
+use crate::contracts::cqrs::command::{ Command, CommandHandler, CommandProvider };
 
 pub struct CommandBus {
     provider: Arc<dyn CommandProvider>,
