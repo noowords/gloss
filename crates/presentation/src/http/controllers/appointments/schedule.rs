@@ -15,7 +15,7 @@ pub async fn schedule(
     State(state): State<HttpState>,
     Json(payload): Json<ScheduleAppointmentRequest>
 ) -> Result<StatusCode, StatusCode> {
-    match state.command_bus.send::<ScheduleAppointmentCommand>(payload.into()).await {
+    match state.command_bus.dispatch::<ScheduleAppointmentCommand>(payload.into()).await {
         Ok(_) => Ok(StatusCode::CREATED),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR)
     }

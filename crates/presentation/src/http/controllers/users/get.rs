@@ -14,7 +14,7 @@ use super::super::super::{
 pub async fn get(
     State(state): State<HttpState>
 ) -> Result<(StatusCode, Json<GetUsersResponse>), StatusCode> {
-    match state.query_bus.send::<GetUsersQuery>(GetUsersQuery { }).await {
+    match state.query_bus.dispatch::<GetUsersQuery>(GetUsersQuery { }).await {
         Ok(Ok(output)) => Ok((StatusCode::OK, Json(output.into()))),
         Ok(Err(_)) => Err(StatusCode::INTERNAL_SERVER_ERROR),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR)
