@@ -3,15 +3,15 @@ use axum::{
     routing::{ post, get }
 };
 
-use super::{ HttpState, handlers };
+use super::{ HttpState, controllers };
 
 pub fn create_router(state: HttpState) -> Router {
     Router::new()
-        .route("/health", get(handlers::health))
-        .route("/auth/register", post(handlers::auth::register))
-        .route("/users", get(handlers::users::get))
-        .route("/users/{id}", get(handlers::users::get_by_id))
-        .route("/users/{id}/profile", get(handlers::users::get_profile_by_id))
-        .route("/appointments", post(handlers::appointments::schedule))
+        .route("/health", get(controllers::health))
+        .route("/auth/register", post(controllers::auth::register))
+        .route("/users", get(controllers::users::get))
+        .route("/users/{id}", get(controllers::users::get_by_id))
+        .route("/users/{id}/profile", get(controllers::users::get_profile_by_id))
+        .route("/appointments", post(controllers::appointments::schedule))
         .with_state(state)
 }

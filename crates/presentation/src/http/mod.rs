@@ -2,7 +2,7 @@ mod state;
 mod router;
 mod server;
 pub mod dtos;
-pub mod handlers;
+pub mod controllers;
 
 pub use state::{ HttpState };
 pub use router::{ create_router };
