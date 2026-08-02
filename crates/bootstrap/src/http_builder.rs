@@ -71,42 +71,79 @@ impl HttpApplication {
 }
 
 pub async fn build_http() -> Result<HttpApplication, anyhow::Error> {
-    let pool = MySqlConnection::connect("mysql://root:root@localhost:3306/gloss").await?;
+    let database_type = std::env::var("DATABASE_TYPE")?;
+    let database_url = std::env::var("DATABASE_URL")?;
     
-    let command_provider = Arc::new(MySqlCommandProvider::new(pool.clone()));
-    let query_provider = Arc::new(MySqlQueryProvider::new(pool));
+    let pool = match database_type.as_str() {
+        "mysql" => MySqlConnection::connect(&database_url).await?,
+        _ => anyhow::bail!("Unsupported database type: {}", database_type)
+    };
+
+    let command_provider = match database_type.as_str() {
+        "mysql" => Arc::new(MySqlCommandProvider::new(pool.clone())),
+        _ => anyhow::bail!("Unsupported database type: {}", database_type)
+    };
+    let query_provider = match database_type.as_str() {
+        "mysql" => Arc::new(MySqlQueryProvider::new(pool)),
+        _ => anyhow::bail!("Unsupported database type: {}", database_type)
+    };
 
     let mut command_bus = CommandBus::new(command_provider);
 
+    let register_user_command_service = match database_type.as_str() {
+        "mysql" => Arc::new(MySqlRegisterUserCommandService::default()),
+        _ => anyhow::bail!("Unsupported database type: {}", database_type)
+    };
+
+    let schedule_appointment_command_service = match database_type.as_str() {
+        "mysql" => Arc::new(MySqlScheduleAppointmentCommandService::default()),
+        _ => anyhow::bail!("Unsupported database type: {}", database_type)
+    };
+
     command_bus.register::<RegisterUserCommand>(
         RegisterUserCommandHandler::build(
-            Arc::new(MySqlRegisterUserCommandService::default())
+            register_user_command_service
         )
     );
 
     command_bus.register::<ScheduleAppointmentCommand>(
         ScheduleAppointmentCommandHandler::build(
-            Arc::new(MySqlScheduleAppointmentCommandService::default())
+            schedule_appointment_command_service
         )
     );
 
     let mut query_bus = QueryBus::new(query_provider);
 
+    let get_users_query_service = match database_type.as_str() {
+        "mysql" => Arc::new(MySqlGetUsersQueryService::default()),
+        _ => anyhow::bail!("Unsupported database type: {}", database_type)
+    };
+
+    let get_user_by_id_query_service = match database_type.as_str() {
+        "mysql" => Arc::new(MySqlGetUserByIdQueryService::default()),
+        _ => anyhow::bail!("Unsupported database type: {}", database_type)
+    };
+
+    let get_user_profile_by_id_query_service = match database_type.as_str() {
+        "mysql" => Arc::new(MySqlGetUserProfileByIdQueryService::default()),
+        _ => anyhow::bail!("Unsupported database type: {}", database_type)
+    };
+
     query_bus.register::<GetUsersQuery>(
         GetUsersQueryHandler::build(
-            Arc::new(MySqlGetUsersQueryService::default())
+            get_users_query_service
         )
     );
 
     query_bus.register::<GetUserByIdQuery>(
         GetUserByIdQueryHandler::build(
-            Arc::new(MySqlGetUserByIdQueryService::default())
+            get_user_by_id_query_service
         )
     );
     
     query_bus.register::<GetUserProfileByIdQuery>(
         GetUserProfileByIdQueryHandler::build(
-            Arc::new(MySqlGetUserProfileByIdQueryService::default())
+            get_user_profile_by_id_query_service
         )
     );
 
