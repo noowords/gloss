@@ -1,0 +1,11 @@
+FROM rust:1.97
+
+WORKDIR /app
+
+COPY Cargo.toml Cargo.lock ./
+COPY crates ./crates
+COPY apps ./apps
+
+RUN cargo build --release
+
+CMD ["./target/release/http-api"]
