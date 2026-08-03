@@ -16,7 +16,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     image: gloss-api:latest
-    container_name: gloss-api-container
+    container_name: gloss-api
     working_dir: /app
     volumes:
       - .:/app

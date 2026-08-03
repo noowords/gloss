@@ -16,7 +16,7 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     image: gloss-api:latest
-    container_name: gloss-api-container
+    container_name: gloss-api
     environment:
       - DATABASE_TYPE=${DATABASE_TYPE:?DATABASE_TYPE is missing!}
       - DATABASE_URL=${DATABASE_URL:?DATABASE_URL is missing!}
