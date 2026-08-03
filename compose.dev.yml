@@ -1,0 +1,32 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: gloss-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is missing!}
+      - MYSQL_USER=${MYSQL_USER:?MYSQL_USER is missing!}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:?MYSQL_PASSWORD is missing!}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:?MYSQL_DATABASE is missing!}
+    ports:
+      - "${MYSQL_PORT:?Port is missing!}:${MYSQL_PORT:?Port is missing!}"
+    volumes:
+      - mysql-data:/var/lib/mysql
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: gloss-api:latest
+    container_name: gloss-api-container
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_TYPE=${DATABASE_TYPE:?DATABASE_TYPE is missing!}
+      - DATABASE_URL=${DATABASE_URL:?DATABASE_URL is missing!}
+    ports:
+      - "3000:3000" # TODO: Replace with env var
+    depends_on:
+      - mysql
+
+volumes:
+  mysql-data:

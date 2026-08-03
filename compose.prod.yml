@@ -12,7 +12,9 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
     image: gloss-api:latest
     container_name: gloss-api-container
     environment:
