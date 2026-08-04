@@ -1,5 +1,5 @@
-mod command_provider;
-mod command_context;
+mod context;
+mod context_provider;
 
-pub use command_provider::{ MySqlCommandProvider };
-pub use command_context::{ MySqlCommandContext };
+pub use context::{ MySqlCommandContext };
+pub use context_provider::{ MySqlCommandContextProvider };

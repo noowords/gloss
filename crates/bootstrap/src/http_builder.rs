@@ -26,8 +26,8 @@ use application::{
 };
 use infrastructure::persistence::mysql::{
     contracts::cqrs::{
-        command::{ MySqlCommandProvider },
-        query::{ MySqlQueryProvider }
+        command::{ MySqlCommandContextProvider },
+        query::{ MySqlQueryContextProvider }
     },
     features::{
         users::{
@@ -80,11 +80,11 @@ pub async fn build_http() -> Result<HttpApplication, anyhow::Error> {
     };
 
     let command_provider = match database_type.as_str() {
-        "mysql" => Arc::new(MySqlCommandProvider::new(pool.clone())),
+        "mysql" => Arc::new(MySqlCommandContextProvider::new(pool.clone())),
         _ => anyhow::bail!("Unsupported database type: {}", database_type)
     };
     let query_provider = match database_type.as_str() {
-        "mysql" => Arc::new(MySqlQueryProvider::new(pool)),
+        "mysql" => Arc::new(MySqlQueryContextProvider::new(pool)),
         _ => anyhow::bail!("Unsupported database type: {}", database_type)
     };
 

@@ -2,15 +2,15 @@ use std::any::{ Any, TypeId };
 use std::collections::{ HashMap };
 use std::sync::{ Arc };
 
-use crate::contracts::cqrs::command::{ Command, CommandHandler, CommandProvider };
+use crate::contracts::cqrs::command::{ Command, CommandHandler, CommandContextProvider };
 
 pub struct CommandBus {
-    provider: Arc<dyn CommandProvider>,
+    provider: Arc<dyn CommandContextProvider>,
     handlers: HashMap<TypeId, Box<dyn Any + Send + Sync>>
 }
 
 impl CommandBus {
-    pub fn new(provider: Arc<dyn CommandProvider>) -> Self {
+    pub fn new(provider: Arc<dyn CommandContextProvider>) -> Self {
         Self { provider, handlers: HashMap::new() }
     }
 

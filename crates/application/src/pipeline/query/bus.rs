@@ -2,15 +2,15 @@ use std::any::{ Any, TypeId };
 use std::collections::{ HashMap };
 use std::sync::{ Arc };
 
-use crate::contracts::cqrs::query::{ Query, QueryHandler, QueryProvider };
+use crate::contracts::cqrs::query::{ Query, QueryHandler, QueryContextProvider };
 
 pub struct QueryBus {
-    provider: Arc<dyn QueryProvider>,
+    provider: Arc<dyn QueryContextProvider>,
     handlers: HashMap<TypeId, Box<dyn Any + Send + Sync>>
 }
 
 impl QueryBus {
-    pub fn new(provider: Arc<dyn QueryProvider>) -> Self {
+    pub fn new(provider: Arc<dyn QueryContextProvider>) -> Self {
         Self { provider, handlers: HashMap::new() }
     }
 

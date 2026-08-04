@@ -1,20 +1,20 @@
 use sqlx::{ MySqlPool };
 
-use application::contracts::cqrs::query::{ QueryProvider, QueryContext };
+use application::contracts::cqrs::query::{ QueryContextProvider, QueryContext };
 
 use super::{ MySqlQueryContext };
 
-pub struct MySqlQueryProvider {
+pub struct MySqlQueryContextProvider {
     pool: MySqlPool
 }
 
-impl MySqlQueryProvider {
+impl MySqlQueryContextProvider {
     pub fn new(pool: MySqlPool) -> Self {
         Self { pool }
     }
 }
 
-impl QueryProvider for MySqlQueryProvider {
+impl QueryContextProvider for MySqlQueryContextProvider {
     fn provide_context(&self) -> Box<dyn QueryContext> {
         let pool = self.pool.clone();
 

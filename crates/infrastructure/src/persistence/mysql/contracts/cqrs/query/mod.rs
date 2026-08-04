@@ -1,5 +1,5 @@
-mod query_provider;
-mod query_context;
+mod context;
+mod context_provider;
 
-pub use query_provider::{ MySqlQueryProvider };
-pub use query_context::{ MySqlQueryContext };
+pub use context::{ MySqlQueryContext };
+pub use context_provider::{ MySqlQueryContextProvider };
