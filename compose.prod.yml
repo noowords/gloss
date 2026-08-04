@@ -1,16 +1,4 @@
 services:
-  mysql:
-    image: mysql:8.4
-    container_name: gloss-mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is missing!}
-      - MYSQL_USER=${MYSQL_USER:?MYSQL_USER is missing!}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD:?MYSQL_PASSWORD is missing!}
-      - MYSQL_DATABASE=${MYSQL_DATABASE:?MYSQL_DATABASE is missing!}
-    ports:
-      - "${MYSQL_PORT:?Port is missing!}:${MYSQL_PORT:?Port is missing!}"
-    volumes:
-      - mysql-data:/var/lib/mysql
   api:
     build:
       context: .
@@ -21,9 +9,27 @@ services:
       - DATABASE_TYPE=${DATABASE_TYPE:?DATABASE_TYPE is missing!}
       - DATABASE_URL=${DATABASE_URL:?DATABASE_URL is missing!}
     ports:
-      - "3000:3000" # TODO: Replace with env var
+      - "${API_PORT:?API_PORT is missing!}:${API_PORT:?API_PORT is missing!}"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+  mysql:
+    image: mysql:8.4
+    container_name: gloss-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is missing!}
+      - MYSQL_USER=${MYSQL_USER:?MYSQL_USER is missing!}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:?MYSQL_PASSWORD is missing!}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:?MYSQL_DATABASE is missing!}
+    ports:
+      - "${MYSQL_PORT:?MYSQL_PORT is missing!}:${MYSQL_PORT:?MYSQL_PORT is missing!}"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   mysql-data:

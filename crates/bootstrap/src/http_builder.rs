@@ -62,9 +62,11 @@ impl HttpApplication {
     }
     
     pub async fn run(self) -> Result<(), anyhow::Error> {
+        let api_port = std::env::var("API_PORT")?.parse::<u16>()?;
+        
         let router = create_http_router(self.state);
     
-        let listener = TcpListener::bind("localhost:3000").await?;
+        let listener = TcpListener::bind(format!("localhost:{}", api_port)).await?;
     
         serve_http(listener, router).await
     }
