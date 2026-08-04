@@ -1,6 +1,6 @@
 set shell := ["powershell.exe", "-NoProfile", "-NoLogo", "-Command"]
 
-run action="":
+up action="":
     {{ if action == "dev" { "docker compose -f compose.dev.yml up" } \
        else if action == "release" { "docker compose -f compose.prod.yml up -d" } \
        else { "docker compose -f compose.dev.yml up" } }}
