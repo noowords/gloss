@@ -66,7 +66,7 @@ impl HttpApplication {
         
         let router = create_http_router(self.state);
     
-        let listener = TcpListener::bind(format!("localhost:{}", api_port)).await?;
+        let listener = TcpListener::bind(format!("0.0.0.0:{}", api_port)).await?;
     
         serve_http(listener, router).await
     }
