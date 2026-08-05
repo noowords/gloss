@@ -36,7 +36,7 @@ services:
       retries: 5
   mysql-migrator:
     image: nxyt/sqlx-cli:latest
-    container_name: gloss-migrator
+    container_name: gloss-mysql-migrator
     environment:
       - DATABASE_URL=${DATABASE_URL:?DATABASE_URL is missing!}
     volumes:
