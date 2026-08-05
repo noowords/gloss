@@ -8,4 +8,4 @@ COPY apps ./apps
 
 RUN cargo build --release
 
-CMD ["./target/release/http-api"]
+CMD ["./target/release/api"]

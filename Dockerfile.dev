@@ -4,4 +4,4 @@ WORKDIR /app
 
 RUN cargo install cargo-watch
 
-CMD ["cargo", "watch", "--poll", "-w", "apps", "-w", "crates", "-x", "run --bin http-api"]
+CMD ["cargo", "watch", "--poll", "-w", "apps", "-w", "crates", "-x", "run --bin api"]

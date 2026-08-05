@@ -24,6 +24,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2a4385e2e34eb35d6b3efe798b9eb88096925d87726c0798709bf56d9ed84af3"
 
 [[package]]
+name = "api"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "bootstrap",
+ "tokio",
+]
+
+[[package]]
 name = "application"
 version = "0.1.0"
 dependencies = [
@@ -602,15 +611,6 @@ checksum = "6970f50e31d6fc17d3fa27329444bfa74e196cf62e95052a3f6fee181dba6425"
 dependencies = [
  "bytes",
  "itoa",
-]
-
-[[package]]
-name = "http-api"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "bootstrap",
- "tokio",
 ]
 
 [[package]]
