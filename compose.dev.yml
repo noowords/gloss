@@ -1,10 +1,10 @@
 services:
   api:
+    image: gloss-api:latest
+    container_name: gloss-api
     build:
       context: .
       dockerfile: Dockerfile.dev
-    image: gloss-api:latest
-    container_name: gloss-api
     working_dir: /app
     volumes:
       - .:/app
@@ -15,8 +15,8 @@ services:
     ports:
       - "${API_PORT:?API_PORT is missing!}:${API_PORT:?API_PORT is missing!}"
     depends_on:
-      mysql:
-        condition: service_healthy
+      mysql-migrator:
+        condition: service_completed_successfully
   mysql:
     image: mysql:8.4
     container_name: gloss-mysql
@@ -30,10 +30,21 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
+  mysql-migrator:
+    image: nxyt/sqlx-cli:latest
+    container_name: gloss-migrator
+    environment:
+      - DATABASE_URL=${DATABASE_URL:?DATABASE_URL is missing!}
+    volumes:
+      - ./migrations:/migrations
+    command: sqlx migrate run --source /migrations
+    depends_on:
+      mysql:
+        condition: service_healthy
 
 volumes:
   mysql-data:
