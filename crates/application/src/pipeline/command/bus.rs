@@ -44,12 +44,21 @@ impl CommandBus {
             .await
             .map_err(|e| anyhow::anyhow!(e))?;
 
-        let result = handler.handle(&mut *context, command).await;
+        match handler.handle(&mut *context, command).await {
+            Ok(result) => {
+                context.commit()
+                    .await
+                    .map_err(|e| anyhow::anyhow!(e))?;
+                
+                Ok(Ok(result))
+            },
+            Err(e) => {
+                context.rollback()
+                    .await
+                    .map_err(|e| anyhow::anyhow!(e))?;
 
-        context.commit()
-            .await
-            .map_err(|e| anyhow::anyhow!(e))?;
-
-        Ok(result)
+                Ok(Err(e))
+            }
+        }
     }
 }
