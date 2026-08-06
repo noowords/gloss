@@ -1,4 +1,7 @@
-use crate::aggregates::user::value_objects::{ UserId };
+use crate::aggregates::{
+    user::value_objects::{ UserId },
+    service::{ Service }
+};
 
 use super::value_objects::{ AppointmentId, AppointmentDate, AppointmentTime, AppointmentDuration, AppointmentStatus };
 
@@ -19,17 +22,25 @@ impl Appointment {
         client_id: UserId,
         date: AppointmentDate,
         time: AppointmentTime,
-        duration: AppointmentDuration
-    ) -> Self {
-        Self {
+        services: &[Service]
+    ) -> Result<Self, anyhow::Error> {
+        if services.is_empty() {
+            anyhow::bail!("Cannot create an appointment without any services");
+        }
+        
+        Ok(Self {
             id: AppointmentId::generate(),
             specialist_id,
             client_id,
             date,
             time,
-            duration,
+            duration: services
+                .iter()
+                .map(|s| u32::from(s.duration()))
+                .sum::<u32>()
+                .into(),
             status: AppointmentStatus::Pending
-        }
+        })
     }
     
     pub fn restore(
