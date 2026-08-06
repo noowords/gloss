@@ -60,7 +60,7 @@ CREATE TABLE services (
     specialist_id BINARY(16) NOT NULL,
     name VARCHAR(100) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
-    duration INT NOT NULL,
+    duration INT UNSIGNED NOT NULL,
     is_active TINYINT(1) DEFAULT '1',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -94,7 +94,7 @@ CREATE TABLE appointments (
 CREATE TABLE appointment_services (
     appointment_id BINARY(16) NOT NULL,
     service_id BINARY(16) NOT NULL,
-    price_at_booking DECIMAL(10, 2) NOT NULL,
+    locked_price DECIMAL(10, 2) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   
     PRIMARY KEY (appointment_id, service_id),
