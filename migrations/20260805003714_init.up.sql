@@ -26,7 +26,7 @@ CREATE TABLE user_identities (
 );
 
 CREATE TABLE user_verification_codes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id BINARY(16) NOT NULL,
     phone VARCHAR(20) NOT NULL,
     code VARCHAR(6) NOT NULL,
     expires_at TIMESTAMP NOT NULL,
