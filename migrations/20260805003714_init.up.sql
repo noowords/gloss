@@ -25,7 +25,7 @@ CREATE TABLE user_identities (
     CONSTRAINT fk_identity_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
-CREATE TABLE user_verification_codes (
+CREATE TABLE otps (
     id BINARY(16) NOT NULL,
     phone VARCHAR(20) NOT NULL,
     code VARCHAR(6) NOT NULL,
