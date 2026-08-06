@@ -1,4 +1,4 @@
-#[derive(Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum AppointmentStatus {
     Pending,
     Confirmed,
@@ -14,6 +14,20 @@ impl From<AppointmentStatus> for String {
             AppointmentStatus::Cancelled => "cancelled",
             AppointmentStatus::Completed => "completed"
         }.to_string()
+    }
+}
+
+impl TryFrom<String> for AppointmentStatus {
+    type Error = anyhow::Error;
+    
+    fn try_from(str: String) -> Result<Self, Self::Error> {
+        match str.as_str() {
+            "pending" => Ok(AppointmentStatus::Pending),
+            "confirmed" => Ok(AppointmentStatus::Confirmed),
+            "cancelled" => Ok(AppointmentStatus::Cancelled),
+            "completed" => Ok(AppointmentStatus::Completed),
+            _ => anyhow::bail!("Invalid AppointmentStatus: {}", str.to_string())
+        }
     }
 }
 

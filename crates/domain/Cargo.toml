@@ -5,6 +5,8 @@ edition = "2024"
 publish = false
 
 [dependencies]
+bigdecimal.workspace = true
 chrono.workspace = true
 uuid.workspace = true
+serde_json.workspace = true
 anyhow.workspace = true

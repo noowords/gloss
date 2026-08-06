@@ -1,2 +1,8 @@
 pub mod user;
+pub mod user_identity;
+pub mod otp;
+pub mod profile;
+pub mod specialist;
+pub mod service;
 pub mod appointment;
+pub mod appointment_service;

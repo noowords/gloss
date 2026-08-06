@@ -1,4 +1,4 @@
-#[derive(Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum UserRole {
     Admin,
     Master,
@@ -12,6 +12,19 @@ impl From<UserRole> for String {
             UserRole::Master => "master",
             UserRole::Client => "client"
         }.to_string()
+    }
+}
+
+impl TryFrom<String> for UserRole {
+    type Error = anyhow::Error;
+    
+    fn try_from(str: String) -> Result<Self, Self::Error> {
+        match str.as_str() {
+            "admin" => Some(UserRole::Admin),
+            "master" => Some(UserRole::Master),
+            "client" => Some(UserRole::Client),
+            _ => None
+        }.ok_or_else(|| anyhow::anyhow!("Invalid UserRole: {}", str.to_string()))
     }
 }
 

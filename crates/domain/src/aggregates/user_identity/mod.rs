@@ -1,4 +1,4 @@
 mod entity;
 pub mod value_objects;
 
-pub use entity::{ Master };
+pub use entity::{ UserIdentity };

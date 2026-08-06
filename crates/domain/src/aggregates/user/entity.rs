@@ -1,43 +1,26 @@
-use super::profile::{ Profile };
-use super::value_objects::{ UserId, UserRole, UserPhone };
+use super::value_objects::{ UserId, UserRole };
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct User {
     id: UserId,
-    role: UserRole,
-    phone: Option<UserPhone>,
-    profile: Profile
+    role: UserRole
 }
 
 impl User {
-    pub fn register(
-        phone: Option<UserPhone>,
-        first_name: String,
-        last_name: Option<String>,
-        avatar_url: Option<String>
-    ) -> Self {
+    pub fn create() -> Self {
         let id = UserId::generate();
         
         Self {
             id,
-            role: UserRole::Client,
-            phone,
-            profile: Profile::create(
-                id,
-                first_name,
-                last_name,
-                avatar_url,
-                None
-            )
+            role: UserRole::Client
         }
     }
     
     pub fn restore(
         id: UserId,
-        role: UserRole,
-        phone: Option<UserPhone>,
-        profile: Profile
+        role: UserRole
     ) -> Self {
-        Self { id, role, phone, profile }
+        Self { id, role }
     }
 
     pub fn id(&self) -> UserId {
@@ -45,14 +28,6 @@ impl User {
     }
 
     pub fn role(&self) -> UserRole {
-        self.role.clone()
-    }
-
-    pub fn phone(&self) -> Option<UserPhone> {
-        self.phone.clone()
-    }
-    
-    pub fn profile(&self) -> Profile {
-        self.profile.clone()
+        self.role
     }
 }

@@ -1,15 +1,11 @@
 use uuid::{ Uuid };
 
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct AppointmentId(Uuid);
 
 impl AppointmentId {
     pub fn generate() -> Self {
         Self(Uuid::now_v7())
-    }
-
-    pub fn uuid(&self) -> Uuid {
-        self.0
     }
 }
 
@@ -21,13 +17,13 @@ impl From<AppointmentId> for Uuid {
 
 impl From<AppointmentId> for String {
     fn from(id: AppointmentId) -> Self {
-        id.uuid().to_string()
+        id.0.to_string()
     }
 }
 
 impl From<AppointmentId> for [u8; 16] {
     fn from(id: AppointmentId) -> Self {
-        id.uuid().into_bytes()
+        id.0.into_bytes()
     }
 }
 
