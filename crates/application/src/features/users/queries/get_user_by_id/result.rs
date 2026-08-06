@@ -1,7 +1,7 @@
 use uuid::{ Uuid };
 
-use domain::aggregates::user::{
-    User,
+use domain::aggregates::{
+    user::{ User },
     profile::{ Profile }
 };
 
@@ -16,10 +16,10 @@ pub struct ProfileDto {
 impl From<Profile> for ProfileDto {
     fn from(profile: Profile) -> Self {
         ProfileDto {
-            first_name: profile.first_name().clone(),
-            last_name: profile.last_name().clone(),
-            avatar_url: profile.avatar_url().clone(),
-            bio: profile.bio().clone()
+            first_name: profile.first_name().into(),
+            last_name: profile.last_name().map(String::from),
+            avatar_url: profile.avatar_url().map(String::from),
+            bio: profile.bio().map(String::from)
         }
     }
 }
@@ -27,36 +27,22 @@ impl From<Profile> for ProfileDto {
 #[derive(Clone)]
 pub struct UserDto {
     pub id: Uuid,
-    pub role: String,
-    pub phone: Option<String>,
-    pub profile: ProfileDto
+    pub role: String
 }
 
 impl From<User> for UserDto {
     fn from(user: User) -> Self {
         UserDto {
             id: user.id().into(),
-            role: user.role().clone().into(),
-            phone: user.phone().clone().map(|p| p.into()),
-            profile: user.profile().into()
+            role: user.role().clone().into()
         }
     }
 }
 
 pub struct GetUserByIdQueryResult(Option<UserDto>);
 
-impl GetUserByIdQueryResult {
-    pub fn new(user: Option<UserDto>) -> Self {
-        Self(user)
-    }
-
-    pub fn value(&self) -> Option<UserDto> {
-        self.0.clone()
-    }
-}
-
 impl From<Option<User>> for GetUserByIdQueryResult {
     fn from(user: Option<User>) -> Self {
-        Self::new(user.map(|u| u.into()))
+        Self(user.map(|u| u.into()))
     }
 }

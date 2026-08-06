@@ -1,7 +1,10 @@
 use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
-use domain::aggregates::appointment::{ Appointment };
+use domain::aggregates::{
+    service::{ Service },
+    appointment::{ Appointment }
+};
 
 use crate::contracts::cqrs::command::{ Command, CommandHandler, CommandContext };
 use super::{ ScheduleAppointmentCommand, ScheduleAppointmentCommandService };
@@ -22,12 +25,27 @@ impl CommandHandler<ScheduleAppointmentCommand> for ScheduleAppointmentCommandHa
         <ScheduleAppointmentCommand as Command>::Result,
         <ScheduleAppointmentCommand as Command>::Error
     > {
-        let appointment = Appointment::schedule(
-            command.master_id.into(),
+        let services: Vec<Service> = command.service_ids
+            .iter()
+            .map(|service_uuid| {
+                Service::restore(
+                    (*service_uuid).into(),
+                    command.specialist_id.into(),
+                    "Fake service".into(),
+                    "1500.00".try_into().unwrap(),
+                    60.into(),
+                    true.into()
+                )
+            })
+            .collect();
+        
+        let appointment = Appointment::create(
+            command.specialist_id.into(),
             command.client_id.into(),
-            command.date,
-            command.time
-        );
+            command.date.into(),
+            command.time.into(),
+            &services
+        ).map_err(|e| anyhow::anyhow!(e))?;
 
         self.service.save_appointment(context, &appointment).await?;
 

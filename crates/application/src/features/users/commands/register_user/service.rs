@@ -1,7 +1,7 @@
 use async_trait::{ async_trait };
 
-use domain::aggregates::user::{
-    User,
+use domain::aggregates::{
+    user::{ User },
     profile::{ Profile }
 };
 

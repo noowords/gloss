@@ -6,10 +6,11 @@ use super::{ ScheduleAppointmentCommandResult, ScheduleAppointmentCommandHandler
 
 #[derive(Clone)]
 pub struct ScheduleAppointmentCommand {
-    pub master_id: Uuid,
+    pub specialist_id: Uuid,
     pub client_id: Uuid,
     pub date: NaiveDate,
     pub time: NaiveTime,
+    pub service_ids: Vec<Uuid>
 }
 
 impl Command for ScheduleAppointmentCommand {

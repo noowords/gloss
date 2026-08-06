@@ -1,7 +1,10 @@
 use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
-use domain::aggregates::user::{ User };
+use domain::aggregates::{
+    user::{ User },
+    profile::{ Profile }
+};
 
 use crate::contracts::cqrs::command::{ Command, CommandHandler, CommandContext };
 use super::{ RegisterUserCommand, RegisterUserCommandService };
@@ -22,17 +25,23 @@ impl CommandHandler<RegisterUserCommand> for RegisterUserCommandHandler {
         <RegisterUserCommand as Command>::Result,
         <RegisterUserCommand as Command>::Error
     > {
-        let user = User::register(
-            command.phone
-                .map(|p| p.as_str().try_into())
-                .transpose()?,
-            command.first_name,
-            command.last_name,
-            command.avatar_url
-        );
+        let user = User::create();
 
         self.service.save_user(context, &user).await?;
-        self.service.save_profile(context, &user.profile()).await?;
+
+        let profile = Profile::create(
+            user.id(),
+            command.first_name.into(),
+            command.last_name
+                .map(|ln| ln.as_str().try_into())
+                .transpose()?,
+            command.avatar_url
+                .map(|au| au.as_str().try_into())
+                .transpose()?,
+            None
+        );
+        
+        self.service.save_profile(context, &profile).await?;
 
         Ok(())
     }

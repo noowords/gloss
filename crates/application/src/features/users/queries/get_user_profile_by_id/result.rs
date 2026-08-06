@@ -1,4 +1,4 @@
-use domain::aggregates::user::profile::{ Profile };
+use domain::aggregates::profile::{ Profile };
 
 #[derive(Clone)]
 pub struct ProfileDto {
@@ -11,25 +11,15 @@ pub struct ProfileDto {
 impl From<Profile> for ProfileDto {
     fn from(profile: Profile) -> Self {
         ProfileDto {
-            first_name: profile.first_name().clone(),
-            last_name: profile.last_name().clone(),
-            avatar_url: profile.avatar_url().clone(),
-            bio: profile.bio().clone()
+            first_name: profile.first_name().into(),
+            last_name: profile.last_name().map(String::from),
+            avatar_url: profile.avatar_url().map(String::from),
+            bio: profile.bio().map(String::from)
         }
     }
 }
 
 pub struct GetUserProfileByIdQueryResult(Option<ProfileDto>);
-
-impl GetUserProfileByIdQueryResult {
-    pub fn new(profile: Option<ProfileDto>) -> Self {
-        Self(profile)
-    }
-
-    pub fn value(&self) -> Option<ProfileDto> {
-        self.0.clone()
-    }
-}
 
 impl From<Option<Profile>> for GetUserProfileByIdQueryResult {
     fn from(profile: Option<Profile>) -> Self {
