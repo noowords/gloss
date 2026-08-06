@@ -37,7 +37,6 @@ CREATE TABLE otps (
 
 CREATE TABLE specialists (
     user_id BINARY(16) NOT NULL,
-    schedule JSON NOT NULL,
 
     PRIMARY KEY (user_id),
     
