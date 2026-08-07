@@ -1,5 +1,5 @@
 use crate::contracts::cqrs::query::{ Query };
-use super::{ GetUsersQueryView, GetUsersQueryHandler };
+use super::{ GetUsersQueryView };
 
 #[derive(Clone)]
 pub struct GetUsersQuery;
@@ -7,6 +7,4 @@ pub struct GetUsersQuery;
 impl Query for GetUsersQuery {
     type View = GetUsersQueryView;
     type Error = anyhow::Error;
-
-    type Handler = GetUsersQueryHandler;
 }

@@ -2,7 +2,6 @@ use chrono::{ NaiveDate, NaiveTime };
 use uuid::{ Uuid };
 
 use crate::contracts::cqrs::command::{ Command };
-use super::{ ScheduleAppointmentCommandHandler };
 
 #[derive(Clone)]
 pub struct ScheduleAppointmentCommand {
@@ -15,6 +14,4 @@ pub struct ScheduleAppointmentCommand {
 
 impl Command for ScheduleAppointmentCommand {
     type Error = anyhow::Error;
-
-    type Handler = ScheduleAppointmentCommandHandler;
 }
