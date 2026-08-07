@@ -4,19 +4,21 @@ use bigdecimal::{ BigDecimal, Zero };
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ServicePrice(BigDecimal);
 
-impl ServicePrice {
-    pub fn new(value: BigDecimal) -> Result<Self, anyhow::Error> {
+impl From<ServicePrice> for BigDecimal {
+    fn from(price: ServicePrice) -> Self {
+        price.0
+    }
+}
+
+impl TryFrom<BigDecimal> for ServicePrice {
+    type Error = anyhow::Error;
+
+    fn try_from(value: BigDecimal) -> Result<Self, Self::Error> {
         if value < BigDecimal::zero() {
             anyhow::bail!("The price of the service cannot be negative");
         }
         
         Ok(Self(value))
-    }
-}
-
-impl From<ServicePrice> for BigDecimal {
-    fn from(price: ServicePrice) -> Self {
-        price.0
     }
 }
 
@@ -27,7 +29,7 @@ impl TryFrom<String> for ServicePrice {
         let decimal = BigDecimal::from_str(&str)
             .map_err(|e| anyhow::anyhow!("Invalid price format: {}", e))?;
         
-        Self::new(decimal)
+        decimal.try_into()
     }
 }
 
@@ -38,6 +40,6 @@ impl TryFrom<&str> for ServicePrice {
         let decimal = BigDecimal::from_str(str)
             .map_err(|e| anyhow::anyhow!("Invalid price format: {}", e))?;
         
-        Self::new(decimal)
+        decimal.try_into()
     }
 }

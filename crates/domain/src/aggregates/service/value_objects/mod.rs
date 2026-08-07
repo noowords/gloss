@@ -9,4 +9,3 @@ pub use name::{ ServiceName };
 pub use price::{ ServicePrice };
 pub use duration::{ ServiceDuration };
 pub use is_active::{ ServiceIsActive };
-
