@@ -26,10 +26,9 @@ impl TryFrom<String> for ServicePrice {
     type Error = anyhow::Error;
 
     fn try_from(str: String) -> Result<Self, Self::Error> {
-        let decimal = BigDecimal::from_str(&str)
-            .map_err(|e| anyhow::anyhow!("Invalid price format: {}", e))?;
-        
-        decimal.try_into()
+        BigDecimal::from_str(&str)
+            .map_err(|e| anyhow::anyhow!("Invalid price format: {}", e))?
+            .try_into()
     }
 }
 
@@ -37,9 +36,8 @@ impl TryFrom<&str> for ServicePrice {
     type Error = anyhow::Error;
 
     fn try_from(str: &str) -> Result<Self, Self::Error> {
-        let decimal = BigDecimal::from_str(str)
-            .map_err(|e| anyhow::anyhow!("Invalid price format: {}", e))?;
-        
-        decimal.try_into()
+        BigDecimal::from_str(str)
+            .map_err(|e| anyhow::anyhow!("Invalid price format: {}", e))?
+            .try_into()
     }
 }
