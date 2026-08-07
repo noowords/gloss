@@ -9,17 +9,17 @@ use application::{
     features::{
         users::{
             commands::{
-                register::{ RegisterUserCommand, RegisterUserCommandHandler }
+                register::{ RegisterUserCommandHandler }
             },
             queries::{
-                get::{ GetUsersQuery, GetUsersQueryHandler },
-                get_by_id::{ GetUserByIdQuery, GetUserByIdQueryHandler },
-                get_profile_by_id::{ GetUserProfileByIdQuery, GetUserProfileByIdQueryHandler }
+                get::{ GetUsersQueryHandler },
+                get_by_id::{ GetUserByIdQueryHandler },
+                get_profile_by_id::{ GetUserProfileByIdQueryHandler }
             }
         },
         appointments::{
             commands::{
-                schedule::{ ScheduleAppointmentCommand, ScheduleAppointmentCommandHandler }
+                schedule::{ ScheduleAppointmentCommandHandler }
             }
         }
     }
@@ -92,60 +92,50 @@ pub async fn build_http() -> Result<HttpApplication, anyhow::Error> {
 
     let mut command_bus = CommandBus::new(command_provider);
 
-    let register_user_command_service = match database_type.as_str() {
-        "mysql" => Arc::new(MySqlRegisterUserCommandService::default()),
-        _ => anyhow::bail!("Unsupported database type: {}", database_type)
-    };
-
-    let schedule_appointment_command_service = match database_type.as_str() {
-        "mysql" => Arc::new(MySqlScheduleAppointmentCommandService::default()),
-        _ => anyhow::bail!("Unsupported database type: {}", database_type)
-    };
-
-    command_bus.register::<RegisterUserCommand>(
+    command_bus.register(
         RegisterUserCommandHandler::build(
-            register_user_command_service
+            match database_type.as_str() {
+                "mysql" => Arc::new(MySqlRegisterUserCommandService::default()),
+                _ => anyhow::bail!("Unsupported database type: {}", database_type)
+            }
         )
     );
 
-    command_bus.register::<ScheduleAppointmentCommand>(
+    command_bus.register(
         ScheduleAppointmentCommandHandler::build(
-            schedule_appointment_command_service
+            match database_type.as_str() {
+                "mysql" => Arc::new(MySqlScheduleAppointmentCommandService::default()),
+                _ => anyhow::bail!("Unsupported database type: {}", database_type)
+            }
         )
     );
 
     let mut query_bus = QueryBus::new(query_provider);
 
-    let get_users_query_service = match database_type.as_str() {
-        "mysql" => Arc::new(MySqlGetUsersQueryService::default()),
-        _ => anyhow::bail!("Unsupported database type: {}", database_type)
-    };
-
-    let get_user_by_id_query_service = match database_type.as_str() {
-        "mysql" => Arc::new(MySqlGetUserByIdQueryService::default()),
-        _ => anyhow::bail!("Unsupported database type: {}", database_type)
-    };
-
-    let get_user_profile_by_id_query_service = match database_type.as_str() {
-        "mysql" => Arc::new(MySqlGetUserProfileByIdQueryService::default()),
-        _ => anyhow::bail!("Unsupported database type: {}", database_type)
-    };
-
-    query_bus.register::<GetUsersQuery>(
+    query_bus.register(
         GetUsersQueryHandler::build(
-            get_users_query_service
+            match database_type.as_str() {
+                "mysql" => Arc::new(MySqlGetUsersQueryService::default()),
+                _ => anyhow::bail!("Unsupported database type: {}", database_type)
+            }
         )
     );
 
-    query_bus.register::<GetUserByIdQuery>(
+    query_bus.register(
         GetUserByIdQueryHandler::build(
-            get_user_by_id_query_service
+            match database_type.as_str() {
+                "mysql" => Arc::new(MySqlGetUserByIdQueryService::default()),
+                _ => anyhow::bail!("Unsupported database type: {}", database_type)
+            }
         )
     );
     
-    query_bus.register::<GetUserProfileByIdQuery>(
+    query_bus.register(
         GetUserProfileByIdQueryHandler::build(
-            get_user_profile_by_id_query_service
+            match database_type.as_str() {
+                "mysql" => Arc::new(MySqlGetUserProfileByIdQueryService::default()),
+                _ => anyhow::bail!("Unsupported database type: {}", database_type)
+            }
         )
     );
 
