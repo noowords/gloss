@@ -8,10 +8,8 @@ pub struct User {
 
 impl User {
     pub fn create() -> Self {
-        let id = UserId::generate();
-        
         Self {
-            id,
+            id: UserId::generate(),
             role: UserRole::Client
         }
     }
