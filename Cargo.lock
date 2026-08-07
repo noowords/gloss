@@ -360,7 +360,6 @@ dependencies = [
  "anyhow",
  "bigdecimal",
  "chrono",
- "serde_json",
  "uuid",
 ]
 
