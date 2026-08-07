@@ -10,7 +10,7 @@ members = [
 ]
 
 [workspace.dependencies]
-sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "mysql", "uuid", "chrono", "macros"] }
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "mysql", "uuid", "chrono", "macros", "json"] }
 uuid = { version = "1.23", features = ["v7", "serde", "fast-rng"] }
 teloxide = { version = "0.17", features = ["macros"] }
 tokio = { version = "1.52", features = ["full"] }
