@@ -1,18 +1,18 @@
 use async_trait::{ async_trait };
 
-use domain::aggregates::user::{
-    User,
+use domain::aggregates::{
+    user::{ User },
     profile::{ Profile }
 };
 
 use application::contracts::cqrs::command::{ CommandContext };
-use application::features::users::commands::register_user::{ RegisterUserCommandService };
+use application::features::users::commands::register::{ RegisterUserCommandService };
 
 use crate::persistence::mysql::{
     contracts::cqrs::command::{ MySqlCommandContext },
     features::{
-        users::models::{ MySqlUserModel },
-        profiles::models::{ MySqlProfileModel },
+        users::rows::{ MySqlUserRow },
+        profiles::rows::{ MySqlProfileRow },
     },
 };
 
@@ -27,17 +27,16 @@ impl RegisterUserCommandService for MySqlRegisterUserCommandService {
             .map(|context| context.tx_mut())
             .ok_or_else(|| anyhow::anyhow!("Invalid CommandContext".to_string()))?;
 
-        let model: MySqlUserModel = user.into();
+        let row: MySqlUserRow = user.into();
 
         sqlx::query(
             r#"
-            INSERT INTO users (id, role, phone)
-            VALUES (?, ?, ?)
+            INSERT INTO users (id, role)
+            VALUES (?, ?)
             "#
         )
-            .bind(model.id())
-            .bind(model.role())
-            .bind(model.phone())
+            .bind(row.id)
+            .bind(row.role)
             .execute(&mut **tx)
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
@@ -51,7 +50,7 @@ impl RegisterUserCommandService for MySqlRegisterUserCommandService {
             .map(|context| context.tx_mut())
             .ok_or_else(|| anyhow::anyhow!("Invalid CommandContext".to_string()))?;
 
-        let model: MySqlProfileModel = profile.into();
+        let row: MySqlProfileRow = profile.into();
 
         sqlx::query(
             r#"
@@ -59,11 +58,11 @@ impl RegisterUserCommandService for MySqlRegisterUserCommandService {
             VALUES (?, ?, ?, ?, ?)
             "#
         )
-            .bind(model.user_id())
-            .bind(model.first_name())
-            .bind(model.last_name())
-            .bind(model.avatar_url())
-            .bind(model.bio())
+            .bind(row.user_id)
+            .bind(row.first_name)
+            .bind(row.last_name)
+            .bind(row.avatar_url)
+            .bind(row.bio)
             .execute(&mut **tx)
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;

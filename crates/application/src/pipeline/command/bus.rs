@@ -26,7 +26,7 @@ impl CommandBus {
         self
     }
 
-    pub async fn dispatch<C>(&self, command: C) -> Result<Result<C::Result, C::Error>, anyhow::Error>
+    pub async fn dispatch<C>(&self, command: C) -> Result<Result<(), C::Error>, anyhow::Error>
     where
         C: Command
     {

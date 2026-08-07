@@ -1,14 +1,16 @@
 use async_trait::{ async_trait };
 
-use domain::aggregates::user::{ User };
-
-use application::contracts::cqrs::query::{ QueryContext };
-use application::features::users::queries::get_users::{ GetUsersQueryService };
-
-use crate::persistence::mysql::{
-    contracts::cqrs::query::{ MySqlQueryContext },
-    features::users::models::{ MySqlUserModel },
+use application::{
+    contracts::cqrs::query::{ QueryContext },
+    features::users::queries::get::{
+        GetUsersQueryService,
+        dtos::{ User }
+    }
 };
+
+use crate::persistence::mysql::contracts::cqrs::query::{ MySqlQueryContext };
+
+use super::dtos::{ MySqlUserRow };
 
 #[derive(Default)]
 pub struct MySqlGetUsersQueryService;
@@ -21,25 +23,25 @@ impl GetUsersQueryService for MySqlGetUsersQueryService {
             .map(|context| context.pool())
             .ok_or_else(|| anyhow::anyhow!("Invalid QueryContext"))?;
 
-        let model: Vec<MySqlUserModel> = sqlx::query_as(
+        let rows: Vec<MySqlUserRow> = sqlx::query_as(
             r#"
             SELECT
-                u.id,
-                u.role,
-                u.phone,
-                p.first_name,
-                p.last_name,
-                p.avatar_url,
-                p.bio
+                u.id         AS id,
+                u.role       AS role,
+                p.first_name AS first_name,
+                p.last_name  AS last_name,
+                p.avatar_url AS avatar_url,
+                p.bio        AS bio
             FROM users u
-            JOIN profiles p ON u.id = p.user_id
-            ORDER BY u.id DESC
+            LEFT JOIN profiles p ON u.id = p.user_id
+            WHERE u.deleted_at IS NULL
+            ORDER BY u.created_at DESC
             "#
         )
             .fetch_all(pool)
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
-        model.into_iter().map(User::try_from).collect()
+        Ok(rows.into_iter().map(|row| row.into()).collect())
     }
 }

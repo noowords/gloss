@@ -9,17 +9,17 @@ use application::{
     features::{
         users::{
             commands::{
-                register_user::{ RegisterUserCommand, RegisterUserCommandHandler }
+                register::{ RegisterUserCommand, RegisterUserCommandHandler }
             },
             queries::{
-                get_users::{ GetUsersQuery, GetUsersQueryHandler },
-                get_user_by_id::{ GetUserByIdQuery, GetUserByIdQueryHandler },
-                get_user_profile_by_id::{ GetUserProfileByIdQuery, GetUserProfileByIdQueryHandler }
+                get::{ GetUsersQuery, GetUsersQueryHandler },
+                get_by_id::{ GetUserByIdQuery, GetUserByIdQueryHandler },
+                get_profile_by_id::{ GetUserProfileByIdQuery, GetUserProfileByIdQueryHandler }
             }
         },
         appointments::{
             commands::{
-                schedule_appointment::{ ScheduleAppointmentCommand, ScheduleAppointmentCommandHandler }
+                schedule::{ ScheduleAppointmentCommand, ScheduleAppointmentCommandHandler }
             }
         }
     }

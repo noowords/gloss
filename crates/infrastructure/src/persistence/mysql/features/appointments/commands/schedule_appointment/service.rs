@@ -3,11 +3,11 @@ use async_trait::{ async_trait };
 use domain::aggregates::appointment::{ Appointment };
 
 use application::contracts::cqrs::command::{ CommandContext };
-use application::features::appointments::commands::schedule_appointment::{ ScheduleAppointmentCommandService };
+use application::features::appointments::commands::schedule::{ ScheduleAppointmentCommandService };
 
 use crate::persistence::mysql::{
     contracts::cqrs::command::{ MySqlCommandContext },
-    features::appointments::models::{ MySqlAppointmentModel },
+    features::appointments::rows::{ MySqlAppointmentRow },
 };
 
 #[derive(Default)]
@@ -21,20 +21,21 @@ impl ScheduleAppointmentCommandService for MySqlScheduleAppointmentCommandServic
             .map(|context| context.tx_mut())
             .ok_or_else(|| anyhow::anyhow!("Invalid CommandContext".to_string()))?;
 
-        let model: MySqlAppointmentModel = appointment.into();
+        let row: MySqlAppointmentRow = appointment.into();
 
         sqlx::query(
             r#"
-            INSERT INTO appointments (id, master_id, client_id, date, time, status, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            INSERT INTO appointments (id, specialist_id, client_id, date, time, duration, status, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             "#
         )
-            .bind(model.id())
-            .bind(model.master_id())
-            .bind(model.client_id())
-            .bind(model.date())
-            .bind(model.time().format("%H:%M:%S").to_string()) // ?
-            .bind(model.status())
+            .bind(row.id)
+            .bind(row.specialist_id)
+            .bind(row.client_id)
+            .bind(row.date)
+            .bind(row.time)
+            .bind(row.duration)
+            .bind(row.status)
             .execute(&mut **tx)
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;

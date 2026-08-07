@@ -1,20 +1,20 @@
 use async_trait::{ async_trait };
 
-use domain::aggregates::user::{
-    User,
-    value_objects::{ UserId }
+use domain::aggregates::user::value_objects::{ UserId };
+use application::{
+    contracts::cqrs::query::{ QueryContext },
+    features::users::queries::get_by_id::{
+        GetUserByIdQueryService,
+        dtos::{ User }
+    }
 };
-
-use application::contracts::cqrs::query::{ QueryContext };
-use application::features::users::queries::get_user_by_id::{ GetUserByIdQueryService };
 
 use crate::persistence::mysql::{
     contracts::cqrs::query::{ MySqlQueryContext },
-    features::users::models::{
-        MySqlUserModel,
-        value_objects::{ MySqlUserIdModel }
-    },
+    features::users::rows::value_objects::{ MySqlUserIdRow }
 };
+
+use super::dtos::{ MySqlUserRow };
 
 #[derive(Default)]
 pub struct MySqlGetUserByIdQueryService;
@@ -27,28 +27,28 @@ impl GetUserByIdQueryService for MySqlGetUserByIdQueryService {
             .map(|context| context.pool())
             .ok_or_else(|| anyhow::anyhow!("Invalid QueryContext"))?;
 
-        let id_model: MySqlUserIdModel = id.into();
+        let id_row: MySqlUserIdRow = id.into();
 
-        let model: Option<MySqlUserModel> = sqlx::query_as(
+        let row: Option<MySqlUserRow> = sqlx::query_as(
             r#"
             SELECT
-                u.id,
-                u.role,
-                u.phone,
-                p.first_name,
-                p.last_name,
-                p.avatar_url,
-                p.bio
+                u.id         AS id,
+                u.role       AS role,
+                p.first_name AS first_name,
+                p.last_name  AS last_name,
+                p.avatar_url AS avatar_url,
+                p.bio        AS bio
             FROM users u
-            JOIN profiles p ON u.id = p.user_id
-            ORDER BY u.id DESC
+            LEFT JOIN profiles p ON u.id = p.user_id
+            WHERE u.id = ? AND u.deleted_at IS NULL
+            LIMIT 1
             "#
         )
-            .bind(id_model)
+            .bind(id_row)
             .fetch_optional(pool)
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
-        model.map(User::try_from).transpose()
+        Ok(row.map(|row| row.into()))
     }
 }

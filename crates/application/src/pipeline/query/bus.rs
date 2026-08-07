@@ -26,7 +26,7 @@ impl QueryBus {
         self
     }
 
-    pub async fn dispatch<Q>(&self, query: Q) -> Result<Result<Q::Result, Q::Error>, anyhow::Error>
+    pub async fn dispatch<Q>(&self, query: Q) -> Result<Result<Q::View, Q::Error>, anyhow::Error>
     where
         Q: Query
     {
