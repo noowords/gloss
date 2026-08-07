@@ -7,7 +7,10 @@ publish = false
 [dependencies]
 chrono.workspace = true
 uuid.workspace = true
+bigdecimal.workspace = true
+
 async-trait.workspace = true
+
 anyhow.workspace = true
 
 domain.workspace = true
