@@ -14,15 +14,16 @@ impl CommandBus {
         Self { provider, handlers: HashMap::new() }
     }
 
-    pub fn register<C>(&mut self, handler: C::Handler) -> &mut Self
+    pub fn register<C, H>(&mut self, handler: H) -> &mut Self
     where
-        C: Command
+        C: Command,
+        H: CommandHandler<C>
     {
         let type_id = TypeId::of::<C>();
-
         let trait_object: Box<dyn CommandHandler<C>> = Box::new(handler);
 
         self.handlers.insert(type_id, Box::new(trait_object));
+        
         self
     }
 

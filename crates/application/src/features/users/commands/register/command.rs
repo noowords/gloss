@@ -1,5 +1,4 @@
 use crate::contracts::cqrs::command::{ Command };
-use super::{ RegisterUserCommandHandler };
 
 #[derive(Clone)]
 pub struct RegisterUserCommand {
@@ -11,6 +10,4 @@ pub struct RegisterUserCommand {
 
 impl Command for RegisterUserCommand {
     type Error = anyhow::Error;
-
-    type Handler = RegisterUserCommandHandler;
 }

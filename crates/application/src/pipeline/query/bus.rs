@@ -14,15 +14,16 @@ impl QueryBus {
         Self { provider, handlers: HashMap::new() }
     }
 
-    pub fn register<Q>(&mut self, handler: Q::Handler) -> &mut Self
+    pub fn register<Q, H>(&mut self, handler: H) -> &mut Self
     where
-        Q: Query
+        Q: Query,
+        H: QueryHandler<Q>
     {
         let type_id = TypeId::of::<Q>();
-
         let trait_object: Box<dyn QueryHandler<Q>> = Box::new(handler);
 
         self.handlers.insert(type_id, Box::new(trait_object));
+        
         self
     }
 

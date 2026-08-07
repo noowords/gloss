@@ -1,7 +1,7 @@
 use domain::aggregates::user::value_objects::{ UserId };
 
 use crate::contracts::cqrs::query::{ Query };
-use super::{ GetUserProfileByIdQueryView, GetUserProfileByIdQueryHandler };
+use super::{ GetUserProfileByIdQueryView };
 
 #[derive(Clone)]
 pub struct GetUserProfileByIdQuery {
@@ -11,6 +11,4 @@ pub struct GetUserProfileByIdQuery {
 impl Query for GetUserProfileByIdQuery {
     type View = GetUserProfileByIdQueryView;
     type Error = anyhow::Error;
-
-    type Handler = GetUserProfileByIdQueryHandler;
 }
