@@ -32,17 +32,17 @@ use infrastructure::persistence::mysql::{
     features::{
         users::{
             commands::{
-                register_user::{ MySqlRegisterUserCommandService }
+                register::{ MySqlRegisterUserCommandService }
             },
             queries::{
-                get_users::{ MySqlGetUsersQueryService },
-                get_user_by_id::{ MySqlGetUserByIdQueryService },
-                get_user_profile_by_id::{ MySqlGetUserProfileByIdQueryService }
+                get::{ MySqlGetUsersQueryService },
+                get_by_id::{ MySqlGetUserByIdQueryService },
+                get_profile_by_id::{ MySqlGetUserProfileByIdQueryService }
             }
         },
         appointments::{
             commands::{
-                schedule_appointment::{ MySqlScheduleAppointmentCommandService }
+                schedule::{ MySqlScheduleAppointmentCommandService }
             }
         }
     }
