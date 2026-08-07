@@ -17,14 +17,14 @@ pub struct MySqlServiceRow {
 impl TryFrom<MySqlServiceRow> for Service {
     type Error = anyhow::Error;
     
-    fn try_from(model: MySqlServiceRow) -> Result<Self, Self::Error> {
+    fn try_from(row: MySqlServiceRow) -> Result<Self, Self::Error> {
         Ok(Self::restore(
-            model.id.into(),
-            model.specialist_id.into(),
-            model.name.into(),
-            model.price.try_into()?,
-            model.duration.into(),
-            model.is_active.into()
+            row.id.into(),
+            row.specialist_id.into(),
+            row.name.into(),
+            row.price.try_into()?,
+            row.duration.into(),
+            row.is_active.into()
         ))
     }
 }

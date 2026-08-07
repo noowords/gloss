@@ -7,8 +7,8 @@ use domain::aggregates::otp::value_objects::{ OtpId };
 pub struct MySqlOtpIdRow(Uuid);
 
 impl From<MySqlOtpIdRow> for OtpId {
-    fn from(model: MySqlOtpIdRow) -> Self {
-        model.0.into()
+    fn from(row: MySqlOtpIdRow) -> Self {
+        row.0.into()
     }
 }
 

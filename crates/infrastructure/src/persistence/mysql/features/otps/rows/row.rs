@@ -12,11 +12,11 @@ pub struct MySqlOtpRow {
 impl TryFrom<MySqlOtpRow> for Otp {
     type Error = anyhow::Error;
 
-    fn try_from(model: MySqlOtpRow) -> Result<Self, Self::Error> {
+    fn try_from(row: MySqlOtpRow) -> Result<Self, Self::Error> {
         Ok(Self::restore(
-            model.id.into(),
-            model.phone.try_into()?,
-            model.code.into()
+            row.id.into(),
+            row.phone.try_into()?,
+            row.code.into()
         ))
     }
 }

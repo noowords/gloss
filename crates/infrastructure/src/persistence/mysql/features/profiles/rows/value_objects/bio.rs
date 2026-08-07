@@ -5,8 +5,8 @@ use domain::aggregates::profile::value_objects::{ ProfileBio };
 pub struct MySqlProfileBioRow(String);
 
 impl From<MySqlProfileBioRow> for ProfileBio {
-    fn from(model: MySqlProfileBioRow) -> Self {
-        model.0.into()
+    fn from(row: MySqlProfileBioRow) -> Self {
+        row.0.into()
     }
 }
 

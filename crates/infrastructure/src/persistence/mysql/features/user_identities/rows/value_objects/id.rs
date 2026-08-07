@@ -7,8 +7,8 @@ use domain::aggregates::user_identity::value_objects::{ UserIdentityId };
 pub struct MySqlUserIdentityIdRow(Uuid);
 
 impl From<MySqlUserIdentityIdRow> for UserIdentityId {
-    fn from(model: MySqlUserIdentityIdRow) -> Self {
-        model.0.into()
+    fn from(row: MySqlUserIdentityIdRow) -> Self {
+        row.0.into()
     }
 }
 

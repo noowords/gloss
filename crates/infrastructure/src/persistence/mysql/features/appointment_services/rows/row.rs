@@ -8,9 +8,9 @@ pub struct MySqlSpecialistRow {
 }
 
 impl From<MySqlSpecialistRow> for Specialist {
-    fn from(model: MySqlSpecialistRow) -> Self {
+    fn from(row: MySqlSpecialistRow) -> Self {
         Self::restore(
-            model.user_id.into()
+            row.user_id.into()
         )
     }
 }

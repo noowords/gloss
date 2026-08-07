@@ -5,8 +5,8 @@ use domain::aggregates::user_identity::value_objects::{ UserIdentityProviderKey 
 pub struct MySqlUserIdentityProviderKeyRow(String);
 
 impl From<MySqlUserIdentityProviderKeyRow> for UserIdentityProviderKey {
-    fn from(model: MySqlUserIdentityProviderKeyRow) -> Self {
-        model.0.into()
+    fn from(row: MySqlUserIdentityProviderKeyRow) -> Self {
+        row.0.into()
     }
 }
 

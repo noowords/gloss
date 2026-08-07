@@ -7,8 +7,8 @@ pub struct MySqlUserIdentityProviderTypeRow(String);
 impl TryFrom<MySqlUserIdentityProviderTypeRow> for UserIdentityProviderType {
     type Error = anyhow::Error;
     
-    fn try_from(model: MySqlUserIdentityProviderTypeRow) -> Result<Self, Self::Error> {
-        model.0.try_into()
+    fn try_from(row: MySqlUserIdentityProviderTypeRow) -> Result<Self, Self::Error> {
+        row.0.try_into()
             .map_err(|e| anyhow::anyhow!("Failed to restore Identity Provider Type from DB string: {:?}", e))
     }
 }

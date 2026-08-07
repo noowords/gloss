@@ -16,13 +16,13 @@ pub struct MySqlUserIdentityRow {
 impl TryFrom<MySqlUserIdentityRow> for UserIdentity {
     type Error = anyhow::Error;
 
-    fn try_from(model: MySqlUserIdentityRow) -> Result<Self, Self::Error> {
+    fn try_from(row: MySqlUserIdentityRow) -> Result<Self, Self::Error> {
         Ok(Self::restore(
-            model.id.into(),
-            model.user_id.into(),
-            model.provider_type.try_into()?,
-            model.provider_key.into(),
-            model.provider_data
+            row.id.into(),
+            row.user_id.into(),
+            row.provider_type.try_into()?,
+            row.provider_key.into(),
+            row.provider_data
                 .map(|pd| pd.try_into())
                 .transpose()?
         ))

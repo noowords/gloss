@@ -7,8 +7,8 @@ use domain::aggregates::service::value_objects::{ ServiceId };
 pub struct MySqlServiceIdRow(Uuid);
 
 impl From<MySqlServiceIdRow> for ServiceId {
-    fn from(model: MySqlServiceIdRow) -> Self {
-        model.0.into()
+    fn from(row: MySqlServiceIdRow) -> Self {
+        row.0.into()
     }
 }
 

@@ -5,8 +5,8 @@ use domain::aggregates::profile::value_objects::{ ProfileAvatarUrl };
 pub struct MySqlProfileAvatarUrlRow(String);
 
 impl From<MySqlProfileAvatarUrlRow> for ProfileAvatarUrl {
-    fn from(model: MySqlProfileAvatarUrlRow) -> Self {
-        model.0.into()
+    fn from(row: MySqlProfileAvatarUrlRow) -> Self {
+        row.0.into()
     }
 }
 

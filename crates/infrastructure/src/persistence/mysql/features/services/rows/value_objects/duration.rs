@@ -5,8 +5,8 @@ use domain::aggregates::service::value_objects::{ ServiceDuration };
 pub struct MySqlServiceDurationRow(u32);
 
 impl From<MySqlServiceDurationRow> for ServiceDuration {
-    fn from(model: MySqlServiceDurationRow) -> Self {
-        model.0.into()
+    fn from(row: MySqlServiceDurationRow) -> Self {
+        row.0.into()
     }
 }
 

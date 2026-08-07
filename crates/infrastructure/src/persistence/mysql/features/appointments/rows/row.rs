@@ -18,15 +18,15 @@ pub struct MySqlAppointmentRow {
 impl TryFrom<MySqlAppointmentRow> for Appointment {
     type Error = anyhow::Error;
 
-    fn try_from(model: MySqlAppointmentRow) -> Result<Self, Self::Error> {
+    fn try_from(row: MySqlAppointmentRow) -> Result<Self, Self::Error> {
         Ok(Self::restore(
-            model.id.into(),
-            model.specialist_id.into(),
-            model.client_id.into(),
-            model.date.into(),
-            model.time.into(),
-            model.duration.into(),
-            model.status
+            row.id.into(),
+            row.specialist_id.into(),
+            row.client_id.into(),
+            row.date.into(),
+            row.time.into(),
+            row.duration.into(),
+            row.status
                 .ok_or_else(|| anyhow::anyhow!("Missing appointment status in database"))?
                 .try_into()?,
         ))

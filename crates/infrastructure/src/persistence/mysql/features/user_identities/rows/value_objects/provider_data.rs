@@ -9,9 +9,9 @@ pub struct MySqlUserIdentityProviderDataRow(JsonValue);
 impl TryFrom<MySqlUserIdentityProviderDataRow> for UserIdentityProviderData {
     type Error = anyhow::Error;
     
-    fn try_from(model: MySqlUserIdentityProviderDataRow) -> Result<Self, Self::Error> {
+    fn try_from(row: MySqlUserIdentityProviderDataRow) -> Result<Self, Self::Error> {
         Ok(
-            model.0.to_string().try_into()
+            row.0.to_string().try_into()
                 .map_err(|e| anyhow::anyhow!("Failed to restore Domain identity from DB JSON: {}", e))?
         )
     }

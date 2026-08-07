@@ -5,8 +5,8 @@ use domain::aggregates::profile::value_objects::{ ProfileLastName };
 pub struct MySqlProfileLastNameRow(String);
 
 impl From<MySqlProfileLastNameRow> for ProfileLastName {
-    fn from(model: MySqlProfileLastNameRow) -> Self {
-        model.0.into()
+    fn from(row: MySqlProfileLastNameRow) -> Self {
+        row.0.into()
     }
 }
 

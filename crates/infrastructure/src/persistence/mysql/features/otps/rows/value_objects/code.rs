@@ -5,8 +5,8 @@ use domain::aggregates::otp::value_objects::{ OtpCode };
 pub struct MySqlOtpCodeRow(String);
 
 impl From<MySqlOtpCodeRow> for OtpCode {
-    fn from(model: MySqlOtpCodeRow) -> Self {
-        model.0.into()
+    fn from(row: MySqlOtpCodeRow) -> Self {
+        row.0.into()
     }
 }
 

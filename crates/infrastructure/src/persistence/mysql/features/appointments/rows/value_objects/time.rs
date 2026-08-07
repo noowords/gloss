@@ -7,8 +7,8 @@ use domain::aggregates::appointment::value_objects::{ AppointmentTime };
 pub struct MySqlAppointmentTimeRow(NaiveTime);
 
 impl From<MySqlAppointmentTimeRow> for AppointmentTime {
-    fn from(model: MySqlAppointmentTimeRow) -> Self {
-        model.0.into()
+    fn from(row: MySqlAppointmentTimeRow) -> Self {
+        row.0.into()
     }
 }
 

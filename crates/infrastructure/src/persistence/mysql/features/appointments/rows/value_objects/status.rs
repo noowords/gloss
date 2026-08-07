@@ -7,8 +7,8 @@ pub struct MySqlAppointmentStatusRow(String);
 impl TryFrom<MySqlAppointmentStatusRow> for AppointmentStatus {
     type Error = anyhow::Error;
 
-    fn try_from(model: MySqlAppointmentStatusRow) -> Result<Self, Self::Error> {
-        model.0.try_into()
+    fn try_from(row: MySqlAppointmentStatusRow) -> Result<Self, Self::Error> {
+        row.0.try_into()
     }
 }
 

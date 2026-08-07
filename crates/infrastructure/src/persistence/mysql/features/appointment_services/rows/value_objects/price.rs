@@ -9,8 +9,8 @@ pub struct MySqlAppointmentLockedPriceRow(BigDecimal);
 impl TryFrom<MySqlAppointmentLockedPriceRow> for AppointmentServiceLockedPrice {
     type Error = anyhow::Error;
     
-    fn try_from(model: MySqlAppointmentLockedPriceRow) -> Result<Self, Self::Error> {
-        model.0.try_into()
+    fn try_from(row: MySqlAppointmentLockedPriceRow) -> Result<Self, Self::Error> {
+        row.0.try_into()
     }
 }
 

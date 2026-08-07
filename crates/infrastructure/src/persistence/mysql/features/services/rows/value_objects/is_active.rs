@@ -5,8 +5,8 @@ use domain::aggregates::service::value_objects::{ ServiceIsActive };
 pub struct MySqlServiceIsActiveRow(bool);
 
 impl From<MySqlServiceIsActiveRow> for ServiceIsActive {
-    fn from(model: MySqlServiceIsActiveRow) -> Self {
-        model.0.into()
+    fn from(row: MySqlServiceIsActiveRow) -> Self {
+        row.0.into()
     }
 }
 

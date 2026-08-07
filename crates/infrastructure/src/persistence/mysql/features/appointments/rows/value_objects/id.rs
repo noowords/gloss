@@ -7,8 +7,8 @@ use domain::aggregates::appointment::value_objects::{ AppointmentId };
 pub struct MySqlAppointmentIdRow(Uuid);
 
 impl From<MySqlAppointmentIdRow> for AppointmentId {
-    fn from(model: MySqlAppointmentIdRow) -> Self {
-        model.0.into()
+    fn from(row: MySqlAppointmentIdRow) -> Self {
+        row.0.into()
     }
 }
 

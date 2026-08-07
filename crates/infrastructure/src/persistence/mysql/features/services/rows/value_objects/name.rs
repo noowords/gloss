@@ -5,8 +5,8 @@ use domain::aggregates::service::value_objects::{ ServiceName };
 pub struct MySqlServiceNameRow(String);
 
 impl From<MySqlServiceNameRow> for ServiceName {
-    fn from(model: MySqlServiceNameRow) -> Self {
-        model.0.into()
+    fn from(row: MySqlServiceNameRow) -> Self {
+        row.0.into()
     }
 }
 

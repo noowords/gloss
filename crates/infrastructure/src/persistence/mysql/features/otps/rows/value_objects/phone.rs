@@ -7,8 +7,8 @@ pub struct MySqlOtpPhoneRow(String);
 impl TryFrom<MySqlOtpPhoneRow> for OtpPhone {
     type Error = anyhow::Error;
 
-    fn try_from(model: MySqlOtpPhoneRow) -> Result<Self, Self::Error> {
-        model.0.try_into()
+    fn try_from(row: MySqlOtpPhoneRow) -> Result<Self, Self::Error> {
+        row.0.try_into()
     }
 }
 

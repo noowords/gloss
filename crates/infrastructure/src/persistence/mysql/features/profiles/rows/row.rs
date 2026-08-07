@@ -14,13 +14,13 @@ pub struct MySqlProfileRow {
 }
 
 impl From<MySqlProfileRow> for Profile {
-    fn from(model: MySqlProfileRow) -> Self {
+    fn from(row: MySqlProfileRow) -> Self {
         Self::restore(
-            model.user_id.into(),
-            model.first_name.into(),
-            model.last_name.map(|ln| ln.into()),
-            model.avatar_url.map(|au| au.into()),
-            model.bio.map(|b| b.into())
+            row.user_id.into(),
+            row.first_name.into(),
+            row.last_name.map(|ln| ln.into()),
+            row.avatar_url.map(|au| au.into()),
+            row.bio.map(|b| b.into())
         )
     }
 }

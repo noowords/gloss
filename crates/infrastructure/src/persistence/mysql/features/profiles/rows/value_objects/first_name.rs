@@ -5,8 +5,8 @@ use domain::aggregates::profile::value_objects::{ ProfileFirstName };
 pub struct MySqlProfileFirstNameRow(String);
 
 impl From<MySqlProfileFirstNameRow> for ProfileFirstName {
-    fn from(model: MySqlProfileFirstNameRow) -> Self {
-        model.0.into()
+    fn from(row: MySqlProfileFirstNameRow) -> Self {
+        row.0.into()
     }
 }
 

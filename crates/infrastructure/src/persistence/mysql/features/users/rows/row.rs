@@ -11,10 +11,10 @@ pub struct MySqlUserRow {
 impl TryFrom<MySqlUserRow> for User {
     type Error = anyhow::Error;
 
-    fn try_from(model: MySqlUserRow) -> Result<Self, Self::Error> {
+    fn try_from(row: MySqlUserRow) -> Result<Self, Self::Error> {
         Ok(Self::restore(
-            model.id.into(),
-            model.role.try_into()?
+            row.id.into(),
+            row.role.try_into()?
         ))
     }
 }
