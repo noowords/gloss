@@ -17,6 +17,13 @@ use application::{
                 get_profile_by_id::{ GetUserProfileByIdQueryHandler }
             }
         },
+        specialists::{
+            queries::{
+                get::{ GetSpecialistsQueryHandler },
+                get_by_user_id::{ GetSpecialistByUserIdQueryHandler },
+                get_services_by_user_id::{ GetSpecialistServicesByUserIdQueryHandler }
+            }
+        },
         appointments::{
             commands::{
                 schedule::{ ScheduleAppointmentCommandHandler }
@@ -38,6 +45,13 @@ use infrastructure::persistence::mysql::{
                 get::{ MySqlGetUsersQueryService },
                 get_by_id::{ MySqlGetUserByIdQueryService },
                 get_profile_by_id::{ MySqlGetUserProfileByIdQueryService }
+            }
+        },
+        specialists::{
+            queries::{
+                get::{ MySqlGetSpecialistsQueryService },
+                get_by_user_id::{ MySqlGetSpecialistByUserIdQueryService },
+                get_services_by_user_id::{ MySqlGetSpecialistServicesByUserIdQueryService }
             }
         },
         appointments::{
@@ -134,6 +148,33 @@ pub async fn build_http() -> Result<HttpApplication, anyhow::Error> {
         GetUserProfileByIdQueryHandler::build(
             match database_type.as_str() {
                 "mysql" => Arc::new(MySqlGetUserProfileByIdQueryService::default()),
+                _ => anyhow::bail!("Unsupported database type: {}", database_type)
+            }
+        )
+    );
+    
+    query_bus.register(
+        GetSpecialistsQueryHandler::build(
+            match database_type.as_str() {
+                "mysql" => Arc::new(MySqlGetSpecialistsQueryService::default()),
+                _ => anyhow::bail!("Unsupported database type: {}", database_type)
+            }
+        )
+    );
+
+    query_bus.register(
+        GetSpecialistByUserIdQueryHandler::build(
+            match database_type.as_str() {
+                "mysql" => Arc::new(MySqlGetSpecialistByUserIdQueryService::default()),
+                _ => anyhow::bail!("Unsupported database type: {}", database_type)
+            }
+        )
+    );
+    
+    query_bus.register(
+        GetSpecialistServicesByUserIdQueryHandler::build(
+            match database_type.as_str() {
+                "mysql" => Arc::new(MySqlGetSpecialistServicesByUserIdQueryService::default()),
                 _ => anyhow::bail!("Unsupported database type: {}", database_type)
             }
         )
