@@ -7,8 +7,8 @@ use crate::persistence::mysql::features::{
 
 #[derive(Debug, Clone, sqlx::FromRow)]
 pub struct MySqlServiceRow {
-    pub id: MySqlUserIdRow,
-    pub specialist_id: MySqlServiceIdRow,
+    pub id: MySqlServiceIdRow,
+    pub specialist_id: MySqlUserIdRow,
     pub name: MySqlServiceNameRow,
     pub price: MySqlServicePriceRow,
     pub duration: MySqlServiceDurationRow,
