@@ -11,7 +11,7 @@ pub fn create_http_router(state: HttpState) -> Router {
         .route("/users/{id}/profile", get(users::get_profile_by_id))
         .route("/specialists", get(specialists::get))
         .route("/specialists/{id}", get(specialists::get_by_user_id))
-        .route("/specialists/{id}/services", get(specialists::get_profile_by_user_id))
+        .route("/specialists/{id}/services", get(specialists::get_services_by_user_id))
         .route("/appointments", post(appointments::schedule))
         .with_state(state)
 }

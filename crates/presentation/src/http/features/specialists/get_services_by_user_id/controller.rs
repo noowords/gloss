@@ -8,12 +8,12 @@ use application::features::specialists::queries::get_services_by_user_id::{ GetS
 
 use crate::http::{ HttpState };
 
-use super::{ GetSpecialistProfileByUserIdRequest, GetSpecialistProfileByUserIdResponse };
+use super::{ GetSpecialistServicesByUserIdRequest, GetSpecialistServicesByUserIdResponse };
 
-pub async fn get_profile_by_user_id(
+pub async fn get_services_by_user_id(
     State(state): State<HttpState>,
-    Path(payload): Path<GetSpecialistProfileByUserIdRequest>
-) -> Result<(StatusCode, Json<GetSpecialistProfileByUserIdResponse>), StatusCode> {
+    Path(payload): Path<GetSpecialistServicesByUserIdRequest>
+) -> Result<(StatusCode, Json<GetSpecialistServicesByUserIdResponse>), StatusCode> {
     let view = state.query_bus.dispatch::<GetSpecialistServicesByUserIdQuery>(payload.into()).await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
