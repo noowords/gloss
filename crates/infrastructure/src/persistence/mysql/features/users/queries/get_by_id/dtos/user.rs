@@ -1,13 +1,13 @@
-use uuid::{ Uuid };
-
 use application::features::users::queries::get_by_id::dtos::{ User };
+
+use crate::persistence::mysql::features::users::rows::value_objects::{ MySqlUserIdRow, MySqlUserRoleRow };
 
 use super::{ MySqlProfileRow };
 
 #[derive(Debug, Clone, sqlx::FromRow)]
 pub struct MySqlUserRow {
-    pub id: Uuid,
-    pub role: String,
+    pub id: MySqlUserIdRow,
+    pub role: MySqlUserRoleRow,
 
     #[sqlx(flatten)]
     pub profile: MySqlProfileRow
@@ -16,8 +16,8 @@ pub struct MySqlUserRow {
 impl From<MySqlUserRow> for User {
     fn from(row: MySqlUserRow) -> Self {
         Self {
-            id: row.id,
-            role: row.role,
+            id: row.id.into(),
+            role: row.role.into(),
             profile: row.profile.into()
         }
     }
@@ -26,13 +26,13 @@ impl From<MySqlUserRow> for User {
 impl From<&User> for MySqlUserRow {
     fn from(entity: &User) -> Self {
         Self {
-            id: entity.id,
-            role: entity.role.clone(),
+            id: entity.id.into(),
+            role: entity.role.clone().into(),
             profile: MySqlProfileRow {
-                first_name: entity.profile.first_name.clone(),
-                last_name: entity.profile.last_name.clone(),
-                avatar_url: entity.profile.avatar_url.clone(),
-                bio: entity.profile.bio.clone()
+                first_name: entity.profile.first_name.clone().into(),
+                last_name: entity.profile.last_name.clone().map(|v| v.into()),
+                avatar_url: entity.profile.avatar_url.clone().map(|v| v.into()),
+                bio: entity.profile.bio.clone().map(|v| v.into())
             }
         }
     }
