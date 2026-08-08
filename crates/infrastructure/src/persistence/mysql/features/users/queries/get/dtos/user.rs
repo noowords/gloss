@@ -14,11 +14,11 @@ pub struct MySqlUserRow {
 }
 
 impl From<MySqlUserRow> for User {
-    fn from(model: MySqlUserRow) -> Self {
+    fn from(row: MySqlUserRow) -> Self {
         Self {
-            id: model.id,
-            role: model.role,
-            profile: model.profile.into()
+            id: row.id,
+            role: row.role,
+            profile: row.profile.into()
         }
     }
 }

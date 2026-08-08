@@ -9,12 +9,12 @@ pub struct MySqlProfileRow {
 }
 
 impl From<MySqlProfileRow> for Profile {
-    fn from(model: MySqlProfileRow) -> Self {
+    fn from(row: MySqlProfileRow) -> Self {
         Self {
-            first_name: model.first_name,
-            last_name: model.last_name,
-            avatar_url: model.avatar_url,
-            bio: model.bio
+            first_name: row.first_name,
+            last_name: row.last_name,
+            avatar_url: row.avatar_url,
+            bio: row.bio
         }
     }
 }
