@@ -5,11 +5,11 @@ use application::features::specialists::queries::get_by_user_id::{ GetSpecialist
 
 #[derive(Deserialize)]
 pub struct GetSpecialistByUserIdRequest {
-    pub user_id: Uuid
+    pub id: Uuid
 }
 
 impl From<GetSpecialistByUserIdRequest> for GetSpecialistByUserIdQuery {
     fn from(req: GetSpecialistByUserIdRequest) -> Self {
-        Self { user_id: req.user_id.into() }
+        Self { user_id: req.id.into() }
     }
 }
