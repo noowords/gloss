@@ -6,6 +6,18 @@ use domain::aggregates::user_identity::value_objects::{ UserIdentityProviderData
 #[sqlx(transparent)]
 pub struct MySqlUserIdentityProviderDataRow(JsonValue);
 
+impl From<MySqlUserIdentityProviderDataRow> for JsonValue {
+    fn from(row: MySqlUserIdentityProviderDataRow) -> Self {
+        row.0
+    }
+}
+
+impl From<JsonValue> for MySqlUserIdentityProviderDataRow {
+    fn from(value: JsonValue) -> Self {
+        Self(value)
+    }
+}
+
 impl TryFrom<MySqlUserIdentityProviderDataRow> for UserIdentityProviderData {
     type Error = anyhow::Error;
     

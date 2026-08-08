@@ -6,6 +6,18 @@ use domain::aggregates::service::value_objects::{ ServiceId };
 #[sqlx(transparent)]
 pub struct MySqlServiceIdRow(Uuid);
 
+impl From<MySqlServiceIdRow> for Uuid {
+    fn from(row: MySqlServiceIdRow) -> Self {
+        row.0
+    }
+}
+
+impl From<Uuid> for MySqlServiceIdRow {
+    fn from(value: Uuid) -> Self {
+        Self(value)
+    }
+}
+
 impl From<MySqlServiceIdRow> for ServiceId {
     fn from(row: MySqlServiceIdRow) -> Self {
         row.0.into()

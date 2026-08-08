@@ -6,6 +6,18 @@ use domain::aggregates::appointment::value_objects::{ AppointmentId };
 #[sqlx(transparent)]
 pub struct MySqlAppointmentIdRow(Uuid);
 
+impl From<MySqlAppointmentIdRow> for Uuid {
+    fn from(row: MySqlAppointmentIdRow) -> Self {
+        row.0
+    }
+}
+
+impl From<Uuid> for MySqlAppointmentIdRow {
+    fn from(value: Uuid) -> Self {
+        Self(value)
+    }
+}
+
 impl From<MySqlAppointmentIdRow> for AppointmentId {
     fn from(row: MySqlAppointmentIdRow) -> Self {
         row.0.into()

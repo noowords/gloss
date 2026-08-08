@@ -4,6 +4,18 @@ use domain::aggregates::user::value_objects::{ UserRole };
 #[sqlx(transparent)]
 pub struct MySqlUserRoleRow(String);
 
+impl From<MySqlUserRoleRow> for String {
+    fn from(row: MySqlUserRoleRow) -> Self {
+        row.0
+    }
+}
+
+impl From<String> for MySqlUserRoleRow {
+    fn from(value: String) -> Self {
+        Self(value)
+    }
+}
+
 impl TryFrom<MySqlUserRoleRow> for UserRole {
     type Error = anyhow::Error;
 

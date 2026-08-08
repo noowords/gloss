@@ -4,6 +4,18 @@ use domain::aggregates::profile::value_objects::{ ProfileLastName };
 #[sqlx(transparent)]
 pub struct MySqlProfileLastNameRow(String);
 
+impl From<MySqlProfileLastNameRow> for String {
+    fn from(row: MySqlProfileLastNameRow) -> Self {
+        row.0
+    }
+}
+
+impl From<String> for MySqlProfileLastNameRow {
+    fn from(value: String) -> Self {
+        Self(value)
+    }
+}
+
 impl From<MySqlProfileLastNameRow> for ProfileLastName {
     fn from(row: MySqlProfileLastNameRow) -> Self {
         row.0.into()

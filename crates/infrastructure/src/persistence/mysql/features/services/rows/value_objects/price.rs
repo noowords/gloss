@@ -6,6 +6,18 @@ use domain::aggregates::service::value_objects::{ ServicePrice };
 #[sqlx(transparent)]
 pub struct MySqlServicePriceRow(BigDecimal);
 
+impl From<MySqlServicePriceRow> for BigDecimal {
+    fn from(row: MySqlServicePriceRow) -> Self {
+        row.0
+    }
+}
+
+impl From<BigDecimal> for MySqlServicePriceRow {
+    fn from(value: BigDecimal) -> Self {
+        Self(value)
+    }
+}
+
 impl TryFrom<MySqlServicePriceRow> for ServicePrice {
     type Error = anyhow::Error;
     

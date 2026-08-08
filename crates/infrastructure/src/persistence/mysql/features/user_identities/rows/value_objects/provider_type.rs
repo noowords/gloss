@@ -4,6 +4,18 @@ use domain::aggregates::user_identity::value_objects::{ UserIdentityProviderType
 #[sqlx(transparent)]
 pub struct MySqlUserIdentityProviderTypeRow(String);
 
+impl From<MySqlUserIdentityProviderTypeRow> for String {
+    fn from(row: MySqlUserIdentityProviderTypeRow) -> Self {
+        row.0
+    }
+}
+
+impl From<String> for MySqlUserIdentityProviderTypeRow {
+    fn from(value: String) -> Self {
+        Self(value)
+    }
+}
+
 impl TryFrom<MySqlUserIdentityProviderTypeRow> for UserIdentityProviderType {
     type Error = anyhow::Error;
     

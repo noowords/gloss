@@ -4,6 +4,18 @@ use domain::aggregates::otp::value_objects::{ OtpPhone };
 #[sqlx(transparent)]
 pub struct MySqlOtpPhoneRow(String);
 
+impl From<MySqlOtpPhoneRow> for String {
+    fn from(row: MySqlOtpPhoneRow) -> Self {
+        row.0
+    }
+}
+
+impl From<String> for MySqlOtpPhoneRow {
+    fn from(value: String) -> Self {
+        Self(value)
+    }
+}
+
 impl TryFrom<MySqlOtpPhoneRow> for OtpPhone {
     type Error = anyhow::Error;
 

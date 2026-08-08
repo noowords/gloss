@@ -6,6 +6,18 @@ use domain::aggregates::appointment::value_objects::{ AppointmentDate };
 #[sqlx(transparent)]
 pub struct MySqlAppointmentDateRow(NaiveDate);
 
+impl From<MySqlAppointmentDateRow> for NaiveDate {
+    fn from(row: MySqlAppointmentDateRow) -> Self {
+        row.0
+    }
+}
+
+impl From<NaiveDate> for MySqlAppointmentDateRow {
+    fn from(value: NaiveDate) -> Self {
+        Self(value)
+    }
+}
+
 impl From<MySqlAppointmentDateRow> for AppointmentDate {
     fn from(row: MySqlAppointmentDateRow) -> Self {
         row.0.into()
