@@ -59,6 +59,8 @@ CREATE TABLE services (
     id BINARY(16) NOT NULL,
     category VARCHAR(100) NOT NULL,
     name VARCHAR(100) NOT NULL,
+    description VARCHAR(512) DEFAULT NULL,
+    cover_url VARCHAR(512) DEFAULT NULL,
     price DECIMAL(10, 2) NOT NULL,
     duration INT UNSIGNED NOT NULL,
     is_active TINYINT(1) DEFAULT '1',
