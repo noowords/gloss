@@ -4,5 +4,6 @@ pub mod otps;
 pub mod profiles;
 pub mod specialists;
 pub mod services;
+pub mod specialist_services;
 pub mod appointments;
 pub mod appointment_services;
