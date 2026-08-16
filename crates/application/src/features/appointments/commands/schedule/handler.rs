@@ -29,8 +29,10 @@ impl CommandHandler<ScheduleAppointmentCommand> for ScheduleAppointmentCommandHa
             .map(|service_uuid| {
                 Service::restore(
                     (*service_uuid).into(),
-                    command.specialist_id.into(),
+                    "manicure".try_into().unwrap(),
                     "Fake service".into(),
+                    None,
+                    None,
                     "1500.00".try_into().unwrap(),
                     60.into(),
                     true.into()
