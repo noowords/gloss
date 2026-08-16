@@ -27,6 +27,10 @@ use application::{
         appointments::{
             commands::{
                 schedule::{ ScheduleAppointmentCommandHandler }
+            },
+            queries::{
+                get::{ GetAppointmentsQueryHandler },
+                get_by_id::{ GetAppointmentByIdQueryHandler }
             }
         }
     }
@@ -57,6 +61,10 @@ use infrastructure::persistence::mysql::{
         appointments::{
             commands::{
                 schedule::{ MySqlScheduleAppointmentCommandService }
+            },
+            queries::{
+                get::{ MySqlGetAppointmentsQueryService },
+                get_by_id::{ MySqlGetAppointmentByIdQueryService }
             }
         }
     }
@@ -175,6 +183,24 @@ pub async fn build_http() -> Result<HttpApplication, anyhow::Error> {
         GetSpecialistServicesByUserIdQueryHandler::build(
             match database_type.as_str() {
                 "mysql" => Arc::new(MySqlGetSpecialistServicesByUserIdQueryService::default()),
+                _ => anyhow::bail!("Unsupported database type: {}", database_type)
+            }
+        )
+    );
+    
+    query_bus.register(
+        GetAppointmentsQueryHandler::build(
+            match database_type.as_str() {
+                "mysql" => Arc::new(MySqlGetAppointmentsQueryService::default()),
+                _ => anyhow::bail!("Unsupported database type: {}", database_type)
+            }
+        )
+    );
+    
+    query_bus.register(
+        GetAppointmentByIdQueryHandler::build(
+            match database_type.as_str() {
+                "mysql" => Arc::new(MySqlGetAppointmentByIdQueryService::default()),
                 _ => anyhow::bail!("Unsupported database type: {}", database_type)
             }
         )
