@@ -35,14 +35,6 @@ CREATE TABLE otps (
     KEY idx_phone_code (phone, code)
 );
 
-CREATE TABLE specialists (
-    user_id BINARY(16) NOT NULL,
-
-    PRIMARY KEY (user_id),
-    
-    CONSTRAINT fk_specialist_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-);
-
 CREATE TABLE profiles (
     user_id BINARY(16) NOT NULL,
     first_name VARCHAR(128) NOT NULL,
@@ -55,20 +47,39 @@ CREATE TABLE profiles (
     CONSTRAINT fk_profile_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
+CREATE TABLE specialists (
+    user_id BINARY(16) NOT NULL,
+
+    PRIMARY KEY (user_id),
+    
+    CONSTRAINT fk_specialist_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
 CREATE TABLE services (
     id BINARY(16) NOT NULL,
-    specialist_id BINARY(16) NOT NULL,
+    category VARCHAR(100) NOT NULL,
     name VARCHAR(100) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     duration INT UNSIGNED NOT NULL,
-    is_active TINYINT(1) DEFAULT '1',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   
     PRIMARY KEY (id),
+    UNIQUE KEY uniq_category_name (category, name)
+);
+
+CREATE TABLE specialist_services (
+    service_id BINARY(16) NOT NULL,
+    specialist_id BINARY(16) NOT NULL,
+    is_active TINYINT(1) DEFAULT '1',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+    PRIMARY KEY (service_id, specialist_id),
     KEY idx_specialist_active (specialist_id, is_active),
     
-    CONSTRAINT fk_service_specialist FOREIGN KEY (specialist_id) REFERENCES specialists (user_id) ON DELETE CASCADE
+    CONSTRAINT fk_spec_services_specialist FOREIGN KEY (specialist_id) REFERENCES specialists (user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_spec_services_service FOREIGN KEY (service_id) REFERENCES services (id) ON DELETE RESTRICT
 );
 
 CREATE TABLE appointments (
@@ -100,5 +111,5 @@ CREATE TABLE appointment_services (
     PRIMARY KEY (appointment_id, service_id),
     
     CONSTRAINT fk_appointment_services_appointment FOREIGN KEY (appointment_id) REFERENCES appointments (id) ON DELETE CASCADE,
-    CONSTRAINT fk_appointment_services_service FOREIGN KEY (service_id) REFERENCES services (id)
+    CONSTRAINT fk_appointment_services_service FOREIGN KEY (service_id) REFERENCES services (id) ON DELETE RESTRICT
 );
