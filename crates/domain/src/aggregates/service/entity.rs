@@ -1,12 +1,12 @@
-use crate::aggregates::user::value_objects::{ UserId };
-
-use super::value_objects::{ ServiceId, ServiceName, ServicePrice, ServiceDuration, ServiceIsActive };
+use super::value_objects::{ ServiceId, ServiceCategory, ServiceName, ServiceDescription, ServiceCoverUrl, ServicePrice, ServiceDuration, ServiceIsActive };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Service {
     id: ServiceId,
-    specialist_id: UserId,
+    category: ServiceCategory,
     name: ServiceName,
+    description: Option<ServiceDescription>,
+    cover_url: Option<ServiceCoverUrl>,
     price: ServicePrice,
     duration: ServiceDuration,
     is_active: ServiceIsActive
@@ -14,16 +14,20 @@ pub struct Service {
 
 impl Service {
     pub fn create(
-        specialist_id: UserId,
+        category: ServiceCategory,
         name: ServiceName,
+        description: Option<ServiceDescription>,
+        cover_url: Option<ServiceCoverUrl>,
         price: ServicePrice,
         duration: ServiceDuration,
         is_active: ServiceIsActive
     ) -> Self {
         Self {
             id: ServiceId::generate(),
-            specialist_id,
+            category,
             name,
+            description,
+            cover_url,
             price,
             duration,
             is_active
@@ -32,16 +36,20 @@ impl Service {
     
     pub fn restore(
         id: ServiceId,
-        specialist_id: UserId,
+        category: ServiceCategory,
         name: ServiceName,
+        description: Option<ServiceDescription>,
+        cover_url: Option<ServiceCoverUrl>,
         price: ServicePrice,
         duration: ServiceDuration,
         is_active: ServiceIsActive
     ) -> Self {
         Self {
             id,
-            specialist_id,
+            category,
             name,
+            description,
+            cover_url,
             price,
             duration,
             is_active
@@ -52,8 +60,8 @@ impl Service {
         self.id
     }
 
-    pub fn specialist_id(&self) -> UserId {
-        self.specialist_id
+    pub fn category(&self) -> ServiceCategory {
+        self.category.clone()
     }
 
     pub fn name(&self) -> ServiceName {
@@ -62,6 +70,14 @@ impl Service {
 
     pub fn price(&self) -> ServicePrice {
         self.price.clone()
+    }
+
+    pub fn description(&self) -> Option<ServiceDescription> {
+        self.description.clone()
+    }
+
+    pub fn cover_url(&self) -> Option<ServiceCoverUrl> {
+        self.cover_url.clone()
     }
 
     pub fn duration(&self) -> ServiceDuration {
