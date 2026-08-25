@@ -54,4 +54,8 @@ impl Otp {
     pub fn code(&self) -> OtpCode {
         self.code.clone()
     }
+
+    pub fn expires_at(&self) -> OtpExpiresAt {
+        self.expires_at.clone()
+    }
 }
