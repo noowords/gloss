@@ -362,6 +362,7 @@ dependencies = [
  "anyhow",
  "bigdecimal",
  "chrono",
+ "rand 0.10.2",
  "uuid",
 ]
 
