@@ -1,11 +1,12 @@
-use super::value_objects::{ OtpId, OtpProviderType, OtpProviderKey, OtpCode };
+use super::value_objects::{ OtpId, OtpProviderType, OtpProviderKey, OtpCode, OtpExpiresAt };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Otp {
     id: OtpId,
     provider_type: OtpProviderType,
     provider_key: OtpProviderKey,
-    code: OtpCode
+    code: OtpCode,
+    expires_at: OtpExpiresAt
 }
 
 impl Otp {
@@ -17,7 +18,8 @@ impl Otp {
             id: OtpId::generate(),
             provider_type,
             provider_key,
-            code: OtpCode::generate_random_numeric(6)
+            code: OtpCode::generate_random_numeric(6),
+            expires_at: OtpExpiresAt::in_minutes(10)
         }
     }
 
@@ -25,13 +27,15 @@ impl Otp {
         id: OtpId,
         provider_type: OtpProviderType,
         provider_key: OtpProviderKey,
-        code: OtpCode
+        code: OtpCode,
+        expires_at: OtpExpiresAt
     ) -> Self {
         Self {
             id,
             provider_type,
             provider_key,
-            code
+            code,
+            expires_at
         }
     }
 
