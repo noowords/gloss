@@ -1,32 +1,37 @@
-use super::value_objects::{ OtpId, OtpPhone, OtpCode };
+use super::value_objects::{ OtpId, OtpProviderType, OtpProviderKey, OtpCode };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Otp {
     id: OtpId,
-    phone: OtpPhone,
+    provider_type: OtpProviderType,
+    provider_key: OtpProviderKey,
     code: OtpCode
 }
 
 impl Otp {
     pub fn create(
-        phone: OtpPhone,
+        provider_type: OtpProviderType,
+        provider_key: OtpProviderKey,
         code: OtpCode
     ) -> Self {
         Self {
             id: OtpId::generate(),
-            phone,
+            provider_type,
+            provider_key,
             code
         }
     }
-    
+
     pub fn restore(
         id: OtpId,
-        phone: OtpPhone,
+        provider_type: OtpProviderType,
+        provider_key: OtpProviderKey,
         code: OtpCode
     ) -> Self {
         Self {
             id,
-            phone,
+            provider_type,
+            provider_key,
             code
         }
     }
@@ -35,8 +40,12 @@ impl Otp {
         self.id
     }
 
-    pub fn phone(&self) -> OtpPhone {
-        self.phone.clone()
+    pub fn provider_type(&self) -> OtpProviderType {
+        self.provider_type
+    }
+
+    pub fn provider_key(&self) -> OtpProviderKey {
+        self.provider_key.clone()
     }
 
     pub fn code(&self) -> OtpCode {
