@@ -8,9 +8,6 @@ use application::{
     },
     features::{
         users::{
-            commands::{
-                register::{ RegisterUserCommandHandler }
-            },
             queries::{
                 get::{ GetUsersQueryHandler },
                 get_by_id::{ GetUserByIdQueryHandler },
@@ -42,9 +39,6 @@ use infrastructure::persistence::mysql::{
     },
     features::{
         users::{
-            commands::{
-                register::{ MySqlRegisterUserCommandService }
-            },
             queries::{
                 get::{ MySqlGetUsersQueryService },
                 get_by_id::{ MySqlGetUserByIdQueryService },
@@ -113,15 +107,6 @@ pub async fn build_http() -> Result<HttpApplication, anyhow::Error> {
     };
 
     let mut command_bus = CommandBus::new(command_provider);
-
-    command_bus.register(
-        RegisterUserCommandHandler::build(
-            match database_type.as_str() {
-                "mysql" => Arc::new(MySqlRegisterUserCommandService::default()),
-                _ => anyhow::bail!("Unsupported database type: {}", database_type)
-            }
-        )
-    );
 
     command_bus.register(
         ScheduleAppointmentCommandHandler::build(
