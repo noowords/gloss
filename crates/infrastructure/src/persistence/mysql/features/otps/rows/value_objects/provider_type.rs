@@ -1,4 +1,4 @@
-use domain::aggregates::user_identity::value_objects::{ OtpProviderType };
+use domain::aggregates::otp::value_objects::{ OtpProviderType };
 
 #[derive(Debug, Clone, PartialEq, Eq, sqlx::Type)]
 #[sqlx(transparent)]
