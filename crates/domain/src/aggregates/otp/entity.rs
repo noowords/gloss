@@ -9,16 +9,15 @@ pub struct Otp {
 }
 
 impl Otp {
-    pub fn create(
+    pub fn generate(
         provider_type: OtpProviderType,
-        provider_key: OtpProviderKey,
-        code: OtpCode
+        provider_key: OtpProviderKey
     ) -> Self {
         Self {
             id: OtpId::generate(),
             provider_type,
             provider_key,
-            code
+            code: OtpCode::generate_random_numeric(6)
         }
     }
 
