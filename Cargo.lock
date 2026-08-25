@@ -847,6 +847,7 @@ dependencies = [
  "bigdecimal",
  "chrono",
  "domain",
+ "rand 0.10.2",
  "serde",
  "sqlx",
  "uuid",
