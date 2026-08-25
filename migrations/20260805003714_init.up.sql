@@ -27,12 +27,14 @@ CREATE TABLE user_identities (
 
 CREATE TABLE otps (
     id BINARY(16) NOT NULL,
-    phone VARCHAR(20) NOT NULL,
+    provider_type VARCHAR(64) NOT NULL,
+    provider_key VARCHAR(256) NOT NULL,
     code VARCHAR(6) NOT NULL,
     expires_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    KEY idx_phone_code (phone, code)
+    PRIMARY KEY (id),
+    UNIQUE KEY uniq_provider_key_code (provider_type, provider_key, code)
 );
 
 CREATE TABLE profiles (
