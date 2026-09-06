@@ -2,7 +2,7 @@ use bigdecimal::{ BigDecimal };
 
 use domain::aggregates::appointment_service::value_objects::{ AppointmentServiceLockedPrice };
 
-#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type)]
+#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
 pub struct MySqlAppointmentLockedPriceRow(BigDecimal);
 

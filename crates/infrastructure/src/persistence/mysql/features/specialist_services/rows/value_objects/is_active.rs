@@ -1,6 +1,6 @@
 use domain::aggregates::specialist_service::value_objects::{ SpecialistServiceIsActive };
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, sqlx::Type)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
 pub struct MySqlSpecialistServiceIsActiveRow(bool);
 

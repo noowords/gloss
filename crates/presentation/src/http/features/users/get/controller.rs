@@ -14,8 +14,8 @@ pub async fn get(
     State(state): State<HttpState>
 ) -> Result<(StatusCode, Json<GetUsersResponse>), StatusCode> {
     let view = state.query_bus.dispatch::<GetUsersQuery>(GetUsersQuery { }).await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .map_err(|e| StatusCode::INTERNAL_SERVER_ERROR)?
+        .map_err(|e| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     let response = view.into();
     

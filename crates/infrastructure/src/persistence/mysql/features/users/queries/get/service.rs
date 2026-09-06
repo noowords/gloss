@@ -33,7 +33,7 @@ impl GetUsersQueryService for MySqlGetUsersQueryService {
                 p.avatar_url AS avatar_url,
                 p.bio        AS bio
             FROM users u
-            LEFT JOIN profiles p ON u.id = p.user_id
+            INNER JOIN profiles p ON u.id = p.user_id
             WHERE u.deleted_at IS NULL
             ORDER BY u.created_at DESC
             "#

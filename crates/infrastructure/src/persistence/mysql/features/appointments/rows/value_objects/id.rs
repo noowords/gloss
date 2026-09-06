@@ -2,7 +2,7 @@ use uuid::{ Uuid };
 
 use domain::aggregates::appointment::value_objects::{ AppointmentId };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, sqlx::Type)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
 pub struct MySqlAppointmentIdRow(Uuid);
 

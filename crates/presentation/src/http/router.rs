@@ -5,6 +5,8 @@ use super::{ HttpState, features::* };
 pub fn create_http_router(state: HttpState) -> Router {
     Router::new()
         .route("/health", get(root::health))
+        .route("/auth/otp/phone", post(auth::request_phone_otp))
+        .route("/auth/otp/verify", post(auth::verify_otp))
         .route("/users", get(users::get))
         .route("/users/{id}", get(users::get_by_id))
         .route("/users/{id}/profile", get(users::get_profile_by_id))

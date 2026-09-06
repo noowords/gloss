@@ -1,6 +1,6 @@
 use domain::aggregates::otp::value_objects::{ OtpProviderType };
 
-#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type)]
+#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
 pub struct MySqlOtpProviderTypeRow(String);
 

@@ -7,6 +7,12 @@ use application::{
         query::{ QueryBus }
     },
     features::{
+        auth::{
+            commands::{
+                request_otp::{ RequestOtpCommandHandler },
+                verify_otp::{ VerifyOtpCommandHandler }
+            }
+        },
         users::{
             queries::{
                 get::{ GetUsersQueryHandler },
@@ -38,6 +44,12 @@ use infrastructure::persistence::mysql::{
         query::{ MySqlQueryContextProvider }
     },
     features::{
+        otps::{
+            commands::{
+                request_otp::{ MySqlRequestOtpCommandService },
+                verify_otp::{ MySqlVerifyOtpCommandService }
+            }
+        },
         users::{
             queries::{
                 get::{ MySqlGetUsersQueryService },
@@ -107,6 +119,24 @@ pub async fn build_http() -> Result<HttpApplication, anyhow::Error> {
     };
 
     let mut command_bus = CommandBus::new(command_provider);
+
+    command_bus.register(
+        RequestOtpCommandHandler::build(
+            match database_type.as_str() {
+                "mysql" => Arc::new(MySqlRequestOtpCommandService::default()),
+                _ => anyhow::bail!("Unsupported database type: {}", database_type)
+            }
+        )
+    );
+
+    command_bus.register(
+        VerifyOtpCommandHandler::build(
+            match database_type.as_str() {
+                "mysql" => Arc::new(MySqlVerifyOtpCommandService::default()),
+                _ => anyhow::bail!("Unsupported database type: {}", database_type)
+            }
+        )
+    );
 
     command_bus.register(
         ScheduleAppointmentCommandHandler::build(

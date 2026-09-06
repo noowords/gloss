@@ -2,7 +2,7 @@ use chrono::{ NaiveTime };
 
 use domain::aggregates::appointment::value_objects::{ AppointmentTime };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, sqlx::Type)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
 pub struct MySqlAppointmentTimeRow(NaiveTime);
 

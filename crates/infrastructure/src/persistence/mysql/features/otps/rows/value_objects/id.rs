@@ -2,7 +2,7 @@ use uuid::{ Uuid };
 
 use domain::aggregates::otp::value_objects::{ OtpId };
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, sqlx::Type)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
 pub struct MySqlOtpIdRow(Uuid);
 

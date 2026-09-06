@@ -2,7 +2,7 @@ use sqlx::types::{ JsonValue };
 
 use domain::aggregates::user_identity::value_objects::{ UserIdentityProviderData };
 
-#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type)]
+#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
 pub struct MySqlUserIdentityProviderDataRow(JsonValue);
 

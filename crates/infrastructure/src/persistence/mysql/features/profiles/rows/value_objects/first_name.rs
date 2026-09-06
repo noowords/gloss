@@ -1,6 +1,6 @@
 use domain::aggregates::profile::value_objects::{ ProfileFirstName };
 
-#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type)]
+#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
 pub struct MySqlProfileFirstNameRow(String);
 

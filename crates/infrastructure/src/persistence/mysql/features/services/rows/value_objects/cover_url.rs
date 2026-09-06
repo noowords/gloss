@@ -1,6 +1,6 @@
 use domain::aggregates::service::value_objects::{ ServiceCoverUrl };
 
-#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type)]
+#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
 pub struct MySqlServiceCoverUrlRow(String);
 

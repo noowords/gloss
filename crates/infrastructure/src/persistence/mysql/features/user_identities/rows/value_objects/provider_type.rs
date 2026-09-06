@@ -1,6 +1,6 @@
 use domain::aggregates::user_identity::value_objects::{ UserIdentityProviderType };
 
-#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type)]
+#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
 pub struct MySqlUserIdentityProviderTypeRow(String);
 

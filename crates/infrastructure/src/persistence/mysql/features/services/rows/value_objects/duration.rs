@@ -1,6 +1,6 @@
 use domain::aggregates::service::value_objects::{ ServiceDuration };
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, sqlx::Type)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
 pub struct MySqlServiceDurationRow(u32);
 

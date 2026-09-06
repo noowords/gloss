@@ -2,7 +2,7 @@ use uuid::{ Uuid };
 
 use domain::aggregates::user_identity::value_objects::{ UserIdentityId };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, sqlx::Type)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
 pub struct MySqlUserIdentityIdRow(Uuid);
 

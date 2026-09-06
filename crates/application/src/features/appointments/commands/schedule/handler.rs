@@ -22,7 +22,8 @@ impl ScheduleAppointmentCommandHandler {
 #[async_trait]
 impl CommandHandler<ScheduleAppointmentCommand> for ScheduleAppointmentCommandHandler {
     async fn handle(&self, context: &mut dyn CommandContext, command: ScheduleAppointmentCommand) -> Result<
-        (), <ScheduleAppointmentCommand as Command>::Error
+        <ScheduleAppointmentCommand as Command>::Result,
+        <ScheduleAppointmentCommand as Command>::Error
     > {
         let services: Vec<Service> = command.service_ids
             .iter()

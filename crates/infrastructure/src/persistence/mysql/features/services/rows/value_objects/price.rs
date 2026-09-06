@@ -2,7 +2,7 @@ use bigdecimal::{ BigDecimal };
 
 use domain::aggregates::service::value_objects::{ ServicePrice };
 
-#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type)]
+#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
 pub struct MySqlServicePriceRow(BigDecimal);
 

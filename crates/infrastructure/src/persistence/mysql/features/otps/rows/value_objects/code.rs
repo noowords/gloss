@@ -1,6 +1,6 @@
 use domain::aggregates::otp::value_objects::{ OtpCode };
 
-#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type)]
+#[derive(Debug, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
 pub struct MySqlOtpCodeRow(String);
 
