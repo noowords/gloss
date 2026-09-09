@@ -6,7 +6,7 @@ use domain::aggregates::otp::{
 };
 
 use application::contracts::cqrs::command::{ CommandContext };
-use application::features::auth::commands::request_otp::{ RequestOtpCommandService };
+use application::features::auth::commands::send_otp::{ SendOtpCommandService };
 
 use crate::persistence::mysql::{
     contracts::cqrs::command::{ MySqlCommandContext },
@@ -17,10 +17,10 @@ use crate::persistence::mysql::{
 };
 
 #[derive(Default)]
-pub struct MySqlRequestOtpCommandService;
+pub struct MySqlSendOtpCommandService;
 
 #[async_trait]
-impl RequestOtpCommandService for MySqlRequestOtpCommandService {
+impl SendOtpCommandService for MySqlSendOtpCommandService {
     async fn save_otp(&self, context: &mut dyn CommandContext, otp: &Otp) -> Result<(), anyhow::Error> {
         let tx = context.as_any_mut()
             .downcast_mut::<MySqlCommandContext>()

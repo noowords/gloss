@@ -9,7 +9,7 @@ use application::{
     features::{
         auth::{
             commands::{
-                request_otp::{ RequestOtpCommandHandler },
+                send_otp::{ SendOtpCommandHandler },
                 verify_otp::{ VerifyOtpCommandHandler }
             }
         },
@@ -46,7 +46,7 @@ use infrastructure::persistence::mysql::{
     features::{
         otps::{
             commands::{
-                request_otp::{ MySqlRequestOtpCommandService },
+                send_otp::{ MySqlSendOtpCommandService },
                 verify_otp::{ MySqlVerifyOtpCommandService }
             }
         },
@@ -121,9 +121,9 @@ pub async fn build_http() -> Result<HttpApplication, anyhow::Error> {
     let mut command_bus = CommandBus::new(command_provider);
 
     command_bus.register(
-        RequestOtpCommandHandler::build(
+        SendOtpCommandHandler::build(
             match database_type.as_str() {
-                "mysql" => Arc::new(MySqlRequestOtpCommandService::default()),
+                "mysql" => Arc::new(MySqlSendOtpCommandService::default()),
                 _ => anyhow::bail!("Unsupported database type: {}", database_type)
             }
         )

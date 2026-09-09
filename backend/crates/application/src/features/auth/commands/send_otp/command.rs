@@ -1,14 +1,14 @@
 use crate::contracts::cqrs::command::{ Command };
 
-use super::{ RequestOtpCommandResult };
+use super::{ SendOtpCommandResult };
 
 #[derive(Clone)]
-pub struct RequestOtpCommand {
+pub struct SendOtpCommand {
     pub provider_type: String,
     pub provider_key: String
 }
 
-impl Command for RequestOtpCommand {
-    type Result = RequestOtpCommandResult;
+impl Command for SendOtpCommand {
+    type Result = SendOtpCommandResult;
     type Error = anyhow::Error;
 }

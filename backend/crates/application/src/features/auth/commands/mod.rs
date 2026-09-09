@@ -1,2 +1,2 @@
-pub mod request_otp;
+pub mod send_otp;
 pub mod verify_otp;

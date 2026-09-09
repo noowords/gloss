@@ -8,7 +8,7 @@ use domain::aggregates::otp::{
 use crate::contracts::cqrs::command::{ CommandContext };
 
 #[async_trait]
-pub trait RequestOtpCommandService: Send + Sync {
+pub trait SendOtpCommandService: Send + Sync {
     async fn save_otp(&self, ctx: &mut dyn CommandContext, otp: &Otp) -> Result<(), anyhow::Error>;
 
     async fn delete_old_otps(&self, ctx: &mut dyn CommandContext, provider_type: &OtpProviderType, provider_key: &OtpProviderKey) -> Result<(), anyhow::Error>;

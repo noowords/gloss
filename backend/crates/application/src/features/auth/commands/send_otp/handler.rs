@@ -4,23 +4,23 @@ use async_trait::{ async_trait };
 use domain::aggregates::otp::{ Otp };
 
 use crate::contracts::cqrs::command::{ Command, CommandHandler, CommandContext };
-use super::{ RequestOtpCommand, RequestOtpCommandService };
+use super::{ SendOtpCommand, SendOtpCommandService };
 
-pub struct RequestOtpCommandHandler {
-    service: Arc<dyn RequestOtpCommandService>
+pub struct SendOtpCommandHandler {
+    service: Arc<dyn SendOtpCommandService>
 }
 
-impl RequestOtpCommandHandler {
-    pub fn build(service: Arc<dyn RequestOtpCommandService>) -> Self {
+impl SendOtpCommandHandler {
+    pub fn build(service: Arc<dyn SendOtpCommandService>) -> Self {
         Self { service }
     }
 }
 
 #[async_trait]
-impl CommandHandler<RequestOtpCommand> for RequestOtpCommandHandler {
-    async fn handle(&self, context: &mut dyn CommandContext, command: RequestOtpCommand) -> Result<
-        <RequestOtpCommand as Command>::Result,
-        <RequestOtpCommand as Command>::Error
+impl CommandHandler<SendOtpCommand> for SendOtpCommandHandler {
+    async fn handle(&self, context: &mut dyn CommandContext, command: SendOtpCommand) -> Result<
+        <SendOtpCommand as Command>::Result,
+        <SendOtpCommand as Command>::Error
     > {
         self.service.delete_old_otps(
             context,
