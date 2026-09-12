@@ -2,6 +2,7 @@ use std::sync::{ Arc };
 use tokio::net::{ TcpListener };
 
 use application::{
+    contracts::{ TokenService },
     pipeline::{
         command::{ CommandBus },
         query::{ QueryBus }
@@ -10,14 +11,18 @@ use application::{
         auth::{
             commands::{
                 send_otp::{ SendOtpCommandHandler },
-                verify_otp::{ VerifyOtpCommandHandler }
+                verify_otp::{ VerifyOtpCommandHandler },
+                refresh_tokens::{ RefreshTokensCommandHandler }
             }
         },
-        users::{
+        account::{
+            commands::{
+                create_profile::{ CreateAccountProfileCommandHandler },
+                update_profile::{ UpdateAccountProfileCommandHandler }
+            },
             queries::{
-                get::{ GetUsersQueryHandler },
-                get_by_id::{ GetUserByIdQueryHandler },
-                get_profile_by_id::{ GetUserProfileByIdQueryHandler }
+                get::{ GetAccountQueryHandler },
+                get_profile::{ GetAccountProfileQueryHandler }
             }
         },
         specialists::{
@@ -39,22 +44,25 @@ use application::{
     }
 };
 use infrastructure::persistence::mysql::{
-    contracts::cqrs::{
-        command::{ MySqlCommandContextProvider },
-        query::{ MySqlQueryContextProvider }
+    contracts::{
+        JwtTokenService,
+        cqrs::{
+            command::{ MySqlCommandContextProvider },
+            query::{ MySqlQueryContextProvider }
+        }
     },
     features::{
-        otps::{
-            commands::{
-                send_otp::{ MySqlSendOtpCommandService },
-                verify_otp::{ MySqlVerifyOtpCommandService }
+        users::{
+            MySqlUserCommandService,
+            queries::{
+                get_by_id::{ MySqlGetUserByIdQueryService }
             }
         },
-        users::{
+        otps::{ MySqlOtpCommandService },
+        profiles::{
+            MySqlProfileCommandService,
             queries::{
-                get::{ MySqlGetUsersQueryService },
-                get_by_id::{ MySqlGetUserByIdQueryService },
-                get_profile_by_id::{ MySqlGetUserProfileByIdQueryService }
+                get_by_user_id::{ MySqlGetProfileByUserIdQueryService }
             }
         },
         specialists::{
@@ -65,9 +73,7 @@ use infrastructure::persistence::mysql::{
             }
         },
         appointments::{
-            commands::{
-                schedule::{ MySqlScheduleAppointmentCommandService }
-            },
+            MySqlAppointmentCommandService,
             queries::{
                 get::{ MySqlGetAppointmentsQueryService },
                 get_by_id::{ MySqlGetAppointmentByIdQueryService }
@@ -83,8 +89,12 @@ pub struct HttpApplication {
 }
 
 impl HttpApplication {
-    fn new(command_bus: Arc<CommandBus>, query_bus: Arc<QueryBus>) -> Self {
-        let state = HttpState::new(command_bus, query_bus);
+    fn new(
+        command_bus: Arc<CommandBus>,
+        query_bus: Arc<QueryBus>,
+        token_service: Arc<dyn TokenService>
+    ) -> Self {
+        let state = HttpState::new(command_bus, query_bus, token_service);
         
         Self { state }
     }
@@ -118,108 +128,64 @@ pub async fn build_http() -> Result<HttpApplication, anyhow::Error> {
         _ => anyhow::bail!("Unsupported database type: {}", database_type)
     };
 
-    let mut command_bus = CommandBus::new(command_provider);
+    let token_service = Arc::new(JwtTokenService::new("eUDM8UQkdT0QAGknzfLMKzSF4pvqbou7rYamPjLeGBy".to_string()));
 
-    command_bus.register(
-        SendOtpCommandHandler::build(
-            match database_type.as_str() {
-                "mysql" => Arc::new(MySqlSendOtpCommandService::default()),
-                _ => anyhow::bail!("Unsupported database type: {}", database_type)
-            }
-        )
-    );
+    let user_service = Arc::new(MySqlUserCommandService::default());
+    let otp_service = Arc::new(MySqlOtpCommandService::default());
+    let profile_service = Arc::new(MySqlProfileCommandService::default());
+    let appointment_service = Arc::new(MySqlAppointmentCommandService::default());
 
-    command_bus.register(
-        VerifyOtpCommandHandler::build(
-            match database_type.as_str() {
-                "mysql" => Arc::new(MySqlVerifyOtpCommandService::default()),
-                _ => anyhow::bail!("Unsupported database type: {}", database_type)
-            }
-        )
-    );
+    let command_bus = CommandBus::new(command_provider)
+        .register(SendOtpCommandHandler::build(otp_service.clone()))
+        .register(VerifyOtpCommandHandler::build(otp_service, token_service.clone()))
+        .register(RefreshTokensCommandHandler::build(user_service, token_service.clone()))
+        .register(CreateAccountProfileCommandHandler::build(profile_service.clone()))
+        .register(UpdateAccountProfileCommandHandler::build(profile_service))
+        .register(ScheduleAppointmentCommandHandler::build(appointment_service));
 
-    command_bus.register(
-        ScheduleAppointmentCommandHandler::build(
-            match database_type.as_str() {
-                "mysql" => Arc::new(MySqlScheduleAppointmentCommandService::default()),
-                _ => anyhow::bail!("Unsupported database type: {}", database_type)
-            }
-        )
-    );
-
-    let mut query_bus = QueryBus::new(query_provider);
-
-    query_bus.register(
-        GetUsersQueryHandler::build(
-            match database_type.as_str() {
-                "mysql" => Arc::new(MySqlGetUsersQueryService::default()),
-                _ => anyhow::bail!("Unsupported database type: {}", database_type)
-            }
-        )
-    );
-
-    query_bus.register(
-        GetUserByIdQueryHandler::build(
+    let query_bus = QueryBus::new(query_provider)
+        .register(GetAccountQueryHandler::build(
             match database_type.as_str() {
                 "mysql" => Arc::new(MySqlGetUserByIdQueryService::default()),
                 _ => anyhow::bail!("Unsupported database type: {}", database_type)
             }
-        )
-    );
-    
-    query_bus.register(
-        GetUserProfileByIdQueryHandler::build(
+        ))
+        .register(GetAccountProfileQueryHandler::build(
             match database_type.as_str() {
-                "mysql" => Arc::new(MySqlGetUserProfileByIdQueryService::default()),
+                "mysql" => Arc::new(MySqlGetProfileByUserIdQueryService::default()),
                 _ => anyhow::bail!("Unsupported database type: {}", database_type)
             }
-        )
-    );
-    
-    query_bus.register(
-        GetSpecialistsQueryHandler::build(
+        ))
+        .register(GetSpecialistsQueryHandler::build(
             match database_type.as_str() {
                 "mysql" => Arc::new(MySqlGetSpecialistsQueryService::default()),
                 _ => anyhow::bail!("Unsupported database type: {}", database_type)
             }
-        )
-    );
-
-    query_bus.register(
-        GetSpecialistByUserIdQueryHandler::build(
+        ))
+        .register(GetSpecialistByUserIdQueryHandler::build(
             match database_type.as_str() {
                 "mysql" => Arc::new(MySqlGetSpecialistByUserIdQueryService::default()),
                 _ => anyhow::bail!("Unsupported database type: {}", database_type)
             }
-        )
-    );
-    
-    query_bus.register(
-        GetSpecialistServicesByUserIdQueryHandler::build(
+        ))
+        .register(GetSpecialistServicesByUserIdQueryHandler::build(
             match database_type.as_str() {
                 "mysql" => Arc::new(MySqlGetSpecialistServicesByUserIdQueryService::default()),
                 _ => anyhow::bail!("Unsupported database type: {}", database_type)
             }
-        )
-    );
-    
-    query_bus.register(
-        GetAppointmentsQueryHandler::build(
+        ))
+        .register(GetAppointmentsQueryHandler::build(
             match database_type.as_str() {
                 "mysql" => Arc::new(MySqlGetAppointmentsQueryService::default()),
                 _ => anyhow::bail!("Unsupported database type: {}", database_type)
             }
-        )
-    );
-    
-    query_bus.register(
-        GetAppointmentByIdQueryHandler::build(
+        ))
+        .register(GetAppointmentByIdQueryHandler::build(
             match database_type.as_str() {
                 "mysql" => Arc::new(MySqlGetAppointmentByIdQueryService::default()),
                 _ => anyhow::bail!("Unsupported database type: {}", database_type)
             }
-        )
-    );
+        ));
 
-    Ok(HttpApplication::new(Arc::new(command_bus), Arc::new(query_bus)))
+    Ok(HttpApplication::new(Arc::new(command_bus), Arc::new(query_bus), token_service))
 }

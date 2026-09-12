@@ -20,7 +20,7 @@ pub trait VerifyOtpCommandService: Send + Sync {
     
     async fn remove_otps(&self, ctx: &mut dyn CommandContext, provider_type: &OtpProviderType, provider_key: &OtpProviderKey) -> Result<(), anyhow::Error>;
 
-    async fn get_user_id(&self, ctx: &mut dyn CommandContext, provider_type: &OtpProviderType, provider_key: &OtpProviderKey) -> Result<Option<UserId>, anyhow::Error>;
+    async fn get_user_by_otp(&self, ctx: &mut dyn CommandContext, provider_type: &OtpProviderType, provider_key: &OtpProviderKey) -> Result<Option<User>, anyhow::Error>;
 
     async fn check_profile_exists(&self, ctx: &mut dyn CommandContext, user_id: &UserId) -> Result<bool, anyhow::Error>;
 

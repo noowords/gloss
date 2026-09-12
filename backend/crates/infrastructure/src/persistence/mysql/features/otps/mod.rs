@@ -1,2 +1,4 @@
+mod command_service;
 pub mod rows;
-pub mod commands;
+
+pub use command_service::{ MySqlOtpCommandService };

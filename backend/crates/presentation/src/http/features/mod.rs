@@ -1,5 +1,4 @@
-pub mod root;
 pub mod auth;
-pub mod users;
+pub mod account;
 pub mod specialists;
 pub mod appointments;

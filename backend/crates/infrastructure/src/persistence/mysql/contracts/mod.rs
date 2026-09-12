@@ -1,1 +1,4 @@
 pub mod cqrs;
+mod token_service;
+
+pub use token_service::{ JwtTokenService };

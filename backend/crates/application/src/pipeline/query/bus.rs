@@ -14,7 +14,7 @@ impl QueryBus {
         Self { provider, handlers: HashMap::new() }
     }
 
-    pub fn register<Q, H>(&mut self, handler: H) -> &mut Self
+    pub fn register<Q, H>(mut self, handler: H) -> Self
     where
         Q: Query,
         H: QueryHandler<Q>

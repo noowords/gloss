@@ -6,3 +6,6 @@ pub mod features;
 pub use state::{ HttpState };
 pub use router::{ create_http_router };
 pub use server::{ serve_http };
+
+mod auth_context;
+pub use auth_context::{ AuthContext };

@@ -14,7 +14,7 @@ impl CommandBus {
         Self { provider, handlers: HashMap::new() }
     }
 
-    pub fn register<C, H>(&mut self, handler: H) -> &mut Self
+    pub fn register<C, H>(mut self, handler: H) -> Self
     where
         C: Command,
         H: CommandHandler<C>

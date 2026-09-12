@@ -6,16 +6,20 @@ use domain::aggregates::{
     user_identity::{ UserIdentity }
 };
 
-use crate::contracts::cqrs::command::{ Command, CommandHandler, CommandContext };
+use crate::contracts::{
+    TokenService,
+    cqrs::command::{ Command, CommandHandler, CommandContext }
+};
 use super::{ VerifyOtpCommand, VerifyOtpCommandResult, VerifyOtpCommandService };
 
 pub struct VerifyOtpCommandHandler {
-    service: Arc<dyn VerifyOtpCommandService>
+    service: Arc<dyn VerifyOtpCommandService>,
+    token_service: Arc<dyn TokenService>
 }
 
 impl VerifyOtpCommandHandler {
-    pub fn build(service: Arc<dyn VerifyOtpCommandService>) -> Self {
-        Self { service }
+    pub fn build(service: Arc<dyn VerifyOtpCommandService>, token_service: Arc<dyn TokenService>) -> Self {
+        Self { service, token_service }
     }
 }
 
@@ -42,16 +46,15 @@ impl CommandHandler<VerifyOtpCommand> for VerifyOtpCommandHandler {
             &command.provider_key.clone().into(),
         ).await?;
 
-        match self.service.get_user_id(
+        let (user, has_profile) = match self.service.get_user_by_otp(
             context,
             &command.provider_type.clone().try_into()?,
             &command.provider_key.clone().into(),
         ).await? {
-            Some(user_id) => {
-                Ok(VerifyOtpCommandResult {
-                    user_id,
-                    has_profile: self.service.check_profile_exists(context, &user_id).await?
-                })
+            Some(user) => {
+                let has_profile = self.service.check_profile_exists(context, &user.id()).await?;
+                
+                (user, has_profile)
             }
             None => {
                 let user = User::create();
@@ -67,11 +70,15 @@ impl CommandHandler<VerifyOtpCommand> for VerifyOtpCommandHandler {
                 
                 self.service.save_user_identity(context, &user_identity).await?;
 
-                Ok(VerifyOtpCommandResult {
-                    user_id: user.id(),
-                    has_profile: false
-                })
+                (user, false)
             }
-        }
+        };
+
+        Ok(VerifyOtpCommandResult {
+            access_token: self.token_service.generate_access_token(user.id(), user.role())?,
+            refresh_token: self.token_service.generate_refresh_token(user.id())?,
+            user_id: user.id(),
+            has_profile
+        })
     }
 }

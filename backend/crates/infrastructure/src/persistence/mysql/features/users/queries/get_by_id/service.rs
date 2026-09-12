@@ -3,8 +3,8 @@ use async_trait::{ async_trait };
 use domain::aggregates::user::value_objects::{ UserId };
 use application::{
     contracts::cqrs::query::{ QueryContext },
-    features::users::queries::get_by_id::{
-        GetUserByIdQueryService,
+    features::account::queries::get::{
+        GetAccountQueryService,
         dtos::{ User }
     }
 };
@@ -20,7 +20,7 @@ use super::dtos::{ MySqlUserRow };
 pub struct MySqlGetUserByIdQueryService;
 
 #[async_trait]
-impl GetUserByIdQueryService for MySqlGetUserByIdQueryService {
+impl GetAccountQueryService for MySqlGetUserByIdQueryService {
     async fn get_user_by_id(&self, context: &dyn QueryContext, id: UserId) -> Result<Option<User>, anyhow::Error> {
         let pool = context.as_any()
             .downcast_ref::<MySqlQueryContext>()
@@ -33,13 +33,8 @@ impl GetUserByIdQueryService for MySqlGetUserByIdQueryService {
             r#"
             SELECT
                 u.id         AS id,
-                u.role       AS role,
-                p.first_name AS first_name,
-                p.last_name  AS last_name,
-                p.avatar_url AS avatar_url,
-                p.bio        AS bio
+                u.role       AS role
             FROM users u
-            LEFT JOIN profiles p ON u.id = p.user_id
             WHERE u.id = ? AND u.deleted_at IS NULL
             LIMIT 1
             "#

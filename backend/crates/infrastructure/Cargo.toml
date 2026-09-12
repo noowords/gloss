@@ -11,6 +11,7 @@ bigdecimal.workspace = true
 
 async-trait.workspace = true
 
+jsonwebtoken.workspace = true
 serde.workspace = true
 sqlx.workspace = true
 
