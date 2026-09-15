@@ -3,7 +3,10 @@ use chrono::{ Utc, Duration };
 use serde::{ Serialize, Deserialize };
 use jsonwebtoken::{ encode, decode, Header, EncodingKey, DecodingKey, Validation };
 
-use domain::aggregates::user::value_objects::{ UserId, UserRole };
+use domain::aggregates::users::{
+    user::value_objects::{ UserId },
+    user_role::value_objects::{ UserRoleName as UserRole }
+};
 use application::contracts::{ TokenService };
 
 #[derive(Serialize, Deserialize)]

@@ -2,8 +2,9 @@ use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
 use domain::aggregates::{
-    user::{ User },
-    user_identity::{ UserIdentity }
+    users::user::{ User },
+    users::user_provider::{ UserProvider },
+    users::user_role::value_objects::{ UserRoleName }
 };
 
 use crate::contracts::{
@@ -32,8 +33,9 @@ impl CommandHandler<VerifyOtpCommand> for VerifyOtpCommandHandler {
         let otp = self.service.get_otp(
             context,
             &command.provider_type.clone().try_into()?,
-            &command.provider_key.clone().into(),
-            &command.code.clone().into()
+            &command.provider_key.clone().try_into()?,
+            &"login".try_into()?,
+            &command.code.clone().into_bytes().try_into()?
         ).await?;
 
         if otp.is_none() {
@@ -43,13 +45,14 @@ impl CommandHandler<VerifyOtpCommand> for VerifyOtpCommandHandler {
         self.service.remove_otps(
             context,
             &command.provider_type.clone().try_into()?,
-            &command.provider_key.clone().into(),
+            &command.provider_key.clone().try_into()?,
+            &"login".try_into()?,
         ).await?;
 
         let (user, has_profile) = match self.service.get_user_by_otp(
             context,
             &command.provider_type.clone().try_into()?,
-            &command.provider_key.clone().into(),
+            &command.provider_key.clone().try_into()?,
         ).await? {
             Some(user) => {
                 let has_profile = self.service.check_profile_exists(context, &user.id()).await?;
@@ -57,25 +60,25 @@ impl CommandHandler<VerifyOtpCommand> for VerifyOtpCommandHandler {
                 (user, has_profile)
             }
             None => {
-                let user = User::create();
+                let user = User::create()?;
                 
                 self.service.save_user(context, &user).await?;
                 
-                let user_identity = UserIdentity::create(
+                let user_identity = UserProvider::create(
                     user.id(),
                     command.provider_type.clone().try_into()?,
-                    command.provider_key.clone().into(),
+                    command.provider_key.clone().try_into()?,
                     None
-                );
+                )?;
                 
-                self.service.save_user_identity(context, &user_identity).await?;
+                self.service.save_user_provider(context, &user_identity).await?;
 
                 (user, false)
             }
         };
 
         Ok(VerifyOtpCommandResult {
-            access_token: self.token_service.generate_access_token(user.id(), user.role())?,
+            access_token: self.token_service.generate_access_token(user.id(), UserRoleName::try_from("client")?)?,
             refresh_token: self.token_service.generate_refresh_token(user.id())?,
             user_id: user.id(),
             has_profile

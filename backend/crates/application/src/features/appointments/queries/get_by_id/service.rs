@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use domain::aggregates::appointment::value_objects::{ AppointmentId };
+use domain::aggregates::appointments::appointment::value_objects::{ AppointmentId };
 
 use crate::contracts::cqrs::query::{ QueryContext };
 

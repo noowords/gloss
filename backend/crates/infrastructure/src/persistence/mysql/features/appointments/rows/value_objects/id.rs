@@ -1,6 +1,6 @@
 use uuid::{ Uuid };
 
-use domain::aggregates::appointment::value_objects::{ AppointmentId };
+use domain::aggregates::appointments::appointment::value_objects::{ AppointmentId };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]

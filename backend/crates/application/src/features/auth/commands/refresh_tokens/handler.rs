@@ -5,6 +5,7 @@ use crate::contracts::{
     TokenService,
     cqrs::command::{ Command, CommandHandler, CommandContext }
 };
+use domain::aggregates::users::user_role::value_objects::{ UserRoleName };
 use super::{ RefreshTokensCommand, RefreshTokensCommandResult, RefreshTokensCommandService };
 
 pub struct RefreshTokensCommandHandler {
@@ -29,8 +30,8 @@ impl CommandHandler<RefreshTokensCommand> for RefreshTokensCommandHandler {
             context,
             &user_id
         ).await? {
-            Some(user) => (
-                user.role(),
+            Some(_user) => (
+                UserRoleName::try_from("client")?,
                 self.service.check_profile_exists(context, &user_id).await?
             ),
             None => anyhow::bail!("User not found")

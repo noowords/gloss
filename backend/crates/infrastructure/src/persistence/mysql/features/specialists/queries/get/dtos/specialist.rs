@@ -28,8 +28,7 @@ impl From<&Specialist> for MySqlSpecialistRow {
             profile: MySqlProfileRow {
                 first_name: entity.profile.first_name.clone().into(),
                 last_name: entity.profile.last_name.clone().map(|v| v.into()),
-                avatar_url: entity.profile.avatar_url.clone().map(|v| v.into()),
-                bio: entity.profile.bio.clone().map(|v| v.into())
+                avatar_url: entity.profile.avatar_url.clone().map(|v| v.into())
             }
         }
     }

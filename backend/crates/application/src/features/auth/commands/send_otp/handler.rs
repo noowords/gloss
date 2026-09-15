@@ -1,7 +1,11 @@
 use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
-use domain::aggregates::otp::{ Otp };
+use chrono::{ Duration, Utc };
+use domain::aggregates::auth::otp_challenge::{
+    OtpChallenge,
+    value_objects::{ OtpChallengeCodeHash, OtpChallengePurpose, OtpChallengeExpiresAt }
+};
 
 use crate::contracts::cqrs::command::{ Command, CommandHandler, CommandContext };
 use super::{ SendOtpCommand, SendOtpCommandService };
@@ -25,22 +29,21 @@ impl CommandHandler<SendOtpCommand> for SendOtpCommandHandler {
         self.service.delete_old_otps(
             context,
             &command.provider_type.clone().try_into()?,
-            &command.provider_key.clone().into()
+            &command.provider_key.clone().try_into()?
         ).await?;
         
-        let otp = Otp::generate(
+        let otp = OtpChallenge::create(
             command.provider_type.try_into()?,
-            command.provider_key.into()
-        );
+            command.provider_key.try_into()?,
+            OtpChallengePurpose::try_from("login")?,
+            OtpChallengeCodeHash::try_from(Vec::new())?,
+            OtpChallengeExpiresAt::from((Utc::now() + Duration::minutes(10)).naive_utc()),
+            None,
+            None
+        )?;
 
         self.service.save_otp(context, &otp).await?;
         
-        println!(
-            "[AUTH] Отправлен код {} на номер {}",
-            String::from(otp.code()),
-            String::from(otp.provider_key())
-        );
-
         Ok(())
     }
 }

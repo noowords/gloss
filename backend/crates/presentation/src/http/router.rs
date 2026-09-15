@@ -18,7 +18,7 @@ pub fn create_http_router(state: HttpState) -> Router {
         .allow_headers(Any);
     
     Router::new()
-        .route("/auth/otp/send", post(auth::send_otp))
+        .route("/auth/otp/phone/send", post(auth::send_otp))
         .route("/auth/otp/verify", post(auth::verify_otp))
         .route("/auth/refresh", post(auth::refresh_tokens))
         .route("/auth/logout", post(auth::logout))

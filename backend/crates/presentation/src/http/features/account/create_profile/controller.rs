@@ -17,10 +17,9 @@ pub async fn create_profile(
 ) -> Result<StatusCode, StatusCode> {
     let command = CreateAccountProfileCommand {
         user_id: auth_ctx.user_id.into(),
-        first_name: payload.first_name.into(),
-        last_name: payload.last_name.map(|ln| ln.into()),
-        avatar_url: payload.avatar_url.map(|url| url.into()),
-        bio: payload.bio.map(|bio| bio.into()),
+        first_name: payload.first_name.try_into().map_err(|_| StatusCode::BAD_REQUEST)?,
+        last_name: payload.last_name.map(TryInto::try_into).transpose().map_err(|_| StatusCode::BAD_REQUEST)?,
+        avatar_url: payload.avatar_url.map(TryInto::try_into).transpose().map_err(|_| StatusCode::BAD_REQUEST)?,
     };
     
     state.command_bus.dispatch::<CreateAccountProfileCommand>(command).await

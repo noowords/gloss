@@ -1,4 +1,4 @@
-use domain::aggregates::user::value_objects::{ UserId };
+use domain::aggregates::users::user::value_objects::{ UserId };
 
 pub struct VerifyOtpCommandResult {
     pub access_token: String,

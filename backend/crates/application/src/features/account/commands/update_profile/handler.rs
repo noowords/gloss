@@ -1,7 +1,7 @@
 use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
-use domain::aggregates::profile::{ Profile };
+use domain::aggregates::users::profile::{ Profile };
 
 use crate::contracts::cqrs::command::{ Command, CommandHandler, CommandContext };
 use super::{ UpdateAccountProfileCommand, UpdateAccountProfileCommandService };
@@ -26,9 +26,8 @@ impl CommandHandler<UpdateAccountProfileCommand> for UpdateAccountProfileCommand
             command.user_id,
             command.first_name,
             command.last_name,
-            command.avatar_url,
-            command.bio
-        );
+            command.avatar_url
+        )?;
         
         self.service.update_profile(context, &command.user_id, &profile).await
     }

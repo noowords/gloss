@@ -1,8 +1,8 @@
 use async_trait::{ async_trait };
 
 use domain::aggregates::{
-    user::value_objects::{ UserId },
-    profile::{ Profile }
+    users::user::value_objects::{ UserId },
+    users::profile::{ Profile }
 };
 
 use crate::contracts::cqrs::command::{ CommandContext };

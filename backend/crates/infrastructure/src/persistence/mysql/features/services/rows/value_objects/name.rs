@@ -1,4 +1,4 @@
-use domain::aggregates::service::value_objects::{ ServiceName };
+use domain::aggregates::services::service::value_objects::{ ServiceName };
 
 #[derive(Debug, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
@@ -18,7 +18,7 @@ impl From<String> for MySqlServiceNameRow {
 
 impl From<MySqlServiceNameRow> for ServiceName {
     fn from(row: MySqlServiceNameRow) -> Self {
-        row.0.into()
+        row.0.try_into().expect("Invalid service name")
     }
 }
 

@@ -1,4 +1,4 @@
-use domain::aggregates::appointment::value_objects::{ AppointmentStatus };
+use domain::aggregates::appointments::appointment::value_objects::{ AppointmentStatus };
 
 #[derive(Debug, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]

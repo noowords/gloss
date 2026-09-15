@@ -1,4 +1,4 @@
-use domain::aggregates::service::value_objects::{ ServiceIsActive };
+use domain::aggregates::services::service::value_objects::{ ServiceIsActive };
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]

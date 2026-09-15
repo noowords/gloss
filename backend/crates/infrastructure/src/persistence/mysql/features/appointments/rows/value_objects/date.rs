@@ -1,6 +1,4 @@
-use chrono::{ NaiveDate };
-
-use domain::aggregates::appointment::value_objects::{ AppointmentDate };
+use chrono::NaiveDate;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
@@ -15,17 +13,5 @@ impl From<MySqlAppointmentDateRow> for NaiveDate {
 impl From<NaiveDate> for MySqlAppointmentDateRow {
     fn from(value: NaiveDate) -> Self {
         Self(value)
-    }
-}
-
-impl From<MySqlAppointmentDateRow> for AppointmentDate {
-    fn from(row: MySqlAppointmentDateRow) -> Self {
-        row.0.into()
-    }
-}
-
-impl From<AppointmentDate> for MySqlAppointmentDateRow {
-    fn from(entity: AppointmentDate) -> Self {
-        Self(entity.into())
     }
 }

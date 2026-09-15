@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use domain::aggregates::user::value_objects::{ UserId };
+use domain::aggregates::users::user::value_objects::{ UserId };
 use application::{
     contracts::cqrs::query::{ QueryContext },
     features::account::queries::get_profile::{
@@ -35,8 +35,7 @@ impl GetAccountProfileQueryService for MySqlGetProfileByUserIdQueryService {
                 p.user_id     AS user_id,
                 p.first_name  AS first_name,
                 p.last_name   AS last_name,
-                p.avatar_url  AS avatar_url,
-                p.bio         AS bio
+                p.avatar_url  AS avatar_url
             FROM profiles p
             WHERE p.user_id = ?
             LIMIT 1

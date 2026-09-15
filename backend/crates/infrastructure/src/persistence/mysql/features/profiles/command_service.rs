@@ -1,8 +1,8 @@
 use async_trait::{ async_trait };
 
 use domain::aggregates::{
-    user::value_objects::{ UserId },
-    profile::{ Profile }
+    users::user::value_objects::{ UserId },
+    users::profile::{ Profile }
 };
 
 use application::{
@@ -36,15 +36,14 @@ impl CreateAccountProfileCommandService for MySqlProfileCommandService {
 
         sqlx::query(
             r#"
-            INSERT INTO profiles (user_id, first_name, last_name, avatar_url, bio)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO profiles (user_id, first_name, last_name, avatar_url)
+            VALUES (?, ?, ?, ?)
             "#
         )
             .bind(profile_row.user_id)
             .bind(profile_row.first_name)
             .bind(profile_row.last_name)
             .bind(profile_row.avatar_url)
-            .bind(profile_row.bio)
             .execute(&mut **tx)
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
@@ -67,14 +66,13 @@ impl UpdateAccountProfileCommandService for MySqlProfileCommandService {
         sqlx::query(
             r#"
             UPDATE profiles
-            SET first_name = ?, last_name = ?, avatar_url = ?, bio = ?, updated_at = NOW()
+            SET first_name = ?, last_name = ?, avatar_url = ?, updated_at = NOW()
             WHERE user_id = ?
             "#
         )
             .bind(profile_row.first_name)
             .bind(profile_row.last_name)
             .bind(profile_row.avatar_url)
-            .bind(profile_row.bio)
             .bind(user_id_row)
             .execute(&mut **tx)
             .await

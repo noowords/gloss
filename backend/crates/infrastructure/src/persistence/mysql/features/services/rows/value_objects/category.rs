@@ -1,4 +1,4 @@
-use domain::aggregates::service::value_objects::{ ServiceCategory };
+use domain::aggregates::services::service::value_objects::{ ServiceCategory };
 
 #[derive(Debug, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]

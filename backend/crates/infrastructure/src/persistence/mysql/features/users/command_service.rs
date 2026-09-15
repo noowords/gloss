@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use domain::aggregates::user::{
+use domain::aggregates::users::user::{
     User,
     value_objects::{ UserId }
 };
@@ -37,7 +37,7 @@ impl RefreshTokensCommandService for MySqlUserCommandService {
             r#"
             SELECT
                 u.id         AS id,
-                u.role       AS role
+                u.status     AS status
             FROM users u
             WHERE u.id = ?
             LIMIT 1
@@ -50,9 +50,7 @@ impl RefreshTokensCommandService for MySqlUserCommandService {
 
         let user = match row {
             Some(r) => {
-                let role = r.role.try_into()
-                    .map_err(|_| anyhow::anyhow!("Invalid role".to_string()))?;
-                Some(User::restore(r.id.into(), role))
+                Some(User::restore(r.id.into(), r.status.try_into()?)?)
             }
             None => None
         };

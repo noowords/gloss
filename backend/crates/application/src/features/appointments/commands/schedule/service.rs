@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use domain::aggregates::appointment::{ Appointment };
+use domain::aggregates::appointments::appointment::{ Appointment };
 
 use crate::contracts::cqrs::command::{ CommandContext };
 

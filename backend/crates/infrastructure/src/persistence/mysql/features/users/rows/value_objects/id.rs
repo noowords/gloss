@@ -1,6 +1,6 @@
 use uuid::{ Uuid };
 
-use domain::aggregates::user::value_objects::{ UserId };
+use domain::aggregates::users::user::value_objects::{ UserId };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]

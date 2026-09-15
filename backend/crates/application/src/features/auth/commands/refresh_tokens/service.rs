@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use domain::aggregates::user::{
+use domain::aggregates::users::user::{
     User,
     value_objects::{ UserId }
 };

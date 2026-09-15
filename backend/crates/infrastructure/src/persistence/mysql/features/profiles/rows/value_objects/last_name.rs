@@ -1,4 +1,4 @@
-use domain::aggregates::profile::value_objects::{ ProfileLastName };
+use domain::aggregates::users::profile::value_objects::{ ProfileLastName };
 
 #[derive(Debug, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
@@ -18,7 +18,7 @@ impl From<String> for MySqlProfileLastNameRow {
 
 impl From<MySqlProfileLastNameRow> for ProfileLastName {
     fn from(row: MySqlProfileLastNameRow) -> Self {
-        row.0.into()
+        row.0.try_into().expect("Invalid profile last name")
     }
 }
 

@@ -1,4 +1,7 @@
-use domain::aggregates::user::value_objects::{ UserId, UserRole };
+use domain::aggregates::{
+    users::user::value_objects::{ UserId },
+    users::user_role::value_objects::{ UserRoleName as UserRole }
+};
 
 pub trait TokenService: Send + Sync + 'static {
     fn generate_access_token(&self, user_id: UserId, role: UserRole) -> Result<String, anyhow::Error>;

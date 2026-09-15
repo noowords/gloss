@@ -1,37 +1,28 @@
-use domain::aggregates::specialist_service::{ SpecialistService };
+use domain::aggregates::specialists::specialist_service::{ SpecialistService };
 
-use crate::persistence::mysql::features::{
-    users::rows::value_objects::{ MySqlUserIdRow },
-    services::rows::value_objects::{ MySqlServiceIdRow }
-};
-
-use super::value_objects::{ MySqlSpecialistServiceIsActiveRow };
+use super::value_objects::{ MySqlSpecialistServiceSalonIdRow, MySqlSpecialistServiceServiceIdRow, MySqlSpecialistServiceSpecialistIdRow };
 
 #[derive(Debug, Clone, sqlx::FromRow)]
 pub struct MySqlSpecialistServiceRow {
-    pub specialist_id: MySqlUserIdRow,
-    pub service_id: MySqlServiceIdRow,
-    pub is_active: MySqlSpecialistServiceIsActiveRow
+    pub specialist_id: MySqlSpecialistServiceSpecialistIdRow,
+    pub salon_id: MySqlSpecialistServiceSalonIdRow,
+    pub service_id: MySqlSpecialistServiceServiceIdRow
 }
 
 impl TryFrom<MySqlSpecialistServiceRow> for SpecialistService {
     type Error = anyhow::Error;
     
     fn try_from(row: MySqlSpecialistServiceRow) -> Result<Self, Self::Error> {
-        Ok(Self::restore(
-            row.specialist_id.into(),
-            row.service_id.into(),
-            row.is_active.into()
-        ))
+        Self::restore(uuid::Uuid::from(row.specialist_id).into(), uuid::Uuid::from(row.salon_id).into(), uuid::Uuid::from(row.service_id).into())
     }
 }
 
 impl From<&SpecialistService> for MySqlSpecialistServiceRow {
     fn from(entity: &SpecialistService) -> Self {
         Self {
-            specialist_id: entity.specialist_id().into(),
-            service_id: entity.service_id().into(),
-            is_active: entity.is_active().into()
+            specialist_id: uuid::Uuid::from(entity.specialist_id()).into(),
+            salon_id: uuid::Uuid::from(entity.salon_id()).into(),
+            service_id: uuid::Uuid::from(entity.service_id()).into()
         }
     }
 }

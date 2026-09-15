@@ -58,7 +58,7 @@ use infrastructure::persistence::mysql::{
                 get_by_id::{ MySqlGetUserByIdQueryService }
             }
         },
-        otps::{ MySqlOtpCommandService },
+        otp_challenges::{ MySqlOtpCommandService },
         profiles::{
             MySqlProfileCommandService,
             queries::{

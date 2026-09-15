@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use domain::aggregates::user::value_objects::{ UserId };
+use domain::aggregates::users::user::value_objects::{ UserId };
 use application::{
     contracts::cqrs::query::{ QueryContext },
     features::specialists::queries::get_services_by_user_id::{
@@ -32,15 +32,19 @@ impl GetSpecialistServicesByUserIdQueryService for MySqlGetSpecialistServicesByU
         let rows: Vec<MySqlServiceRow> = sqlx::query_as(
             r#"
             SELECT
-                id,
-                specialist_id,
-                name,
-                price,
-                duration,
-                is_active
-            FROM services
-            WHERE specialist_id = ?
-              AND is_active = 1
+                s.id,
+                ss.specialist_id,
+                s.name,
+                ssalon.price,
+                s.duration_minutes AS duration,
+                s.is_active
+            FROM specialist_services ss
+            INNER JOIN specialists sp ON sp.id = ss.specialist_id
+            INNER JOIN services s ON s.id = ss.service_id
+            INNER JOIN salon_services ssalon
+                ON ssalon.salon_id = ss.salon_id AND ssalon.service_id = ss.service_id
+            WHERE sp.user_id = ?
+              AND s.is_active = 1
             "#
         )
             .bind(user_id_row)

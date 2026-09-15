@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use domain::aggregates::appointment::value_objects::{ AppointmentId };
+use domain::aggregates::appointments::appointment::value_objects::{ AppointmentId };
 use application::{
     contracts::cqrs::query::{ QueryContext },
     features::appointments::queries::get_by_id::{
@@ -35,12 +35,12 @@ impl GetAppointmentByIdQueryService for MySqlGetAppointmentByIdQueryService {
                 a.id               AS id,
                 a.specialist_id    AS specialist_id,
                 a.client_id        AS client_id,
-                a.date             AS date,
-                a.time             AS time,
-                a.duration         AS duration,
+                DATE(a.starts_at)  AS date,
+                TIME(a.starts_at)  AS time,
+                TIMESTAMPDIFF(MINUTE, a.starts_at, a.ends_at) AS duration,
                 a.status           AS status
             FROM appointments a
-            WHERE u.id = ?
+            WHERE a.id = ?
             LIMIT 1
             "#
         )

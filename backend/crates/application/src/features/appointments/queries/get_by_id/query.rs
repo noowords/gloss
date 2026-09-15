@@ -1,4 +1,4 @@
-use domain::aggregates::appointment::value_objects::{ AppointmentId };
+use domain::aggregates::appointments::appointment::value_objects::{ AppointmentId };
 
 use crate::contracts::cqrs::query::{ Query };
 use super::{ GetAppointmentByIdQueryView };

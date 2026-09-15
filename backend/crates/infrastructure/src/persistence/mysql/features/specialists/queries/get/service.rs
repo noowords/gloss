@@ -29,12 +29,11 @@ impl GetSpecialistsQueryService for MySqlGetSpecialistsQueryService {
                 s.user_id    AS user_id,
                 p.first_name AS first_name,
                 p.last_name  AS last_name,
-                p.avatar_url AS avatar_url,
-                p.bio        AS bio
+                p.avatar_url AS avatar_url
             FROM specialists s
             INNER JOIN users u ON s.user_id = u.id
             LEFT JOIN profiles p ON s.user_id = p.user_id
-            WHERE u.deleted_at IS NULL
+            WHERE u.status = 'active'
             ORDER BY u.created_at DESC
             "#
         )

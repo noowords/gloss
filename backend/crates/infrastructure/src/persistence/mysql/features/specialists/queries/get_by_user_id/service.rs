@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use domain::aggregates::user::value_objects::{ UserId };
+use domain::aggregates::users::user::value_objects::{ UserId };
 use application::{
     contracts::cqrs::query::{ QueryContext },
     features::specialists::queries::get_by_user_id::{
@@ -32,14 +32,14 @@ impl GetSpecialistByUserIdQueryService for MySqlGetSpecialistByUserIdQueryServic
         let row: Option<MySqlSpecialistRow> = sqlx::query_as(
             r#"
             SELECT
-                u.id         AS id,
+                s.user_id    AS user_id,
                 p.first_name AS first_name,
                 p.last_name  AS last_name,
-                p.avatar_url AS avatar_url,
-                p.bio        AS bio
-            FROM users u
-            LEFT JOIN profiles p ON u.id = p.user_id
-            WHERE u.id = ? AND u.deleted_at IS NULL
+                p.avatar_url AS avatar_url
+            FROM specialists s
+            INNER JOIN users u ON s.user_id = u.id
+            LEFT JOIN profiles p ON s.user_id = p.user_id
+            WHERE s.user_id = ? AND u.status = 'active'
             LIMIT 1
             "#
         )

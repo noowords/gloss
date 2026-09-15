@@ -1,16 +1,15 @@
-use domain::aggregates::profile::{ Profile };
+use domain::aggregates::users::profile::{ Profile };
 
 use crate::persistence::mysql::features::users::rows::value_objects::{ MySqlUserIdRow };
 
-use super::value_objects::{ MySqlProfileFirstNameRow, MySqlProfileLastNameRow, MySqlProfileAvatarUrlRow, MySqlProfileBioRow };
+use super::value_objects::{ MySqlProfileFirstNameRow, MySqlProfileLastNameRow, MySqlProfileAvatarUrlRow };
 
 #[derive(Debug, Clone, sqlx::FromRow)]
 pub struct MySqlProfileRow {
     pub user_id: MySqlUserIdRow,
     pub first_name: MySqlProfileFirstNameRow,
     pub last_name: Option<MySqlProfileLastNameRow>,
-    pub avatar_url: Option<MySqlProfileAvatarUrlRow>,
-    pub bio: Option<MySqlProfileBioRow>,
+    pub avatar_url: Option<MySqlProfileAvatarUrlRow>
 }
 
 impl From<MySqlProfileRow> for Profile {
@@ -19,9 +18,8 @@ impl From<MySqlProfileRow> for Profile {
             row.user_id.into(),
             row.first_name.into(),
             row.last_name.map(|ln| ln.into()),
-            row.avatar_url.map(|au| au.into()),
-            row.bio.map(|b| b.into())
-        )
+            row.avatar_url.map(|au| au.into())
+        ).expect("Invalid profile row")
     }
 }
 
@@ -31,8 +29,7 @@ impl From<&Profile> for MySqlProfileRow {
             user_id: entity.user_id().into(),
             first_name: entity.first_name().into(),
             last_name: entity.last_name().map(|ln| ln.into()),
-            avatar_url: entity.avatar_url().map(|au| au.into()),
-            bio: entity.bio().map(|b| b.into())
+            avatar_url: entity.avatar_url().map(|au| au.into())
         }
     }
 }

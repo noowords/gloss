@@ -1,5 +1,5 @@
 mod id;
-mod role;
+mod status;
 
 pub use id::{ MySqlUserIdRow };
-pub use role::{ MySqlUserRoleRow };
+pub use status::{ MySqlUserStatusRow };

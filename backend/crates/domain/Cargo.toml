@@ -7,7 +7,7 @@ publish = false
 [dependencies]
 bigdecimal.workspace = true
 chrono.workspace = true
+chrono-tz = "0.10"
 uuid.workspace = true
 
-rand.workspace = true
 anyhow.workspace = true

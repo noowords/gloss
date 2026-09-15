@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use domain::aggregates::appointment::{ Appointment };
+use domain::aggregates::appointments::appointment::{ Appointment };
 
 use application::{
     contracts::cqrs::command::{ CommandContext },
@@ -9,7 +9,10 @@ use application::{
 
 use crate::persistence::mysql::{
     contracts::cqrs::command::{ MySqlCommandContext },
-    features::appointments::rows::{ MySqlAppointmentRow },
+    features::{
+        appointments::rows::{ MySqlAppointmentRow },
+        appointment_services::rows::{ MySqlAppointmentServiceRow }
+    },
 };
 
 #[derive(Default)]
@@ -27,20 +30,51 @@ impl ScheduleAppointmentCommandService for MySqlAppointmentCommandService {
 
         sqlx::query(
             r#"
-            INSERT INTO appointments (id, specialist_id, client_id, date, time, duration, status, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            INSERT INTO appointments (id, client_id, salon_id, specialist_id, starts_at, ends_at, status, total_price_snapshot, total_duration_minutes_snapshot, cancelled_at, cancellation_reason)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             "#
         )
             .bind(row.id)
-            .bind(row.specialist_id)
             .bind(row.client_id)
-            .bind(row.date)
-            .bind(row.time)
-            .bind(row.duration)
+            .bind(row.salon_id)
+            .bind(row.specialist_id)
+            .bind(row.starts_at)
+            .bind(row.ends_at)
             .bind(row.status)
+            .bind(row.total_price_snapshot)
+            .bind(row.total_duration_minutes_snapshot)
+            .bind(row.cancelled_at)
+            .bind(row.cancellation_reason)
             .execute(&mut **tx)
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        for service in appointment.services() {
+            let service_row: MySqlAppointmentServiceRow = service.into();
+
+            sqlx::query(
+                r#"
+                INSERT INTO appointment_services (
+                    appointment_id,
+                    service_id,
+                    role,
+                    service_name_snapshot,
+                    price_snapshot,
+                    duration_minutes_snapshot
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+                "#
+            )
+                .bind(service_row.appointment_id)
+                .bind(service_row.service_id)
+                .bind(service_row.role)
+                .bind(service_row.service_name_snapshot)
+                .bind(service_row.price_snapshot)
+                .bind(service_row.duration_minutes_snapshot)
+                .execute(&mut **tx)
+                .await
+                .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+        }
 
         Ok(())
     }

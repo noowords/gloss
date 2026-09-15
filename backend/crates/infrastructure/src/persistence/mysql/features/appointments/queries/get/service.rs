@@ -29,9 +29,9 @@ impl GetAppointmentsQueryService for MySqlGetAppointmentsQueryService {
                 a.id               AS id,
                 a.specialist_id    AS specialist_id,
                 a.client_id        AS client_id,
-                a.date             AS date,
-                a.time             AS time,
-                a.duration         AS duration,
+                DATE(a.starts_at)  AS date,
+                TIME(a.starts_at)  AS time,
+                TIMESTAMPDIFF(MINUTE, a.starts_at, a.ends_at) AS duration,
                 a.status           AS status
             FROM appointments a
             ORDER BY a.created_at DESC

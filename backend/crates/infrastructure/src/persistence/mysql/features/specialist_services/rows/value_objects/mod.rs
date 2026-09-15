@@ -1,3 +1,5 @@
-mod is_active;
+use uuid::Uuid;
 
-pub use is_active::{ MySqlSpecialistServiceIsActiveRow };
+crate::mysql_row_value!(MySqlSpecialistServiceSpecialistIdRow, Uuid);
+crate::mysql_row_value!(MySqlSpecialistServiceSalonIdRow, Uuid);
+crate::mysql_row_value!(MySqlSpecialistServiceServiceIdRow, Uuid);

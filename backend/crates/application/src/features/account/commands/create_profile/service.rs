@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use domain::aggregates::profile::{ Profile };
+use domain::aggregates::users::profile::{ Profile };
 
 use crate::contracts::cqrs::command::{ CommandContext };
 

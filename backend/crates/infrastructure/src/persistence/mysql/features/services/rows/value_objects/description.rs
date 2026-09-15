@@ -1,4 +1,4 @@
-use domain::aggregates::service::value_objects::{ ServiceDescription };
+use domain::aggregates::services::service::value_objects::{ ServiceDescription };
 
 #[derive(Debug, Clone, PartialEq, Eq, sqlx::Type, sqlx::FromRow)]
 #[sqlx(transparent)]
@@ -18,7 +18,7 @@ impl From<String> for MySqlServiceDescriptionRow {
 
 impl From<MySqlServiceDescriptionRow> for ServiceDescription {
     fn from(row: MySqlServiceDescriptionRow) -> Self {
-        row.0.into()
+        row.0.try_into().expect("Invalid service description")
     }
 }
 

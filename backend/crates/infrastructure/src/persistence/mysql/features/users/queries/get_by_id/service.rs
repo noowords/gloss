@@ -1,6 +1,6 @@
 use async_trait::{ async_trait };
 
-use domain::aggregates::user::value_objects::{ UserId };
+use domain::aggregates::users::user::value_objects::{ UserId };
 use application::{
     contracts::cqrs::query::{ QueryContext },
     features::account::queries::get::{
@@ -33,9 +33,9 @@ impl GetAccountQueryService for MySqlGetUserByIdQueryService {
             r#"
             SELECT
                 u.id         AS id,
-                u.role       AS role
+                u.status     AS status
             FROM users u
-            WHERE u.id = ? AND u.deleted_at IS NULL
+            WHERE u.id = ?
             LIMIT 1
             "#
         )
