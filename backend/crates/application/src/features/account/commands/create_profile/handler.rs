@@ -1,23 +1,28 @@
-use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
 use domain::aggregates::users::profile::{ Profile };
 
-use crate::contracts::cqrs::command::{ Command, CommandHandler, CommandContext };
+use crate::common::cqrs::command::{ Command, CommandHandler, CommandContext };
 use super::{ CreateAccountProfileCommand, CreateAccountProfileCommandService };
 
-pub struct CreateAccountProfileCommandHandler {
-    service: Arc<dyn CreateAccountProfileCommandService>
+pub struct CreateAccountProfileCommandHandler<S> {
+    service: S
 }
 
-impl CreateAccountProfileCommandHandler {
-    pub fn build(service: Arc<dyn CreateAccountProfileCommandService>) -> Self {
+impl<S> CreateAccountProfileCommandHandler<S>
+where
+    S: CreateAccountProfileCommandService
+{
+    pub fn build(service: S) -> Self {
         Self { service }
     }
 }
 
 #[async_trait]
-impl CommandHandler<CreateAccountProfileCommand> for CreateAccountProfileCommandHandler {
+impl<S> CommandHandler<CreateAccountProfileCommand> for CreateAccountProfileCommandHandler<S>
+where
+    S: CreateAccountProfileCommandService
+{
     async fn handle(&self, context: &mut dyn CommandContext, command: CreateAccountProfileCommand) -> Result<
         <CreateAccountProfileCommand as Command>::Result,
         <CreateAccountProfileCommand as Command>::Error

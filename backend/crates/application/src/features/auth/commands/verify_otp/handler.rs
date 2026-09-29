@@ -1,5 +1,5 @@
-use std::sync::{ Arc };
 use async_trait::{ async_trait };
+use std::sync::{ Arc };
 
 use domain::aggregates::{
     users::user::{ User },
@@ -7,25 +7,33 @@ use domain::aggregates::{
     users::user_role::value_objects::{ UserRoleName }
 };
 
-use crate::contracts::{
+use crate::common::{
     TokenService,
     cqrs::command::{ Command, CommandHandler, CommandContext }
 };
 use super::{ VerifyOtpCommand, VerifyOtpCommandResult, VerifyOtpCommandService };
 
-pub struct VerifyOtpCommandHandler {
-    service: Arc<dyn VerifyOtpCommandService>,
-    token_service: Arc<dyn TokenService>
+pub struct VerifyOtpCommandHandler<S, T> {
+    service: S,
+    token_service: Arc<T>
 }
 
-impl VerifyOtpCommandHandler {
-    pub fn build(service: Arc<dyn VerifyOtpCommandService>, token_service: Arc<dyn TokenService>) -> Self {
+impl<S, T> VerifyOtpCommandHandler<S, T>
+where
+    S: VerifyOtpCommandService,
+    T: TokenService
+{
+    pub fn build(service: S, token_service: Arc<T>) -> Self {
         Self { service, token_service }
     }
 }
 
 #[async_trait]
-impl CommandHandler<VerifyOtpCommand> for VerifyOtpCommandHandler {
+impl<S, T> CommandHandler<VerifyOtpCommand> for VerifyOtpCommandHandler<S, T>
+where
+    S: VerifyOtpCommandService,
+    T: TokenService
+{
     async fn handle(&self, context: &mut dyn CommandContext, command: VerifyOtpCommand) -> Result<
         <VerifyOtpCommand as Command>::Result,
         <VerifyOtpCommand as Command>::Error

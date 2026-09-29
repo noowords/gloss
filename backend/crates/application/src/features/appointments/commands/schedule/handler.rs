@@ -1,4 +1,3 @@
-use std::sync::{ Arc };
 use async_trait::{ async_trait };
 use chrono::{ NaiveDateTime };
 
@@ -10,21 +9,27 @@ use domain::aggregates::{
     appointments::appointment::{ Appointment }
 };
 
-use crate::contracts::cqrs::command::{ Command, CommandHandler, CommandContext };
+use crate::common::cqrs::command::{ Command, CommandHandler, CommandContext };
 use super::{ ScheduleAppointmentCommand, ScheduleAppointmentCommandService };
 
-pub struct ScheduleAppointmentCommandHandler {
-    service: Arc<dyn ScheduleAppointmentCommandService>
+pub struct ScheduleAppointmentCommandHandler<S> {
+    service: S
 }
 
-impl ScheduleAppointmentCommandHandler {
-    pub fn build(service: Arc<dyn ScheduleAppointmentCommandService>) -> Self {
+impl<S> ScheduleAppointmentCommandHandler<S>
+where
+    S: ScheduleAppointmentCommandService
+{
+    pub fn build(service: S) -> Self {
         Self { service }
     }
 }
 
 #[async_trait]
-impl CommandHandler<ScheduleAppointmentCommand> for ScheduleAppointmentCommandHandler {
+impl<S> CommandHandler<ScheduleAppointmentCommand> for ScheduleAppointmentCommandHandler<S>
+where
+    S: ScheduleAppointmentCommandService
+{
     async fn handle(&self, context: &mut dyn CommandContext, command: ScheduleAppointmentCommand) -> Result<
         <ScheduleAppointmentCommand as Command>::Result,
         <ScheduleAppointmentCommand as Command>::Error

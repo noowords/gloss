@@ -2,7 +2,7 @@ use std::any::{ Any, TypeId };
 use std::collections::{ HashMap };
 use std::sync::{ Arc };
 
-use crate::contracts::cqrs::query::{ Query, QueryHandler, QueryContextProvider };
+use super::{ Query, QueryHandler, QueryContextProvider };
 
 pub struct QueryBus {
     provider: Arc<dyn QueryContextProvider>,
@@ -10,8 +10,11 @@ pub struct QueryBus {
 }
 
 impl QueryBus {
-    pub fn new(provider: Arc<dyn QueryContextProvider>) -> Self {
-        Self { provider, handlers: HashMap::new() }
+    pub fn new<P>(provider: P) -> Self
+    where
+        P: QueryContextProvider
+    {
+        Self { provider: Arc::new(provider), handlers: HashMap::new() }
     }
 
     pub fn register<Q, H>(mut self, handler: H) -> Self

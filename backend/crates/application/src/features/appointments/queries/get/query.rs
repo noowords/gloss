@@ -1,4 +1,4 @@
-use crate::contracts::cqrs::query::{ Query };
+use crate::common::cqrs::query::{ Query };
 use super::{ GetAppointmentsQueryView };
 
 #[derive(Clone)]

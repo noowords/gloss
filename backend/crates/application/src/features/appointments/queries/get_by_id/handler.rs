@@ -1,21 +1,26 @@
 use async_trait::{ async_trait };
-use std::sync::{ Arc };
 
-use crate::contracts::cqrs::query::{ Query, QueryHandler, QueryContext };
+use crate::common::cqrs::query::{ Query, QueryHandler, QueryContext };
 use super::{ GetAppointmentByIdQuery, GetAppointmentByIdQueryService };
 
-pub struct GetAppointmentByIdQueryHandler {
-    service: Arc<dyn GetAppointmentByIdQueryService>
+pub struct GetAppointmentByIdQueryHandler<S> {
+    service: S
 }
 
-impl GetAppointmentByIdQueryHandler {
-    pub fn build(service: Arc<dyn GetAppointmentByIdQueryService>) -> Self {
+impl<S> GetAppointmentByIdQueryHandler<S>
+where
+    S: GetAppointmentByIdQueryService
+{
+    pub fn build(service: S) -> Self {
         Self { service }
     }
 }
 
 #[async_trait]
-impl QueryHandler<GetAppointmentByIdQuery> for GetAppointmentByIdQueryHandler {
+impl<S> QueryHandler<GetAppointmentByIdQuery> for GetAppointmentByIdQueryHandler<S>
+where
+    S: GetAppointmentByIdQueryService
+{
     async fn handle(&self, context: &dyn QueryContext, query: GetAppointmentByIdQuery) -> Result<
         <GetAppointmentByIdQuery as Query>::View,
         <GetAppointmentByIdQuery as Query>::Error

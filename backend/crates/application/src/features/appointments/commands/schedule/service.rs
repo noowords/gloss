@@ -2,9 +2,9 @@ use async_trait::{ async_trait };
 
 use domain::aggregates::appointments::appointment::{ Appointment };
 
-use crate::contracts::cqrs::command::{ CommandContext };
+use crate::common::cqrs::command::{ CommandContext };
 
 #[async_trait]
-pub trait ScheduleAppointmentCommandService: Send + Sync {
+pub trait ScheduleAppointmentCommandService: Send + Sync + 'static {
     async fn save_appointment(&self, ctx: &mut dyn CommandContext, appointment: &Appointment) -> Result<(), anyhow::Error>;
 }

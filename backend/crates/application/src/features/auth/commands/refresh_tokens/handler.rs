@@ -1,26 +1,34 @@
-use std::sync::{ Arc };
 use async_trait::{ async_trait };
+use std::sync::{ Arc };
 
-use crate::contracts::{
+use crate::common::{
     TokenService,
     cqrs::command::{ Command, CommandHandler, CommandContext }
 };
 use domain::aggregates::users::user_role::value_objects::{ UserRoleName };
 use super::{ RefreshTokensCommand, RefreshTokensCommandResult, RefreshTokensCommandService };
 
-pub struct RefreshTokensCommandHandler {
-    service: Arc<dyn RefreshTokensCommandService>,
-    token_service: Arc<dyn TokenService>
+pub struct RefreshTokensCommandHandler<S, T> {
+    service: S,
+    token_service: Arc<T>
 }
 
-impl RefreshTokensCommandHandler {
-    pub fn build(service: Arc<dyn RefreshTokensCommandService>, token_service: Arc<dyn TokenService>) -> Self {
+impl<S, T> RefreshTokensCommandHandler<S, T>
+where
+    S: RefreshTokensCommandService,
+    T: TokenService
+{
+    pub fn build(service: S, token_service: Arc<T>) -> Self {
         Self { service, token_service }
     }
 }
 
 #[async_trait]
-impl CommandHandler<RefreshTokensCommand> for RefreshTokensCommandHandler {
+impl<S, T> CommandHandler<RefreshTokensCommand> for RefreshTokensCommandHandler<S, T>
+where
+    S: RefreshTokensCommandService,
+    T: TokenService
+{
     async fn handle(&self, context: &mut dyn CommandContext, command: RefreshTokensCommand) -> Result<
         <RefreshTokensCommand as Command>::Result,
         <RefreshTokensCommand as Command>::Error

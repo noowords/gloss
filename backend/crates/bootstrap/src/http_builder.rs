@@ -119,73 +119,127 @@ pub async fn build_http() -> Result<HttpApplication, anyhow::Error> {
         _ => anyhow::bail!("Unsupported database type: {}", database_type)
     };
 
-    let command_provider = match database_type.as_str() {
-        "mysql" => Arc::new(MySqlCommandContextProvider::new(pool.clone())),
-        _ => anyhow::bail!("Unsupported database type: {}", database_type)
-    };
-    let query_provider = match database_type.as_str() {
-        "mysql" => Arc::new(MySqlQueryContextProvider::new(pool)),
-        _ => anyhow::bail!("Unsupported database type: {}", database_type)
-    };
-
     let token_service = Arc::new(JwtTokenService::new("eUDM8UQkdT0QAGknzfLMKzSF4pvqbou7rYamPjLeGBy".to_string()));
 
-    let user_service = Arc::new(MySqlUserCommandService::default());
-    let otp_service = Arc::new(MySqlOtpCommandService::default());
-    let profile_service = Arc::new(MySqlProfileCommandService::default());
-    let appointment_service = Arc::new(MySqlAppointmentCommandService::default());
-
-    let command_bus = CommandBus::new(command_provider)
-        .register(SendOtpCommandHandler::build(otp_service.clone()))
-        .register(VerifyOtpCommandHandler::build(otp_service, token_service.clone()))
-        .register(RefreshTokensCommandHandler::build(user_service, token_service.clone()))
-        .register(CreateAccountProfileCommandHandler::build(profile_service.clone()))
-        .register(UpdateAccountProfileCommandHandler::build(profile_service))
-        .register(ScheduleAppointmentCommandHandler::build(appointment_service));
-
-    let query_bus = QueryBus::new(query_provider)
-        .register(GetAccountQueryHandler::build(
-            match database_type.as_str() {
-                "mysql" => Arc::new(MySqlGetUserByIdQueryService::default()),
-                _ => anyhow::bail!("Unsupported database type: {}", database_type)
-            }
-        ))
-        .register(GetAccountProfileQueryHandler::build(
-            match database_type.as_str() {
-                "mysql" => Arc::new(MySqlGetProfileByUserIdQueryService::default()),
-                _ => anyhow::bail!("Unsupported database type: {}", database_type)
-            }
-        ))
-        .register(GetSpecialistsQueryHandler::build(
-            match database_type.as_str() {
-                "mysql" => Arc::new(MySqlGetSpecialistsQueryService::default()),
-                _ => anyhow::bail!("Unsupported database type: {}", database_type)
-            }
-        ))
-        .register(GetSpecialistByUserIdQueryHandler::build(
-            match database_type.as_str() {
-                "mysql" => Arc::new(MySqlGetSpecialistByUserIdQueryService::default()),
-                _ => anyhow::bail!("Unsupported database type: {}", database_type)
-            }
-        ))
-        .register(GetSpecialistServicesByUserIdQueryHandler::build(
-            match database_type.as_str() {
-                "mysql" => Arc::new(MySqlGetSpecialistServicesByUserIdQueryService::default()),
-                _ => anyhow::bail!("Unsupported database type: {}", database_type)
-            }
-        ))
-        .register(GetAppointmentsQueryHandler::build(
-            match database_type.as_str() {
-                "mysql" => Arc::new(MySqlGetAppointmentsQueryService::default()),
-                _ => anyhow::bail!("Unsupported database type: {}", database_type)
-            }
-        ))
-        .register(GetAppointmentByIdQueryHandler::build(
-            match database_type.as_str() {
-                "mysql" => Arc::new(MySqlGetAppointmentByIdQueryService::default()),
-                _ => anyhow::bail!("Unsupported database type: {}", database_type)
-            }
-        ));
+    let command_bus = CommandBus::new(
+        match database_type.as_str() {
+            "mysql" => MySqlCommandContextProvider::new(pool.clone()),
+            _ => anyhow::bail!("Unsupported database type: {}", database_type)
+        }
+    )
+        .register(
+            SendOtpCommandHandler::build(
+                match database_type.as_str() {
+                    "mysql" => MySqlOtpCommandService::default(),
+                    _ => anyhow::bail!("Unsupported database type: {}", database_type)
+                }
+            )
+        )
+        .register(
+            VerifyOtpCommandHandler::build(
+                match database_type.as_str() {
+                    "mysql" => MySqlOtpCommandService::default(),
+                    _ => anyhow::bail!("Unsupported database type: {}", database_type)
+                },
+                token_service.clone()
+            )
+        )
+        .register(
+            RefreshTokensCommandHandler::build(
+                match database_type.as_str() {
+                    "mysql" => MySqlUserCommandService::default(),
+                    _ => anyhow::bail!("Unsupported database type: {}", database_type)
+                },
+                token_service.clone()
+            )
+        )
+        .register(
+            CreateAccountProfileCommandHandler::build(
+                match database_type.as_str() {
+                    "mysql" => MySqlProfileCommandService::default(),
+                    _ => anyhow::bail!("Unsupported database type: {}", database_type)
+                }
+            )
+        )
+        .register(
+            UpdateAccountProfileCommandHandler::build(
+                match database_type.as_str() {
+                    "mysql" => MySqlProfileCommandService::default(),
+                    _ => anyhow::bail!("Unsupported database type: {}", database_type)
+                }
+            )
+        )
+        .register(
+            ScheduleAppointmentCommandHandler::build(
+                match database_type.as_str() {
+                    "mysql" => MySqlAppointmentCommandService::default(),
+                    _ => anyhow::bail!("Unsupported database type: {}", database_type)
+                }
+            )
+        );
+    
+    let query_bus = QueryBus::new(
+        match database_type.as_str() {
+            "mysql" => MySqlQueryContextProvider::new(pool.clone()),
+            _ => anyhow::bail!("Unsupported database type: {}", database_type)
+        }
+    )
+        .register(
+            GetAccountQueryHandler::build(
+                match database_type.as_str() {
+                    "mysql" => MySqlGetUserByIdQueryService::default(),
+                    _ => anyhow::bail!("Unsupported database type: {}", database_type)
+                }
+            )
+        )
+        .register(
+            GetAccountProfileQueryHandler::build(
+                match database_type.as_str() {
+                    "mysql" => MySqlGetProfileByUserIdQueryService::default(),
+                    _ => anyhow::bail!("Unsupported database type: {}", database_type)
+                }
+            )
+        )
+        .register(
+            GetSpecialistsQueryHandler::build(
+                match database_type.as_str() {
+                    "mysql" => MySqlGetSpecialistsQueryService::default(),
+                    _ => anyhow::bail!("Unsupported database type: {}", database_type)
+                }
+            )
+        )
+        .register(
+            GetSpecialistByUserIdQueryHandler::build(
+                match database_type.as_str() {
+                    "mysql" => MySqlGetSpecialistByUserIdQueryService::default(),
+                    _ => anyhow::bail!("Unsupported database type: {}", database_type)
+                }
+            )
+        )
+        .register(
+            GetSpecialistServicesByUserIdQueryHandler::build(
+                match database_type.as_str() {
+                    "mysql" => MySqlGetSpecialistServicesByUserIdQueryService::default(),
+                    _ => anyhow::bail!("Unsupported database type: {}", database_type)
+                }
+            )
+        )
+        .register(
+            GetAppointmentsQueryHandler::build(
+                match database_type.as_str() {
+                    "mysql" => MySqlGetAppointmentsQueryService::default(),
+                    _ => anyhow::bail!("Unsupported database type: {}", database_type)
+                }
+            )
+        )
+        .register(
+            GetAppointmentByIdQueryHandler::build(
+                match database_type.as_str() {
+                    "mysql" => MySqlGetAppointmentByIdQueryService::default(),
+                    _ => anyhow::bail!("Unsupported database type: {}", database_type)
+                }
+            )
+        );
 
     Ok(HttpApplication::new(Arc::new(command_bus), Arc::new(query_bus), token_service))
 }

@@ -1,6 +1,6 @@
 use domain::aggregates::users::user::value_objects::{ UserId };
 
-use crate::contracts::cqrs::query::{ Query };
+use crate::common::cqrs::query::{ Query };
 use super::{ GetAccountProfileQueryView };
 
 #[derive(Clone)]

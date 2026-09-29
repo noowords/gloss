@@ -3,7 +3,7 @@ use domain::aggregates::{
     users::profile::value_objects::{ ProfileFirstName, ProfileLastName, ProfileAvatarUrl }
 };
 
-use crate::contracts::cqrs::command::{ Command };
+use crate::common::cqrs::command::{ Command };
 
 use super::{ CreateAccountProfileCommandResult };
 

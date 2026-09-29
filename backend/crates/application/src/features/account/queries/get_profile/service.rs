@@ -2,11 +2,11 @@ use async_trait::{ async_trait };
 
 use domain::aggregates::users::user::value_objects::{ UserId };
 
-use crate::contracts::cqrs::query::{ QueryContext };
+use crate::common::cqrs::query::{ QueryContext };
 
 use super::dtos::{ Profile };
 
 #[async_trait]
-pub trait GetAccountProfileQueryService: Send + Sync {
+pub trait GetAccountProfileQueryService: Send + Sync + 'static {
     async fn get_profile_by_user_id(&self, context: &dyn QueryContext, user_id: UserId) -> Result<Option<Profile>, anyhow::Error>;
 }

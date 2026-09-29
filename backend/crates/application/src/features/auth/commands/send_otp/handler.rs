@@ -1,4 +1,3 @@
-use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
 use chrono::{ Duration, Utc };
@@ -7,21 +6,27 @@ use domain::aggregates::auth::otp_challenge::{
     value_objects::{ OtpChallengeCodeHash, OtpChallengePurpose, OtpChallengeExpiresAt }
 };
 
-use crate::contracts::cqrs::command::{ Command, CommandHandler, CommandContext };
+use crate::common::cqrs::command::{ Command, CommandHandler, CommandContext };
 use super::{ SendOtpCommand, SendOtpCommandService };
 
-pub struct SendOtpCommandHandler {
-    service: Arc<dyn SendOtpCommandService>
+pub struct SendOtpCommandHandler<S> {
+    service: S
 }
 
-impl SendOtpCommandHandler {
-    pub fn build(service: Arc<dyn SendOtpCommandService>) -> Self {
+impl<S> SendOtpCommandHandler<S>
+where
+    S: SendOtpCommandService
+{
+    pub fn build(service: S) -> Self {
         Self { service }
     }
 }
 
 #[async_trait]
-impl CommandHandler<SendOtpCommand> for SendOtpCommandHandler {
+impl<S> CommandHandler<SendOtpCommand> for SendOtpCommandHandler<S>
+where
+    S: SendOtpCommandService
+{
     async fn handle(&self, context: &mut dyn CommandContext, command: SendOtpCommand) -> Result<
         <SendOtpCommand as Command>::Result,
         <SendOtpCommand as Command>::Error

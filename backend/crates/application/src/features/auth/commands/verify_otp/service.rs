@@ -12,10 +12,10 @@ use domain::aggregates::{
     }
 };
 
-use crate::contracts::cqrs::command::{ CommandContext };
+use crate::common::cqrs::command::{ CommandContext };
 
 #[async_trait]
-pub trait VerifyOtpCommandService: Send + Sync {
+pub trait VerifyOtpCommandService: Send + Sync + 'static {
     async fn get_otp(&self, ctx: &mut dyn CommandContext, provider: &OtpChallengeProvider, subject: &OtpChallengeSubject, purpose: &OtpChallengePurpose, code_hash: &OtpChallengeCodeHash) -> Result<Option<OtpChallenge>, anyhow::Error>;
     
     async fn remove_otps(&self, ctx: &mut dyn CommandContext, provider: &OtpChallengeProvider, subject: &OtpChallengeSubject, purpose: &OtpChallengePurpose) -> Result<(), anyhow::Error>;

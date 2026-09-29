@@ -1,21 +1,26 @@
 use async_trait::{ async_trait };
-use std::sync::{ Arc };
 
-use crate::contracts::cqrs::query::{ Query, QueryHandler, QueryContext };
+use crate::common::cqrs::query::{ Query, QueryHandler, QueryContext };
 use super::{ GetSpecialistByUserIdQuery, GetSpecialistByUserIdQueryService };
 
-pub struct GetSpecialistByUserIdQueryHandler {
-    service: Arc<dyn GetSpecialistByUserIdQueryService>
+pub struct GetSpecialistByUserIdQueryHandler<S> {
+    service: S
 }
 
-impl GetSpecialistByUserIdQueryHandler {
-    pub fn build(service: Arc<dyn GetSpecialistByUserIdQueryService>) -> Self {
+impl<S> GetSpecialistByUserIdQueryHandler<S>
+where
+    S: GetSpecialistByUserIdQueryService
+{
+    pub fn build(service: S) -> Self {
         Self { service }
     }
 }
 
 #[async_trait]
-impl QueryHandler<GetSpecialistByUserIdQuery> for GetSpecialistByUserIdQueryHandler {
+impl<S> QueryHandler<GetSpecialistByUserIdQuery> for GetSpecialistByUserIdQueryHandler<S>
+where
+    S: GetSpecialistByUserIdQueryService
+{
     async fn handle(&self, context: &dyn QueryContext, query: GetSpecialistByUserIdQuery) -> Result<
         <GetSpecialistByUserIdQuery as Query>::View,
         <GetSpecialistByUserIdQuery as Query>::Error

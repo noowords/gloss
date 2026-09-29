@@ -2,7 +2,7 @@ use std::any::{ Any, TypeId };
 use std::collections::{ HashMap };
 use std::sync::{ Arc };
 
-use crate::contracts::cqrs::command::{ Command, CommandHandler, CommandContextProvider };
+use super::{ Command, CommandHandler, CommandContextProvider };
 
 pub struct CommandBus {
     provider: Arc<dyn CommandContextProvider>,
@@ -10,8 +10,11 @@ pub struct CommandBus {
 }
 
 impl CommandBus {
-    pub fn new(provider: Arc<dyn CommandContextProvider>) -> Self {
-        Self { provider, handlers: HashMap::new() }
+    pub fn new<P>(provider: P) -> Self
+    where
+        P: CommandContextProvider
+    {
+        Self { provider: Arc::new(provider), handlers: HashMap::new() }
     }
 
     pub fn register<C, H>(mut self, handler: H) -> Self

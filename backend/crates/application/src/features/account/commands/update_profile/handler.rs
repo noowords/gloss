@@ -1,23 +1,28 @@
-use std::sync::{ Arc };
 use async_trait::{ async_trait };
 
 use domain::aggregates::users::profile::{ Profile };
 
-use crate::contracts::cqrs::command::{ Command, CommandHandler, CommandContext };
+use crate::common::cqrs::command::{ Command, CommandHandler, CommandContext };
 use super::{ UpdateAccountProfileCommand, UpdateAccountProfileCommandService };
 
-pub struct UpdateAccountProfileCommandHandler {
-    service: Arc<dyn UpdateAccountProfileCommandService>
+pub struct UpdateAccountProfileCommandHandler<S> {
+    service: S
 }
 
-impl UpdateAccountProfileCommandHandler {
-    pub fn build(service: Arc<dyn UpdateAccountProfileCommandService>) -> Self {
+impl<S> UpdateAccountProfileCommandHandler<S>
+where
+    S: UpdateAccountProfileCommandService
+{
+    pub fn build(service: S) -> Self {
         Self { service }
     }
 }
 
 #[async_trait]
-impl CommandHandler<UpdateAccountProfileCommand> for UpdateAccountProfileCommandHandler {
+impl<S> CommandHandler<UpdateAccountProfileCommand> for UpdateAccountProfileCommandHandler<S>
+where
+    S: UpdateAccountProfileCommandService
+{
     async fn handle(&self, context: &mut dyn CommandContext, command: UpdateAccountProfileCommand) -> Result<
         <UpdateAccountProfileCommand as Command>::Result,
         <UpdateAccountProfileCommand as Command>::Error

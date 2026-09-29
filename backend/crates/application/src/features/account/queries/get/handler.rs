@@ -1,21 +1,26 @@
 use async_trait::{ async_trait };
-use std::sync::{ Arc };
 
-use crate::contracts::cqrs::query::{ Query, QueryHandler, QueryContext };
+use crate::common::cqrs::query::{ Query, QueryHandler, QueryContext };
 use super::{ GetAccountQuery, GetAccountQueryService };
 
-pub struct GetAccountQueryHandler {
-    service: Arc<dyn GetAccountQueryService>
+pub struct GetAccountQueryHandler<S> {
+    service: S
 }
 
-impl GetAccountQueryHandler {
-    pub fn build(service: Arc<dyn GetAccountQueryService>) -> Self {
+impl<S> GetAccountQueryHandler<S>
+where
+    S: GetAccountQueryService
+{
+    pub fn build(service: S) -> Self {
         Self { service }
     }
 }
 
 #[async_trait]
-impl QueryHandler<GetAccountQuery> for GetAccountQueryHandler {
+impl<S> QueryHandler<GetAccountQuery> for GetAccountQueryHandler<S>
+where
+    S: GetAccountQueryService
+{
     async fn handle(&self, context: &dyn QueryContext, query: GetAccountQuery) -> Result<
         <GetAccountQuery as Query>::View,
         <GetAccountQuery as Query>::Error
