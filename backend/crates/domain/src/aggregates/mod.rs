@@ -1,8 +1,8 @@
-pub mod users;
-pub mod salons;
-pub mod specialists;
-pub mod services;
-pub mod appointments;
-pub mod auth;
-pub mod reviews;
-pub mod notifications;
+pub mod user;
+pub mod specialist;
+pub mod salon;
+pub mod service;
+pub mod appointment;
+pub mod auth_session;
+pub mod otp_challenge;
+pub mod notification;
